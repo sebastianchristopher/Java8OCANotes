@@ -2,12 +2,15 @@
 
 **Table of contents**
 
+---
 [Chapter 1 - Java Building Blocks](#chapter-1---java-building-blocks)
 [Chapter 2 - Operators and Statements](#chapter-2---operators-and-statements)
+---
 
 ## Chapter 1 - Java Building Blocks
-**Sub-sections**
+**In this chapter:**
 
+---
 [Comments](#comments)
 
 [Classes and Files](#classes-and-files)
@@ -36,6 +39,7 @@
 
 [Destroying objects](#destroying-objects)
 
+---
 ### Comments
 ```java
 /**
@@ -347,15 +351,51 @@ public class Foobar { // class declaration; required
   - run only when the object is eligible for garbage collection
 
 ## Chapter 2 - Operators and Statements
-**Sub-sections**
+**In this chapter:**
 
+---
 [Order of Precedence](#order-of-precedence)
 
 [Pre unary and post unary increment and decrement](#pre-unary-and-post-unary-increment-and-decrement)
 
 [Numeric promotion](#numeric-promotion)
 
-[Logical complement (!) and negation (-) operators](#logical-complement-and-negation-operators)
+[Logical complement (!) and negation (-) operators](#logical-complement--and-negation--operators)
+
+[Primitive conversion](#primitive-conversion)
+
+[Compound assignment operator](#compound-assignment-operator)
+
+[Assignment operator](#assignment-operator]
+
+[Logical operators](#logical-operators)
+
+[if....](#if)
+
+[if else](#if-else)
+
+[Ternary](#ternary)
+
+[switch](#switch)
+
+[while](#while)
+
+[do while](#do-while)
+
+[for](#for)
+
+[for each](#for-each)
+
+[Labels](#labels)
+
+[break](#break)
+
+[continue](#continue)
+
+[Advanced control flow usage](#advanced-control-flow-usage)
+
+[Extra things](#extra-things)
+---
 
 ### Order of Precedence
 
@@ -392,12 +432,30 @@ System.out.println("y is " + y);
   - evaluate the operations:
     - `20 / 4 + 2` -> `5 + 2` -> `7`
 
-[More on this:](https://coderanch.com/t/653797/certification/Post-Pre-unary-operator-precedence)  
-[Princeton](https://introcs.cs.princeton.edu/java/11precedence/)
+[More on this](https://coderanch.com/t/653797/certification/Post-Pre-unary-operator-precedence)  
+[Princeton on precedence](https://introcs.cs.princeton.edu/java/11precedence/)
 
 ### Logical complement (!) and negation (-) operators
-
-
+* `!` flips the value of a boolean expression e.g.
+```java
+boolean x = true;
+System.out.println(x); // true
+System.out.println(!x); // false
+```
+* `-` reverses the sign of a numeric expressions e.g.
+```java
+int x = 1;
+x = -x;
+System.out.println(x); // -1
+x = -x;
+System.out.println(x); // 1
+```
+* in Java, 1 and true are not related (nor 0 and false):
+```java
+int x = !5; // DOES NOT COMPILE - can't logically invert a number
+boolean y = -true; // DOES NOT COMPILE
+boolean z = !0; // DOES NOT COMPILE
+```
 ### Numeric promotion
 1. if two values in an operation have different data types, the smaller will be promoted to the larger:
 ```java
@@ -423,13 +481,229 @@ int x = 1;
 long y = 2;
 long z = x + y; // x promoted to long; z is also a long
 ```
+### Primitive conversion
+* Java automatically promotes from smaller to larger data types, but not the other way round
+```java
+int x = 1.0; // DOES NOT COMPILE -> double can't assign to int
+short y = 1921222; // DOES NOT COMPILE -> too large to fit into short type
+int z = 9f; // DOES NOT COMPILE -> float can't assign to int
+long l = 192_301_398_193_810_323; // DOES NOT COMPILE -> interprets literal as int & value is too large
+```
+* casting primitive values:
+```java
+int x = (int)1.0;
+short y = (short)1921222; // stored as 20678 - value is too big too store in short, so numeric overflow occurs, wrapping around to the next lowest value then counting up from there
+int z = (int)9f;
+long l = 192_301_398_193_810_323L;
+```
+* any literal is assumed to be an int or double unless specified
+```java
+float f = 1.2; // DOES NOT COMPILE -> 1.2 interpreted as double -> double larger than float
+float f = 1.2f; // compiles
+float f = (float)1.2; // compiles
+```
+### Compound assignment operator
+```java
+int x = 2;
+x *= 3;
+System.out.println("x is " + x); // x is 6
+```
+* not just shorthand - also saves having to cast a value:
+```java
+long x = 10;
+int y = 5;
+y = x * y; // DOES NOT COMPILE - result promoted to long -> won't fit int
+y = (int)x * y; // compiles
+y *= x; // automatically casts
+```
+### Assignment operator
+* the result of an assignment is an expression in and of iself, equal to the value of the assignment e.g.
+```java
+long x = 3;
+long y = (x = 5);
+System.out.println(y); // 5
+System.out.println(x); // 5
+```
+### Logical operators
+```java
+true & true // true
+/* inclusive or - either can be true */
+true | false // true
+true | true // true
+/* exclusive or - only one can be true */
+true ^ true // false
+true ^ false // true
+```
+* make sure if asked about a value where || appears that the right hand side is reached:
+```java
+int x = 6;
+boolean y = (x >= 6) || (++x <= 7);
+System.out.println(x); // 6, as right hand operation never reached
+```
+### if....
+```java
+if(booleanExpression)
+	System.out.println("Foo"); // for a single statement, braces are optional
+if(booleanExpression){
+	System.out.println("Foo"); // more than one statement
+	System.out.println("Bar"); // so braces are mandatory
+}
+```
+* watch out for this on the exam, e.g.:
+```java
+boolean x = false;
+if(x)
+	System.out.print("one");
+	System.out.print("two");
+```
+* output is "two" - despite the formatting, it is interpretted as a single statement if block so the second statement runs regardless
+### if else
+* again, braces optional for single statments
+```java
+if(true){
+	System.out.print("true");
+} else
+	System.out.print("false");
+	System.out.print("foobar"); // no longer in if-else
+```
+* output is "truefoobar"
+---
+* if statement must evaluate to boolean
+```java
+int x = 1;
+if(x){ // DOES NOT COMPILE (unlike Groovy Truth)
+	// do something
+}
+```
+* watch out also for assignment instead of evaluation:
+```java
+int x = 1;
+if(x = 1) { // DOES NOT COMPILE -> result of x = 1 is 1, which is not a boolean expression
+	// do something
+}
+```
+### Ternary
+* if using for assignment, both outcomes must be assignable to type:
+```java
+int x = true ? 1 : 2;
+int y = true ? 1 : "not true"; // DOES NOT COMPILE
+```
+* but otherwise no obligation that both need to be of same type:
+```java
+System.out.println(true ? 1 : "not true");
+```
+### switch
+```java
+int x = 4;
+switch(x){ // braces required
+	case 1:
+		//bla bla
+		break;
+	case 2:
+		// something else
+		break;
+	case 4:
+		// this runs
+		break;
+	default:
+		// if no matches
+		break;
+}
+```
+* supports:
+  - `int` and `Integer`
+  - `short` and `Short`
+  - `byte` and `Byte`
+  - `char` and `Character`
+  - String
+  - enum values
+* does not support:
+	- `long` or `Long`
+	- `boolean` or `Boolean`
+	- `double` or `Double`
+	- `float` or `Float`
+* additionally, it can't be passed a null value (NullPointerException)
+---
+* case values must be compile-time constants of same data type as switch value e.g.
+```java
+String x = "bla bla";
+final String y = "tac tac";
+String test = "foo";
+switch(test) {
+	case x: // DOES NOT COMPILE -> variable value not known at compile time
+	case y: // compiles -> final constant
+	case "bar": // compiles -> string literal
+}
+```
+* switch will run **every** statement after entry point (case match or default) until it hits break:
+```java
+int x = 1;
+switch(x) {
+	case 0:
+		// doesn't run
+	case 1: //enters here
+		// runs code
+	case 2:
+		// runs code
+		break; // exits switch
+	case 3:
+		// doesn't run
+}
+```
+* one final example:
+```java
+public void fooBar(String bla, final String tac) {
+	final String foo = "Foo";
+	switch(bla) {
+	case foo: // compiles -> final constant at compile time
+	case tac: // DOES NOT COMPILE -> final but not constant, as passed in as argument at runtime
+	case 3: // DOES NOT COMPILE -> wrong data type
+	case 'B': // DOES NOT COMPILE -> wrong data type
+	case "B": // compiles -> String data type
+	case java.time.DayOfWeek.SUNDAY: // DOES NOT COMPILE -> final constant, but of type enum
+}
+```
+### while
+* braces optional for single-line statement
+```java
+while(booleanExpression)
+	// do code
+while(booleanExpression){
+	// do code
+}
+```
+```java
+int x = 0;
+while(x++ < 5){
+	System.out.print(x);
+}
+// 01234
+x = 0;
+while(++x < 5){
+	System.out.print(x);
+}
+// 1234
+```
+### do while
+* braces optional for single-line statement
+* `while` evaluates before running the block, `do-while` evaluates after
+* `do-while` will always run at least once e.g.
+```java
+do {
+	System.out.print(false); // out -> false
+} while (false); // evaluates and doesn't run again
+```
 
+[for](#for)
 
+[for each](#for-each)
 
+[Labels](#labels)
 
+[break](#break)
 
+[continue](#continue)
 
+[Advanced control flow usage](#advanced-control-flow-usage)
 
-
-
-
+[Extra things](#extra-things)
