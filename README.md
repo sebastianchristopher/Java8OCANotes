@@ -51,3 +51,8 @@ import java.nio.file.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 ```
+* **don't** use:
+```java
+import java.nio.*; // only matches classes, not packages
+import java.nio.*.*; // can't recursively use wildcards - there can only be one and it must be at the end
+```
