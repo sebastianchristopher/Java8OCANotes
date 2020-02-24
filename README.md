@@ -3,6 +3,7 @@
 **Table of contents**
 
 [Chapter 1 - Java Building Blocks](#chapter-1---java-building-blocks)
+[Chapter 2 - Operators and Statements](#chapter-2---operators-and-statements)
 
 ## Chapter 1 - Java Building Blocks
 **Sub-sections**
@@ -315,14 +316,8 @@ public int foo() {
 | char                   | '\u0000' (NUL) *not on exam   |
 | All object references  | null                          |
 ### Variable scope
-* there are two local variables in the following snippet - the argument foo, and the local variable bar:
-```java
-public void fooPlus(int foo) {
-	int bar = 1;
-	foo += bar;
-}
-```
 * local variables are in scope from declaration to the end of the block
+* there are two local variables in the following snippet - the argument foo, and the local variable bar:
 ```java
 public void fooPlus(int foo) {
 	int bar = 1;
@@ -336,7 +331,7 @@ public void fooPlus(int foo) {
 package com.foo; //package declaration; optional
 import com.bar; // imports; optional
 public class Foobar { // class declaration; required
-	int x; // any fields...
+	int x; // declare any fields...
 	void myMethod(){} //... or methods - order not important
 }
 ```
@@ -345,8 +340,96 @@ public class Foobar { // class declaration; required
 * the public class must match the filename
 ### Destroying objects
 * an object remains on the heap until it is no longer reachable i.e.:
-  - it no longer has any references pointing to it
+  - it no longer has any references pointing to it, or
   - all references to it have gone out of scope
 * finalize()
   - may or may not get called, and definitely won't be called more than once
   - run only when the object is eligible for garbage collection
+
+## Chapter 2 - Operators and Statements
+**Sub-sections**
+
+[Order of Precedence](#order-of-precedence)
+
+[Pre unary and post unary increment and decrement](#pre-unary-and-post-unary-increment-and-decrement)
+
+[Numeric promotion](#numeric-promotion)
+
+[Logical complement (!) and negation (-) operators](#logical-complement-and-negation-operators)
+
+### Order of Precedence
+
+| Operator              | Symbol                             |
+| --------------------- | ---------------------------------- |
+| post unary            | `x++`, `x--`                       |
+| pre unary             | `++x`, `--x`                       |
+| other unary           | `!x`, `+x`, `-x`                   |
+| multiplicative        | `*`, `/`, `%` (modulus)            |
+| additive              | `+`, `-`                           |
+| relational            | `<`, `>`, `<=`, `>=`, `instanceof` |
+| equality              | `==`, `!=`                         |
+| logical               | `&`, `|`, `^`                      |
+| short-circuit logical | `&&`, `||`                         |
+| ternary               | `x == true ? y : z`                |
+| assignment            | `=`, `+=`, `-=`                    |
+
+
+### Pre unary and post unary increment and decrement
+* pre unary increments/decrements and returns a new value
+* post unary increments/decrements and returns the original value
+```java
+int x = 3;
+int y = ++x * 5 / x-- + --x;
+System.out.println("x is " + x);
+System.out.println("y is " + y);
+```
+
+* step-by-step:
+  - apply the operators, left to right:
+    - `++x` -> increment, then assign -> `4 * 5 / x-- + --x` -> x is 4
+    - `x--` -> assign, then decrement -> `4 * 5 / 4 + --x` -> x is 3
+    - `--x` -> decrement, then assign -> `4 * 5 / 4 + 2` -> x is 2
+  - evaluate the operations:
+    - `20 / 4 + 2` -> `5 + 2` -> `7`
+
+[More on this:](https://coderanch.com/t/653797/certification/Post-Pre-unary-operator-precedence)  
+[Princeton](https://introcs.cs.princeton.edu/java/11precedence/)
+
+### Logical complement (!) and negation (-) operators
+
+
+### Numeric promotion
+1. if two values in an operation have different data types, the smaller will be promoted to the larger:
+```java
+int x = 1;
+long y = 2;
+System.out.println(x + y); // x promoted to long
+```
+2. if one value is integral and the other floating-point, the integral value is promoted to the floating-point value type:
+```java
+long x = 1;
+double y = 1.1;
+System.out.println(x + y); // x promoted to double
+```
+3. anything smaller than an int (char, byte, short) is promoted to int, even if neither is an int:
+```java
+short x = 1;
+byte y = 1;
+System.out.println(x + y); // both promoted to int
+```
+4. after all promotion, all operands will have the same type and the resulting value will be of that type:
+```java
+int x = 1;
+long y = 2;
+long z = x + y; // x promoted to long; z is also a long
+```
+
+
+
+
+
+
+
+
+
+
