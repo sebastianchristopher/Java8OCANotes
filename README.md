@@ -4,6 +4,7 @@
 
 ---
 [Chapter 1 - Java Building Blocks](#chapter-1---java-building-blocks)
+
 [Chapter 2 - Operators and Statements](#chapter-2---operators-and-statements)
 ---
 
@@ -366,7 +367,7 @@ public class Foobar { // class declaration; required
 
 [Compound assignment operator](#compound-assignment-operator)
 
-[Assignment operator](#assignment-operator]
+[Assignment operator](#assignment-operator)
 
 [Logical operators](#logical-operators)
 
@@ -395,6 +396,7 @@ public class Foobar { // class declaration; required
 [Advanced control flow usage](#advanced-control-flow-usage)
 
 [Extra things](#extra-things)
+
 ---
 
 ### Order of Precedence
@@ -694,16 +696,16 @@ do {
 } while (false); // evaluates and doesn't run again
 ```
 
-[for](#for)
+### for
 
-[for each](#for-each)
+### for each
 
-[Labels](#labels)
+### Labels
 
-[break](#break)
+### break
 
-[continue](#continue)
+### continue
 
-[Advanced control flow usage](#advanced-control-flow-usage)
+### Advanced control flow usage
 
-[Extra things](#extra-things)
+### Extra things
