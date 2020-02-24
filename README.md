@@ -1,17 +1,18 @@
 # Java OCA
 ## Chapter 1 - Java Building Blocks
 ** Contents **
-[Comments](###comments)
 
-[Classes and Files](###classes-and-files)
+[Comments](#comments)
 
-[main() method](###main()-method)
+[Classes and Files](#classes-and-files)
 
-[Package declarations and imports](###package-declarations-and-imports)
+[main() method](#main-method)
 
-[Code formatting on the exam](###code-formatting-on-the-exam)
+[Package declarations and imports](#package-declarations-and-imports)
 
-[Benefits of Java](###benefits-of-java)
+[Code formatting on the exam](#code-formatting-on-the-exam)
+
+[Benefits of Java](#benefits-of-java)
 
 ### Comments
 ```java
