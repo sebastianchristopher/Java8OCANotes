@@ -826,6 +826,8 @@ b == x; // compiles -> false
 
 [StringBuilder Methods](#stringBuilder-methods)
 
+[Understanding Equality](#understanding-equality)
+
 ---
 ### Strings
 * concatenation
@@ -886,10 +888,55 @@ sb.append("World"); // HelloWorld
   - `new StringBuilder(String str)` -> *creates with that value*
   - `new StringBuilder(int size)` -> *reserves slots for characters, but not fixed size (as is mutable)*
 ### StringBuilder Methods
-* charAt, indexOf, length methods all identical to String
-* substring() - also identical to String, and **returns new String object**, not mutated StringBuilder
+* charAt, indexOf, length methods all identical to String methods
+* substring() - also identical to String method, and **returns new String object**, not mutated StringBuilder
 ```java
 StringBuilder sb = new StringBuilder("HelloWorld");
 sb.substring(2, 6); // lloW
 sb; // HelloWorld
+```
+* `toString()` -> `new StringBuilder("Hello").toString();` -> `Hello` **return String object**
+* **the return type of all the following methods is StringBuilder**
+* `append(Object o)` -> *takes different data types e.g. String, boolean*
+```java
+StringBuilder sb = new StringBuilder();
+sb.append(1).append(1 < 0).append('c');
+System.out.print(sb); // -> 1falsec
+```
+* `insert(int offset, String str)` -> `new StringBuilder("Hello").insert(5, "World");` -> `HelloWorld` (**offset can be greater than index**)
+* `delete(int start, int end)` -> `new StringBuilder("Hello").delete(1, 5);` -> `H`
+* `deleteCharAt(int index)` -> `new StringBuilder("Hello").deleteCharAt(0);` -> `ello`
+* `reverse()` -> `new StringBuilder("Hello").reverse();` -> `olleH`
+#### StringBuffer
+* StringBuffer is an older, thread-safe (therefore, less efficient) version of StringBuilder which has the same methods
+### Understanding Equality
+```java
+StringBuilder sb1 = new StringBuilder();
+StringBuilder sb2 = sb1.append("a"); // both now point to same object
+System.out.println(sb1 == sb2); // true
+sb1.append("bcdef");
+System.out.println(sb1 == sb2); // true - both still point at same object
+```
+#### String Equality
+* `equals(String str)` compares logically - do both strings contain exactly the same characters
+* `==` compares the objects themselves - do the references point to the same object
+```java
+String x = "Hello World";
+String y = "Hello World";
+String z = new String("Hello World");
+System.out.println(x == y); // true -> string literals, both at the same location in string pool
+System.out.println(x == z); // false -> one in stringpool, one a new string object
+System.out.println(x.equals(y)); // true
+System.out.println(x.equals(z));  // true
+
+System.out.println(x == "Hello World ".trim()); // two different literals - as they aren't the same at compile time, a new string object is created
+```
+#### StringBuilder equality
+* StringBuilder doesn't have an overridden `equals()`
+```java
+StringBuilder sb1 = new StringBuilder("abc");
+StringBuilder sb2  = new StringBuilder("abc");
+System.out.println(sb1 == sb2); // false
+System.out.println(sb1.equals(sb2)); // false
+System.out.println(sb1.toString().equals(sb2.toString())); // true
 ```
