@@ -7,6 +7,8 @@
 
 [Chapter 2 - Operators and Statements](#chapter-2---operators-and-statements)
 
+[Chapter 3 - Java Core APIs](#chapter-3---java-core-apis)
+
 ---
 
 ## Chapter 1 - Java Building Blocks
@@ -811,4 +813,83 @@ x == z; // DOES NOT COMPILE -> boolean not numeric
 byte b = 1;
 char c = '1';
 b == x; // compiles -> false
+```
+## Chapter 3 - Java Core APIs
+**In this chapter:**
+
+---
+[Strings](#strings)
+
+[String Methods](#string-methods)
+
+[StringBuilder](#stringbuilder)
+
+[StringBuilder Methods](#stringBuilder-methods)
+
+---
+### Strings
+* concatenation
+```java
+System.out.println("hello" + 1 + 2); // -> hello12
+System.out.println(1 + 2 + "hello"); // -> 3hello
+int three = 3;
+String four = "4";
+System.out.println(1 + 2 + three  + four); // -> 64
+```
+* Strings are *immutable*
+* **String pool**
+  - string literals are stored in the string pool
+  - they are not garbage collected
+### String Methods
+* `length()` -> `"Hello".length()` -> `5`
+* `charAt(int index)` -> `"Hello".charAt(4);` -> `o`
+* indexOf
+  - `indexOf(char ch)`
+  - `indexOf(String str)`
+  - `indexOf(char ch, index fromIndex)`
+  - `indexOf(String str, index fromIndex)`
+```java
+"Hello".indexOf('o'); // -> 4
+"HelloHello".indexOf('o', 5); // -> 9
+"Hello".indexOf("ell"); // -> 1
+"Hello".indexOf('s'); // -> -1
+```
+* substring
+  - `substring(int beginIndex)` -> `"Hello".substring(1);` -> `ello`
+  - `substring(int beginIndex, int endIndex)` -> `"s".substring(0,1);` -> `s` (**n.b. endIndex not included**)
+* `equals(String str)` -> `"Hello".equals("Hello");` -> `true` (*overriden equals, compares characters*)
+* `equalsIgnoreCase(String str)` -> *case-sensitive equals*
+* `startsWith(String str)` -> `"Hello".startsWith("H");` -> `true`
+* `endsWith(String str)` -> `"Hello".endsWith("H");` -> `false`
+* `contains(String str)` -> `"Hello".contains("Hell");` -> `true`
+* replace
+  - `replace(char oldChar, char newChar)` -> `"Hello".replace('H', 'J');` -> `Jello`
+  - `replace(String oldStr, String newStr)` -> `"Hello".replace("lo", "icopter");` -> `Helicopter`
+* `trim()` -> `"\t  a b c \n".trim();` -> `a b c` (*trims trailing whitespace, tab and newline*)
+#### Chaining methods
+* you can chain as many methods as you want - each method creates a new string object
+* remember, strings are immutable so the original object isn't affected
+```java
+String s = "Hello"
+s.replace("lo", "icopter").substring(3, 5) + "e"; // -> ice
+s; // -> Hello
+```
+### StringBuilder
+* StringBuilder objects are mutable
+```java
+StringBuilder sb = new StringBuilder("Hello");
+sb.append("World"); // HelloWorld
+```
+* mutates the original object and returns it - String just returns a new object
+* signatures:
+  - `new StringBuilder()` -> *empty StringBuilder*
+  - `new StringBuilder(String str)` -> *creates with that value*
+  - `new StringBuilder(int size)` -> *reserves slots for characters, but not fixed size (as is mutable)*
+### StringBuilder Methods
+* charAt, indexOf, length methods all identical to String
+* substring() - also identical to String, and **returns new String object**, not mutated StringBuilder
+```java
+StringBuilder sb = new StringBuilder("HelloWorld");
+sb.substring(2, 6); // lloW
+sb; // HelloWorld
 ```
