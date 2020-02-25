@@ -6,6 +6,7 @@
 [Chapter 1 - Java Building Blocks](#chapter-1---java-building-blocks)
 
 [Chapter 2 - Operators and Statements](#chapter-2---operators-and-statements)
+
 ---
 
 ## Chapter 1 - Java Building Blocks
