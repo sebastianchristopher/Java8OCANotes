@@ -828,6 +828,14 @@ b == x; // compiles -> false
 
 [Understanding Equality](#understanding-equality)
 
+[Arrays](#arrays)
+
+[Array Methods](#array-methods)
+
+[varargs](#varargs)
+
+[Multidimensional Array](#multidimensional-array)
+
 ---
 ### Strings
 * concatenation
@@ -896,7 +904,7 @@ sb.substring(2, 6); // lloW
 sb; // HelloWorld
 ```
 * `toString()` -> `new StringBuilder("Hello").toString();` -> `Hello` **return String object**
-* **the return type of all the following methods is StringBuilder**
+#### the return type of all the following methods is StringBuilder
 * `append(Object o)` -> *takes different data types e.g. String, boolean*
 ```java
 StringBuilder sb = new StringBuilder();
@@ -940,3 +948,88 @@ System.out.println(sb1 == sb2); // false
 System.out.println(sb1.equals(sb2)); // false
 System.out.println(sb1.toString().equals(sb2.toString())); // true
 ```
+### Arrays
+* Primitive arrays
+```java
+int[] myArray = new int[3];
+int anotherArray[] = new int[3];
+int[] anonymousArray = new int[] {1, 2, 3, 4};
+int[] shorthandAnonymousArray = {1, 2, 3, 4};
+// anonymous arrays have to be declared and initialized on the same line
+```
+* multiple declarations
+```java
+int[] ids, numbers; // declares two int[] objects
+ids = new int[3];
+numbers = new int[3];
+```
+```java
+int ids[], numbers; // declares one int[] object, and one int
+ids = new int[3];
+numbers = new int[3]; // COMPILE ERROR: incompatible types: int[] cannot be converted to int
+```
+* an array of primitives is an object
+* it can cast (and automatically promote)
+* watch out for runtime errors when putting subtypes in a supertype array
+```java
+String[] strings = {"string"};
+Object[] objects = strings;
+String[] backToStrings = (String[])objects;
+strings[0] = "new string";
+strings[0] = new StringBuilder("new string"); // DOES NOT COMPILE - only allows string objects
+objects[0] = new StringBuilder("new string"); // compiles but throws RuntimeException java.lang.ArrayStoreException: java.lang.StringBuilder
+```
+* (ArrayStoreException in Java occurs whenever an attempt is made to store the wrong type of object into an array of objects)
+```java
+Number[] numbers = new Double[1];
+numbers[0] = new Integer(4); // throw java.lang.ArrayStoreException: java.lang.Integer
+```
+### Array Methods
+* `equals(type[] array)` - not overridden so looks for reference equality
+```java
+int[] arr = {1, 2, 3};
+int[] arr2 = {1, 2, 3};
+System.out.println(arr.equals(arr2)); // false
+```
+* `Arrays.binarySearch(type[] array, Type key)`-> *static method of `java.util.Arrays`*
+* must be used on a sorted array
+```java
+import java.util.*;
+public class Main {
+	public static void main(String... args) {    
+		int[] nums = {4, 6, 8, 2};
+		Arrays.sort(nums);
+		Arrays.binarySearch(nums, 2); // -> 0 -> index of 2
+		Arrays.binarySearch(nums, 5); // -> negative (index + 1) of where it would go
+  }
+}
+```
+* *remember for the exam, if line starts after 1 or is a snippet, assume imports are present*
+* *if the array is unsorted, the result is unpredictable lok for answer like 'undefined' or 'unpredictable'*
+### varargs
+* you can use a variable created with varagrs as if it were a normal array
+```java
+public static void main(String[] args){}
+public static void main(String args[]){}
+public static void main(String... args){} // varargs
+```
+* varargs also takes a comma-separated parameter list
+```java
+static void foo(int... args){
+	for(int i = 0; i < args.length; i++){
+		System.out.print(args[i]);
+	}
+}
+foo(1, 2, 3, 4, 5); // -> 12345
+```
+### Multidimensional Array
+* creating:
+```java
+// three ways of creating a 2d array:
+int[][] multiDim1;
+int multiDim2[][];
+int[] multiDim3[];
+
+int[] vars, vars2[], vars3[][]; // 1d, 2d and 3d array
+```
+* the `[]`s after the type are appended to each variable in the declaration statement
