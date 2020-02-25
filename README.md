@@ -394,6 +394,8 @@ public class Foobar { // class declaration; required
 
 [continue](#continue)
 
+[break and continue with labelled statements](#break-and-continue-with-labelled-statements)
+
 [Advanced control flow usage](#advanced-control-flow-usage)
 
 [Extra things](#extra-things)
@@ -698,15 +700,115 @@ do {
 ```
 
 ### for
-
+```java
+for(int i = 0; i < 5; i++){}
+```
+* format: for(`initialization`; `booleanExpression`; `updateStatement`){}
+* curly braces `{}` optional for a one-line statement
+* the initialization, boolean and update statements themselves can be blank, but the separating semicolons must be present:
+```java
+for( ; ; ){} // compiles - will run an infinite loop
+for(){} // DOES NOT COMPILE
+for(;){} // DOES NOT COMPILE
+```
+* we can add multiple terms:
+```java
+for(int x = 0, y = 5; y < 10 && x < 5; x++, y++){}
+```
+* can't redeclare a variable in the initialization block:
+```java
+int x = 5;
+for(int y = 1, x = 2; x < 5; x++){} // DOES NOT COMPILE - x is already declared, and this is shorthand for int x = 2
+```
+* initialization block must **either** *declare* or *assign*
+```java
+int x;
+long y = 10;
+for(x = 7, y = 14; x < 10; x++){} // legal - already declared so x is assigned, y is reassigned
+```
+* variables **declared** in init block must be of the same type:
+```java
+for(int i = 0, long x = 0; i < 5; i++){} // DOES NOT COMPILE
+```
+* in fact, it's illegal to repeat the type, so not even possible:
+```java
+for(int i = 0, int j = 0; i < 5; i++){} // DOES NOT COMPILE -> instead you would use:
+for(int i = 0, j = 0; i < 5; i++){} // legal
+```
 ### for each
-
+* format: for(`dataType` `variableName` : `collection`){}
+* `collection` must be an object that implements Iterable, e.g. array, ArrayList
+* curly braces `{}` optional for a one-line statement
+```java
+int[] arr = new int[] {1, 2, 3, 4};
+for(int i : arr){
+	System.out.print(i);
+} // OUTPUT -> 1234
+```
 ### Labels
-
+```java
+int[][] myComplexArray = { {1, 2, 3},{4, 5, 6},{7, 8, 9} };
+OUTER_LOOP: for(int[] mySimpleArray : myComplexArray){
+	INNER_LOOP: // code
+}
+```
 ### break
-
+```java
+while(booleanExpression){
+	break; // break out of immediate loop
+}
+_optionalLabel: while(booleanExpression){
+	break _optionalLabel; // break out of labelled loop
+}
+```
 ### continue
-
+* break transfers to enclosing statement
+* continue transfers control to the boolean expression - i.e. it ends the current iteration of the loop
+```java
+int i = 0;
+int j = 0;
+while(i < 5){
+  System.out.print(i);
+  i++;
+  break;
+} // OUTPUT -> 0
+while(j < 5){
+  System.out.print(j);
+  j++;
+  continue;
+} // OUTPUT -> 01234
+```
+### break and continue with labelled statements
+```java
+String[] birds = {"duck", "duck", "duck", "goose", "duck", "duck", "duck"};
+lbl: for(String bird : birds){
+  if(bird.equals("duck")){
+	System.out.println(bird);
+	continue lbl;
+  }
+  System.out.println(bird + "!");
+  break lbl;
+} // OUTPUT -> duck duck duck goose!
+```
 ### Advanced control flow usage
-
+| Allows   | Optional labels | break statement | continue statement |
+| ------   | :-------------: | :-------------: | :----------------: |
+| if       | yes             | no              | no                 |
+| while    | yes             | yes             | yes                |
+| do-while | yes             | yes             | yes                |
+| for      | yes             | yes             | yes                |
+| switch   | yes             | yes             | no                |
 ### Extra things
+* remember, numeric promotion also occurs when checking equality `==`
+* can't compare boolean to other primitives
+* can compare char to numeric types (although output will be false)
+```java
+int x = 1;
+double y = 2;
+boolean z = false;
+x == y; // compiles -> int promotes to double -> true
+x == z; // DOES NOT COMPILE -> boolean not numeric
+byte b = 1;
+char c = '1';
+b == x; // compiles -> false
+```
