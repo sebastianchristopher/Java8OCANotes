@@ -848,6 +848,8 @@ b == x; // compiles -> false
 
 [Dates and Times](#dates-and-times)
 
+[Manipulating Dates and Times](#manipulating-dates-and-times)
+
 ---
 ### Strings
 * concatenation
@@ -1158,7 +1160,7 @@ int primitive = Integer.parseInt("123");
 Integer wrapperClass = Integer.valueOf("123");
 ```
 | WrapperClass   | String -> Primitive          | String -> Wrapper Class  |
-| ------------   | ---------------------------- | ----------------------- -|
+| ------------   | ---------------------------- | ------------------------ |
 | Boolean        | Boolean.parseBoolean("tRue") | Boolean.valueOf("TrUe")  |
 | Byte           | Byte.parseByte("123")        | Byte.valueOf("123")      |
 | Short          | Short.parseShort("123")      | Short.valueOf("123")     |
@@ -1239,7 +1241,7 @@ arrList.add("one");
 arrList.add("two");
 String[] stringArray = arrList.toArray(new String[3]);
 for(String el : stringArray){
-  System.out.print(el + " ");
+  System.out.print(el + " "); // one two null
 }
 ```
 #### array to List
@@ -1262,9 +1264,64 @@ stringList.remove(1);
 System.out.print(stringList.toString()); // -> [One, Four]
 ```
 ### Dates and Times
+** all immutable**
 * `java.time.LocalDate`
 * `java.time.LocalTime`
 * `java.time.LocalDateTime`
 #### Signatures
-* `public static LocalDate of(int year, int month, int dayOfMonth)`
-* `public static LocalDate of(int year, Month month, int dayOfMonth)`
+* `public static LocalDate of(int year, int month, int dayOfMonth)` -> `LocalDate ld = LocalDate.of(2020, 2, 12);`
+* `public static LocalDate of(int year, Month month, int dayOfMonth)` -> `LocalDate ld = LocalDate.of(2020, Month.FEBRUARY, 12);`
+* `public static LocalTime of(int hour, int minute)` -> `LocalTime lt = LocalTime.of(14, 30);`
+* `public static LocalTime of(int hour, int minute, int second)` -> `LocalTime lt = LocalTime.of(14, 30, 5);`
+* `public static LocalTime of(int hour, int minute, int second, int nanos)` -> `LocalTime lt = LocalTime.of(14, 30, 5, 444);` *(valid values 0 - 999999999)*
+* public static LocalDateTime of
+  - `of(int year, int month, int dayOfMonth, int hour, int minute)`
+  - `of(int year, int month, int dayOfMonth, int hour, int minute, int second)`
+  - `of(int year, int month, int dayOfMonth, int hour, int minute, int second, int nanoOfSecond)`
+  - `of(int year, Month month, int dayOfMonth, int hour, int minute)`
+  - `of(int year, Month month, int dayOfMonth, int hour, int minute, int second)`
+  - `of(int year, Month month, int dayOfMonth, int hour, int minute, int second, int nanoOfSecond)`
+  - `of(LocalDate date, LocalTime time)`
+```java
+LocalDate ld = LocalDate.of(2020, 2, 12);
+LocalTime lt = LocalTime.of(21, 31);
+LocalDateTime ldt1 = LocalDateTime.of(2020, 2, 12, 21, 31);
+LocalDateTime ldt2 = LocalDateTime.of(ld, lt);
+LocalDateTime ldt3 = LocalDateTime.of(ld, 21, 31); // DOES NOT COMPILE
+LocalDateTime ldt4 = LocalDateTime.of(2020, 2, 12, lt); // DOES NOT COMPILE
+```
+* these methods are static and must be called statically:
+```java
+LocalDate ld = new LocalDate(2020, 2, 12); // DOES NOT COMPILE
+```
+* using invalid arguments will throw a runtime error:
+```java
+LocalDate ld = LocalDate.of(1989, 1, 32); // throws java.time.DateTimeException: Invalid value for DayOfMonth (valid values 1 - 28/31): 32
+```
+### Manipulating Dates and Times
+```java
+LocalDate date = LocalDate.of(2020, 2, 12);
+date = date.plusDays(14);
+System.out.println(date); // 2020-06-22
+date.plusDays(100);
+System.out.println(date);  // still 2020-06-22 -> immutable
+```
+* methods available to LocalDate and LocalDateTime
+  - plusYears/minusYears
+  - plusMonths/minusMonths
+  - plusWeeks/minusWeeks
+  - plusDays/minusDays
+
+* methods available to LocalTime and LocalDateTime
+  - plusHours/minusHours
+  - plusMinutes/minusMinutes
+  - plusSeconds/minusSeconds
+  - plusNanos/minusNanos
+* these methods can be chained
+* won't compile if methods belonging to wrong object used
+```java
+LocalDate date = LocalDate.of(2020, 2, 12);
+date = date.plusDays(1).plusWeeks(1);
+System.out.println(date); // 2020-02-20
+date = date.plusDays(1).plusHours(2); // DOES NOT COMPILE
+```
