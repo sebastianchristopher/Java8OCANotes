@@ -850,6 +850,10 @@ b == x; // compiles -> false
 
 [Manipulating Dates and Times](#manipulating-dates-and-times)
 
+[Periods](#periods)
+
+[Formatting Dates and Times](#formatting-dates-and-times)
+
 ---
 ### Strings
 * concatenation
@@ -1311,12 +1315,14 @@ System.out.println(date);  // still 2020-06-22 -> immutable
   - plusMonths/minusMonths
   - plusWeeks/minusWeeks
   - plusDays/minusDays
+  - `plus(TemporalAmount amountToAdd)`
 
 * methods available to LocalTime and LocalDateTime
   - plusHours/minusHours
   - plusMinutes/minusMinutes
   - plusSeconds/minusSeconds
   - plusNanos/minusNanos
+  - `plus(TemporalAmount amountToAdd)`
 * these methods can be chained
 * won't compile if methods belonging to wrong object used
 ```java
@@ -1325,3 +1331,71 @@ date = date.plusDays(1).plusWeeks(1);
 System.out.println(date); // 2020-02-20
 date = date.plusDays(1).plusHours(2); // DOES NOT COMPILE
 ```
+### Periods
+`java.time.Period` *implements TemporalAmount*
+* immutable
+* `static Period	of(int years, int months, int days)`
+* `static Period	ofDays(int days)`
+* `static Period	ofMonths(int months)`
+* `static Period	ofWeeks(int weeks)`
+* `static Period	ofYears(int years)`
+```java
+import java.time.*;
+public class PeriodTester {
+	public static void main(String... args) {  
+		LocalDate ld = LocalDate.of(2020, Month.FEBRUARY, 12);
+		printFutureTime(ld, Period.of(1, 1, 1)); // Future date is 2021-03-13
+		printFutureTime(ld, Period.ofDays(8)); // Future date is 2020-02-20
+		printFutureTime(ld, Period.ofWeeks(5)); // Future date is 2020-03-18
+		printFutureTime(ld, Period.ofMonths(6)); // Future date is 2020-08-12
+		printFutureTime(ld, Period.ofYears(1)); // Future date is 2021-02-12
+	}
+	public static void printFutureTime(LocalDate date, Period period){
+		System.out.println("Future date is " + date.plus(period));
+	}
+}
+```
+* its static methods (like all static methods) can't be chained (*runs but will only process last method*)
+```java
+LocalDate ld = LocalDate.of(2020, 2, 12);
+Period p = Period.ofWeeks(1).ofDays(1); // only processes last method
+System.out.println(ld.plus(p)); // 2020-02-13
+```
+* can't be used with DateTime -> will throw a runtime exception -> use `Duration` instead (also implements *TemporalAmount*)
+
+### Formatting Dates and Times
+`java.time.format.DateTimeFormatter`
+* `static DateTimeFormatter	ofLocalizedDate(FormatStyle dateStyle)`
+* `static DateTimeFormatter	ofLocalizedTime(FormatStyle timeStyle)`
+* `static DateTimeFormatter	ofLocalizedDateTime(FormatStyle dateTimeStyle)`
+* `static DateTimeFormatter	ofLocalizedDateTime(FormatStyle dateStyle, FormatStyle timeStyle)`
+```java
+DateTimeFormatter dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL);
+DateTimeFormatter timeFormatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT);
+DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM);
+DateTimeFormatter dateTimeFormatter2 = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG, FormatStyle.SHORT);
+```
+* `DateTimeFormatter.format(format(TemporalAccessor temporal))` -> String
+* `LocalDate.format(DateTimeFormatter formatter)` -> String
+* `LocalTime.format(DateTimeFormatter formatter)` -> String
+* `LocalDateTime.format(DateTimeFormatter formatter)` -> String
+```java
+LocalDate date = LocalDate.of(2020, 2, 12);
+LocalTime time = LocalTime.of(21, 31);
+LocalDateTime dateTime = LocalDateTime.of(date, time);
+	
+System.out.println(date.format(dateFormatter)); // -> Wednesday, February 12, 2020
+System.out.println(date.format(timeFormatter)); // java.time.temporal.UnsupportedTemporalTypeException: Unsupported field: ClockHourOfAmPm
+System.out.println(date.format(dateTimeFormatter)); // java.time.temporal.UnsupportedTemporalTypeException
+
+System.out.println(timeFormatter.format(time)); // -> 9:31 PM
+System.out.println(dateFormatter.format(time)); // throws UnsupportedTemporalTypeException
+System.out.println(dateTimeFormatter.format(time)); // throws UnsupportedTemporalTypeException
+
+System.out.println(dateTime.format(dateTimeFormatter)); // -> Feb 12, 2020, 9:31:00 PM
+System.out.println(dateTime.format(dateFormatter)); // -> Wednesday, February 12, 2020
+System.out.println(dateTime.format(timeFormatter)); // -> 9:31 PM
+```
+* `DateTimeFormatter	ofLocalizedDate` -> 
+* `DateTimeFormatter	ofLocalizedTime`
+* `DateTimeFormatter	ofLocalizedDateTime`
