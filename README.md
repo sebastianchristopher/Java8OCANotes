@@ -836,6 +836,18 @@ b == x; // compiles -> false
 
 [Multidimensional Array](#multidimensional-array)
 
+[ArrayList](#arraylist)
+
+[ArrayList Methods](#arraylist-methods)
+
+[Wrapper Classes and ArrayList](#wrapper-classes-and-arraylist)
+
+[Autoboxing](#autoboxing)
+
+[Converting between array and List](#converting-between-array-and-list)
+
+[Dates and Times](#dates-and-times)
+
 ---
 ### Strings
 * concatenation
@@ -1033,3 +1045,226 @@ int[] multiDim3[];
 int[] vars, vars2[], vars3[][]; // 1d, 2d and 3d array
 ```
 * the `[]`s after the type are appended to each variable in the declaration statement
+* specify size inline optionally - *n.b. the first array must always specify size*
+```java
+int[][] nums = new int[3][2]; // an array containing three arrays containing two ints
+int[][] nums2 = new int[3][]; // an array containing three arrays of indeterminate size
+int[][] nums3 = new int[][]; // DOES NOT COMPILE
+```
+* Asymetrical array
+```java
+// an array containing three arrays containing 2 ints, 1 int and 3 ints
+int[][] nums = { {1, 4}, {3},  {9, 8, 7} };
+```
+ * or the longer way:
+ ```java
+ int[][] nums = new int[3][];
+ nums[0] = new int[2];
+ nums[1] = new int[1];
+ nums[2] = new int[2];
+ ```
+ * Looping
+ ```java
+ int[][] twoD = { {2, 4, 6}, {5, 3, 1} };
+ for(int i = 0; i < twoD.length; i++){
+	for(int j = 0; j < twoD[i].length; j++){
+		System.out.print(twoD[i][j]); // 246531
+	}
+}
+// or
+for(int[] inner : twoD){
+  for(int i : inner){
+	System.out.print(i); // 246531
+  }
+}
+```
+### ArrayList
+`java.util.ArrayList`
+* mutable object, no fixed size
+* creating:
+```java
+// before Java 5 and generics:
+ArrayList arrList1 = new ArrayList();
+ArrayList arrList2 = new ArrayList(10); // reserves slots for characters, but not fixed size (as is mutable) c.f. StringBuilder
+ArrayList arrList3 = new ArrayList(arrList2);
+// post-Java 5, using generics:
+ArrayList<String> arrList4 = new ArrayList<String>();
+// post-Java 7:
+ArrayList<string> arrList5 = new ArrayList<>();
+```
+### ArrayList Methods
+* add
+  - `add(E element)`
+  - `add(int index, E element)`
+ (*E is an object of the ArrayList's type or a type that it extends/implements - if not specified, implicitly it is the ArrayList's type*)
+ *argument must match type*
+ ```java
+ ArrayList aList1 = new ArrayList(); // implicitly new ArrayList<Object>()
+ aList1.add("foo");
+ aList1.add(Boolean.TRUE);
+ 
+ ArrayList<String> aList2 = new ArrayList<>();
+ aList2.add("foo");
+ aList2.add(Boolean.TRUE); // DOES NOT COMPILE -> incompatible types: Boolean cannot beconverted to String
+```
+* `remove(Object obj)` -> `boolean`
+```java
+ArrayList<String> arrList = new ArrayList<>();
+arrList.add("One");
+arrList.add("Two");
+arrList.add("Three");
+System.out.println(arrList.remove("Three")); // true -> removes object so no longer in ArrayList
+System.out.println(arrList.remove("Three")); // false
+```* `remove(int index)` -> `object` or `IndexOutOfBoundsException`
+```java
+ArrayList<String> arrList = new ArrayList<>();
+arrList.add("One");
+arrList.add("Two");
+arrList.add("Three");
+System.out.println(arrList.remove(2)); // Three -> removes element, so indices change
+System.out.println(arrList.remove(2)); // throws IndexOutOfBoundsException
+```
+* `set(int index, E newElement)` -> invalid index throws `IndexOutOfBoundsException`
+```java
+ArrayList<String> arrList = new ArrayList<>();
+arrList.add("One");
+arrList.add("Two");
+System.out.println(arrList.toString()); // [One, Two]
+arrList.set(0, "Foo");
+arrList.set(1, "Bar");
+System.out.println(arrList.toString()); // [Foo, Bar]
+```
+* `get(int index)` -> *opposite of remove, doesn't mutate ArrayList*
+* `isEmpty()` -> `boolean`
+* `size()` -> `int`
+* `clear()` -> `void` *removes all elements from ArrayList*
+* `contains(Object obj)` -> `boolean` *uses equals() method of type (so String overrides)*
+* `equals(Object o)` -> `boolean` *compares the specified object with this list for equality*
+* `java.util.Collections.sort(List l)`
+```java
+List<Integer> list = new ArrayList<>();
+list.add(10);
+list.add(5);
+list.add(1);
+System.out.println(list.toString()); // -> [10, 5, 1]
+Collections.sort(list);
+System.out.println(list.toString()); // -> [1, 5, 10]
+```
+### Wrapper Classes and ArrayList
+* `parseInt(String str)` -> `int` *String to primitive*
+* `valueOf(String s)` -> `Integer` *String to wrapper class*
+```java
+int primitive = Integer.parseInt("123");
+Integer wrapperClass = Integer.valueOf("123");
+```
+| WrapperClass   | String -> Primitive          | String -> Wrapper Class  |
+| ------------   | ---------------------------- | ----------------------- -|
+| Boolean        | Boolean.parseBoolean("tRue") | Boolean.valueOf("TrUe")  |
+| Byte           | Byte.parseByte("123")        | Byte.valueOf("123")      |
+| Short          | Short.parseShort("123")      | Short.valueOf("123")     |
+| Integer        | Integer.parseInt("123")      | Integer.valueOf("123")   |
+| Long           | Long.parseLong("123")        | Long.valueOf("123")      |
+| Float          | Float.parseFloat("123.23")   | Float.("123.23")         |
+| Double         | Double.parseDouble("123.23") | Double.valueOf("123.23") |
+| Character      | *n/a*                        | *n/a*                    |
+* must be valid for type:
+```java
+int i = Integer.parseInt("a"); //throws java.lang.NumberFormatException
+int j = Integer.parseInt("1.1"); //throws java.lang.NumberFormatException
+```
+* promotion applies for primitives, but not wrapper classes:
+```java
+double primitive = Integer.parseInt("1");
+Double wrapperClass = Integer.parseInt("1"); // DOES NOT COMPILE -> incompatible types: int cannot be converted to Double
+```
+* however, if wrapper class and primitive match, will autobox/unbox:
+```java
+double primitive = Double.valueOf("1");
+Double wrapperClass = Double.parseDouble("1");
+```
+### Autoboxing
+```java
+List<Double> doubleList = new ArrayList<>();
+doubleList.add(20.6); // double literal autoboxes to Double
+```
+* careful with autoboxing null:
+```java
+
+List<Double> doubleList = new ArrayList<>();
+doubleList.add(null); // legal -> Double is an object, so can be null
+double d = doubleList.remove(0); // NullPointerException
+// equivalent of saying double d = null.unbox() -> NullPointerException
+// n.b. unbox() isn't a real method
+```
+* careful unboxing into Integer and other numerics when using remove:
+```java
+List<Integer> integerList = new ArrayList<>();
+integerList.add(1);
+integerList.add(2);
+integerList.remove(1);
+System.out.print(integerList.toString()); // [1]
+```
+* remember, remove() takes either an object or an integer as an argument, and the above interprets it as an index to remove
+* to explicitly remove the object:
+```java
+List<Integer> integerList = new ArrayList<>();
+integerList.add(1);
+integerList.add(2);
+integerList.remove(new Integer(1)); // or integerList.remove(Integer.valueOf("1");
+System.out.print(integerList.toString()); // [2]
+```
+### Converting between array and List
+#### List to array
+* `toArray()` -> `Object[]`
+* `toArray(T[] a)` -> `<T> T[]` - > *returns an array of type T*
+Returns an array containing all of the elements in this list in proper sequence (from first to last element); the runtime type of the returned array is that of the specified array.
+```java
+List<String> arrList = new ArrayList<>();
+arrList.add("one");
+arrList.add("two");
+Object[] objectArray = arrList.toArray();
+String[] stringArray = arrList.toArray(); // DOES NOT COMPILE -> incompatible types: Object[] cannot beconverted to String[]
+String[] stringArray = arrList.toArray(new String[]); // DOES NOT COMPILE -> array dimension missing
+String[] stringArray = arrList.toArray(new String[0]);
+```
+* remember, if no argument specified, default behaviour is an array of objects
+* specifiying size of array
+  - 0 means Java will use correct array size
+  - using the correct size also will
+  - using a larger number will return an array of that size with the elements from ArrayList at the start
+  - using a smaller number will create a new array of the correct size
+```java
+List<String> arrList = new ArrayList<>();
+arrList.add("one");
+arrList.add("two");
+String[] stringArray = arrList.toArray(new String[3]);
+for(String el : stringArray){
+  System.out.print(el + " ");
+}
+```
+#### array to List
+* this list will be of a fixed size - add or remove will throw UnsupportedOperationException
+```java
+String[] stringArray = {"One", "Two"};
+List<String> stringList = Arrays.asList(stringArray);
+System.out.println(stringList.toString());
+stringList.set(1, "Three");
+System.out.println(stringList.toString());
+stringList.add("Four"); // throws UnsupportedOperationException
+stringList.remove(1); // throws UnsupportedOperationException
+```
+* you can convert it to a new ArrayList to make it a mutable object
+```java
+String[] stringArray = {"One", "Two"};
+List<String> stringList = new ArrayList<>(Arrays.asList(stringArray));
+stringList.add("Four");
+stringList.remove(1);
+System.out.print(stringList.toString()); // -> [One, Four]
+```
+### Dates and Times
+* `java.time.LocalDate`
+* `java.time.LocalTime`
+* `java.time.LocalDateTime`
+#### Signatures
+* `public static LocalDate of(int year, int month, int dayOfMonth)`
+* `public static LocalDate of(int year, Month month, int dayOfMonth)`
