@@ -1625,4 +1625,43 @@ public class CatTester extends Cat{
 * in addition to main(), static methods have two main purposes:
   - utility or helper methods that don't require object state
   - for state that is shared by all instances of a class, e.g. a counter
-* we can call `main()`
+* we can call `main()` like any other static method:
+```java
+public class Test {
+	public static void main(String... args){}
+}
+class Tester {
+	public static void main(String... args){
+		Test.main();
+		Test.main("bla", "bla");
+		Test.main(new String[0]);
+	}
+}
+```
+* we can use an instance of an object to call a static method or variable:
+```java
+public class Test {
+	String testString = "test string";
+	public static void main(String... args){}
+}
+class Tester {
+	public static void main(String... args){
+		Test test = new Test();
+
+		test.main();
+		Test.main();
+
+		System.out.println(Test.testString);
+		System.out.println(test.testString);
+		
+		test = null;
+		System.out.println(test.testString);
+		
+		Test test2 = null;
+		System.out.println(test2.testString);
+		
+	}
+}
+```
+* even though test and test2 are null, it still has a reference type of Test
+* as it is using the reference rather than the instance to call the static method, we don't get a NullPointerException
