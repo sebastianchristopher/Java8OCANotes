@@ -854,6 +854,8 @@ b == x; // compiles -> false
 
 [Formatting Dates and Times](#formatting-dates-and-times)
 
+[Parsing dates and Times](#parsing-dates-and-times)
+
 ---
 ### Strings
 * concatenation
@@ -1379,23 +1381,35 @@ DateTimeFormatter dateTimeFormatter2 = DateTimeFormatter.ofLocalizedDateTime(For
 * `LocalDate.format(DateTimeFormatter formatter)` -> String
 * `LocalTime.format(DateTimeFormatter formatter)` -> String
 * `LocalDateTime.format(DateTimeFormatter formatter)` -> String
+* ofLocalizedDate can format LocalDate and LocalDateTime
+* ofLocalizedTime can format LocalTime and LocalDateTime
+* ofLocalizedDateTime can format LocalDateTime
+* anything else throws java.time.temporal.UnsupportedTemporalTypeException
 ```java
 LocalDate date = LocalDate.of(2020, 2, 12);
 LocalTime time = LocalTime.of(21, 31);
 LocalDateTime dateTime = LocalDateTime.of(date, time);
 	
-System.out.println(date.format(dateFormatter)); // -> Wednesday, February 12, 2020
-System.out.println(date.format(timeFormatter)); // java.time.temporal.UnsupportedTemporalTypeException: Unsupported field: ClockHourOfAmPm
-System.out.println(date.format(dateTimeFormatter)); // java.time.temporal.UnsupportedTemporalTypeException
+dateFormatter.format(date);
+dateFormatter.format(dateTime);
+    
+timeFormatter.format(time);
+timeFormatter.format(dateTime);
 
-System.out.println(timeFormatter.format(time)); // -> 9:31 PM
-System.out.println(dateFormatter.format(time)); // throws UnsupportedTemporalTypeException
-System.out.println(dateTimeFormatter.format(time)); // throws UnsupportedTemporalTypeException
-
-System.out.println(dateTime.format(dateTimeFormatter)); // -> Feb 12, 2020, 9:31:00 PM
-System.out.println(dateTime.format(dateFormatter)); // -> Wednesday, February 12, 2020
-System.out.println(dateTime.format(timeFormatter)); // -> 9:31 PM
+dateTimeFormatter.format(dateTime);
 ```
-* `DateTimeFormatter	ofLocalizedDate` -> 
-* `DateTimeFormatter	ofLocalizedTime`
-* `DateTimeFormatter	ofLocalizedDateTime`
+* `DateTimeFormatter.ofPattern(String pattern)`
+* creating a pattern:
+  - `M/MM/MMM/MMMM` -> e.g. 1/01/Jan/January
+  - `d/dd` -> e.g. 2/02 or 20/02 -> *dd adds leading 0 if single digit*
+  - `h/hh` -> hour/with leading 0
+  - `mm` -> minute
+```java
+LocalDate date = LocalDate.of(2020, 2, 12);
+LocalTime time = LocalTime.of(21, 31);
+LocalDateTime dateTime = LocalDateTime.of(date, time);
+
+DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MMMM dd, yyyy, hh:mm")
+dtf.format(date);
+```
+### Parsing Dates and Times
