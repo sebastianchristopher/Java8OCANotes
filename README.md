@@ -1447,16 +1447,18 @@ LocalDate date = LocalDate.parse("02 12 2020 21:31", dtf2);
 
 [Applying Access Modifiers](#applying-access-modifiers)
 
+[Designing Static Methods and Fields](#designing-static-methods-and-fields)
+
 ---
 ### Anatomy of a Method
-`access modifier` `optional specifiers` `return type` `methodName` `(` *required parentheses* `optional parameter list` `)` `optional exception list` `{`*requierd braces*`}`
-`public` `final` `void` `foo` `(` `int age, String name` `)` `throws Interrupeted Exception` `{``}`
-### #Access Modifiers
+* `access modifier` `optional specifiers` `return type` `methodName` `(` *required parentheses* `optional parameter list` `)` `optional exception list` `{`*requierd braces*`}`
+* `public` `final` `void` `foo` `(` `int age, String name` `)` `throws Interrupeted Exception` `{` `}`
+### Access Modifiers
 * `public` -> can be called from any class -> `public void foo()`
 * `private` -> can only be called from within the same class -> `private void foo()`
 * `protected` -> can only be called from classes in the package or child classes -> `protected void foo()`
 * `Default (package private) Access` -> can only be called from classes within the same package -> `void foo()`
-* **Default doesn't have a keyword**
+* **Default doesn't have a keyword - it is denoted by its absence**
 #### Optional Specifiers
 * `static`
 * `final`
@@ -1472,13 +1474,13 @@ LocalDate date = LocalDate.parse("02 12 2020 21:31", dtf2);
 * must contain a return statement matching return type that is reached by all branches
 * if void, return statement is optional; either omit or return with no value
 #### Method Name
-* must be a valid identifier
+* must be a [valid identifier](#identifiers)
 #### Parameter List
 * must have parentheses
-* list can be comma-separated parameters or varargs - or both ([see below](#more-on-varags))
+* list can be comma-separated parameters or varargs - or both ([see below](#more-on-varargs))
 #### Optional Exception List
-* `...throws AnException, ASecondException, AnotherException{}`
-* **NOT** `throws AnException, throws ASecondException, throw AnotherException{}`
+* `public void foo() throws AnException, ASecondException, AnotherException {}`
+* **NOT** `public void foo() throws AnException, throws ASecondException, throws AnotherException {}`
 #### Method Body
 * curly braces required (except interfaces and abstract objects)
 ### More on varargs
@@ -1503,7 +1505,7 @@ public static void main(String... args){
 ### Applying Access Modifiers
 * access modifiers in order of restrictiveness (most to least):
 | Access Modifier          | Accessibility                                   |
-| ---------------          | ----------------------------------------------- |
+| ------------------------ | ----------------------------------------------- |
 | `private`                | within same class                               |
 | default (package-private | within same class or same package               |
 | `protected`              | within same class or same package or subclasses |
@@ -1619,3 +1621,8 @@ public class CatTester extends Cat{
     }
 }
 ```
+### Designing Static Methods and Fields
+* in addition to main(), static methods have two main purposes:
+  - utility or helper methods that don't require object state
+  - for state that is shared by all instances of a class, e.g. a counter
+* we can call `main()`
