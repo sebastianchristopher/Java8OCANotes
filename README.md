@@ -1423,6 +1423,7 @@ dtf.format(date); // -> throws UnsupportedTemporalTypeException
 DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MMMM dd, yyyy");
 dtf.format(date); // -> February 12, 2020
 dtf.format(dateTime); // -> February 12, 2020
+```
 ### Parsing Dates and Times
 ```java
 DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MM dd yyyy");
@@ -1443,6 +1444,8 @@ LocalDate date = LocalDate.parse("02 12 2020 21:31", dtf2);
 [Anatomy of a Method](#anatomy-of-a-method)
 
 [More on varargs](#more-on-varargs)
+
+[Applying Access Modifiers](#applying-access-modifiers)
 
 ---
 ### Anatomy of a Method
@@ -1474,7 +1477,145 @@ LocalDate date = LocalDate.parse("02 12 2020 21:31", dtf2);
 * must have parentheses
 * list can be comma-separated parameters or varargs - or both ([see below](#more-on-varags))
 #### Optional Exception List
-
+* `...throws AnException, ASecondException, AnotherException{}`
+* **NOT** `throws AnException, throws ASecondException, throw AnotherException{}`
 #### Method Body
-
+* curly braces required (except interfaces and abstract objects)
 ### More on varargs
+* must be the last element in a parameter list
+* only one varargs per method signature
+```java
+public void foo(Date birthday, boolean important, String... people){};
+public void foo(String... names, int... ages){}; // DOES NOT COMPILE
+public void foo(Date birthday, String... people, boolean important){}; // DOES NOT COMPILE
+```
+* pass in either an array or the elements separated by comma
+```java
+public static void foo(int arg1, int... additionalArgs{}
+public static void main(String... args){
+	foo(5); // passes empty array as second (varargs) argument
+	foo(5, 7, 8, 9);
+	foo(5, new int[]{7, 8, 9};
+	foo(5, null); // legal but could throw exception later
+}
+```
+* uses same indexing as arrays
+### Applying Access Modifiers
+* access modifiers in order of restrictiveness (most to least):
+| Access Modifier          | Accessibility                                   |
+| ---------------          | ----------------------------------------------- |
+| `private`                | within same class                               |
+| default (package-private | within same class or same package               |
+| `protected`              | within same class or same package or subclasses |
+| `public`                 | available to all classes                        |
+#### Private
+```java
+// Cat.java
+public class Cat{
+	private int age = 5;
+	public static void main(String... args){
+		Cat cat = new Cat();
+		System.out.println("Cat age is " + cat.age); // -> Cat age is 5
+		System.out.println(cat.catYears()); // -> 35 in cat years
+	}
+	private String catYears(){
+		int catYears = age * 7;
+		return catYears + " in cat years";
+	}
+}
+class CatTester extends Cat{
+  public static void main(String... args){
+      Cat cat = new Cat();
+      System.out.println("Cat age is " + cat.age); // DOES NOT COMPILE
+      System.out.println(cat.catYears()); // DOES NOT COMPILE
+    }
+}
+```
+#### Default
+```java
+// cat/Cat.java
+package cat;
+
+public class Cat{
+	int age = 5;
+	String catYears(){
+		int catYears = age * 7;
+		return catYears + " in cat years";
+	}
+}
+class CatTester extends Cat{
+  public static void main(String... args){
+      Cat cat = new Cat();
+      System.out.println("Cat age is " + cat.age); // -> Cat age is 5
+      System.out.println(cat.catYears()); // -> 35 in cat years
+    }
+}
+
+// catTester/CatTester.java
+package catTester;
+import cat.Cat;
+
+public class CatTester extends Cat{
+  public static void main(String... args){
+      Cat cat = new Cat();
+      System.out.println("Cat age is " + cat.age); // DOES NOT COMPILE -> age is not public in Cat; cannot be accessed from outside package
+      System.out.println(cat.catYears()); // DOES NOT COMPILE -> catYears() is not public in Cat; cannot be accessed from outside package
+    }
+}
+```
+#### Protected
+* subclasses can call protected methods *provided the reference type is the subclass, not the superclass*
+```java
+// cat/Cat.java
+package cat;
+
+public class Cat{
+	protected int age = 5;
+	protected String catYears(){
+		int catYears = age * 7;
+		return catYears + " in cat years";
+	}
+}
+
+// catTester/CatTester.java
+package catTester;
+import cat.Cat;
+
+public class CatTester extends Cat{
+  public static void main(String... args){
+      CatTester catTester = new CatTester();
+      System.out.println("Cat age is " + catTester.age); // -> Cat age is 5
+      System.out.println(catTester.catYears()); // -> 35 in cat years
+	  
+	  Cat cat = new CatTester();
+      System.out.println("Cat age is " + cat.age); //DOES NOT COMPILE -> called by superclass
+      System.out.println(cat.catYears()); // DOES NOT COMPILE
+    }
+}
+```
+#### Public
+* anything goes
+```java
+// cat/Cat.java
+package cat;
+
+public class Cat{
+	public int age = 5;
+	public String catYears(){
+		int catYears = age * 7;
+		return catYears + " in cat years";
+	}
+}
+
+// catTester/CatTester.java
+package catTester;
+import cat.Cat;
+
+public class CatTester extends Cat{
+  public static void main(String... args){
+      Cat cat = new CatTester();
+      System.out.println("Cat age is " + cat.age); // -> Cat age is 5
+      System.out.println(cat.catYears()); // -> 35 in cat years
+    }
+}
+```
