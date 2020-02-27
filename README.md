@@ -1449,6 +1449,12 @@ LocalDate date = LocalDate.parse("02 12 2020 21:31", dtf2);
 
 [Designing Static Methods and Fields](#designing-static-methods-and-fields)
 
+[Static vs Instance](#static-vs-instance)
+
+{Static variables](#static-variables)
+
+[Static initialization](#static-initialization)
+
 ---
 ### Anatomy of a Method
 * `access modifier` `optional specifiers` `return type` `methodName` `(` *required parentheses* `optional parameter list` `)` `optional exception list` `{`*requierd braces*`}`
@@ -1504,6 +1510,7 @@ public static void main(String... args){
 * uses same indexing as arrays
 ### Applying Access Modifiers
 * access modifiers in order of restrictiveness (most to least):
+
 | Access Modifier          | Accessibility                                   |
 | ------------------------ | ----------------------------------------------- |
 | `private`                | within same class                               |
@@ -1665,3 +1672,27 @@ class Tester {
 ```
 * even though test and test2 are null, it still has a reference type of Test
 * as it is using the reference rather than the instance to call the static method, we don't get a NullPointerException
+### Static vs Instance
+* a static member cannot call an instance member
+```java
+public class StaticVsInstance {
+	public static String stringOne = "One";
+	public String stringTwo = "Two";
+	public static void one(){
+		System.out.println("Called one()");
+	}
+	public void two(){
+		System.out.println("Called two()");
+	}
+	public static void main(String... args){
+		one();
+		two();  // DOES NOT COMPILE -> error: non-static method two() cannot be referenced from a static context    two();
+		
+		System.out.println(stringOne);
+		System.out.println(stringTwo);  // -> error: non-static variable stringTwo cannot be referenced from a static context    System.out.println(stringTwo);
+	}
+}
+```
+### Static variables
+
+### Static initialization
