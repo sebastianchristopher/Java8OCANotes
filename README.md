@@ -9,6 +9,8 @@
 
 [Chapter 3 - Java Core APIs](#chapter-3---java-core-apis)
 
+[Chapter 4 - Methods and Encapsulation](#chapter-4---methods-and-encapsulation)
+
 ---
 
 ## Chapter 1 - Java Building Blocks
@@ -1402,14 +1404,77 @@ dateTimeFormatter.format(dateTime);
 * creating a pattern:
   - `M/MM/MMM/MMMM` -> e.g. 1/01/Jan/January
   - `d/dd` -> e.g. 2/02 or 20/02 -> *dd adds leading 0 if single digit*
-  - `h/hh` -> hour/with leading 0
+  - `H/HH` -> 24 hour/with leading 0
+  - `h/hh` -> 12 hour/with leading 0
   - `mm` -> minute
 ```java
 LocalDate date = LocalDate.of(2020, 2, 12);
 LocalTime time = LocalTime.of(21, 31);
 LocalDateTime dateTime = LocalDateTime.of(date, time);
 
-DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MMMM dd, yyyy, hh:mm")
-dtf.format(date);
+DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MMMM dd, yyyy, HH:mm")
+dtf.format(dateTime); // -> February 12, 2020, 21:31
+dtf.format(date); // -> throws UnsupportedTemporalTypeException
 ```
+* ofPattern matches exactly, so if the String contains a time field it can't format a LocalDate
+* if the String contains a date field it can't format a LocalTime
+* however if the String only contains a date field, it can format a DateTime (it will just ignore the time), and the same for a time field
+```java
+DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MMMM dd, yyyy");
+dtf.format(date); // -> February 12, 2020
+dtf.format(dateTime); // -> February 12, 2020
 ### Parsing Dates and Times
+```java
+DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MM dd yyyy");
+LocalDate date = LocalDate.parse("00 02 2015", dtf);
+LocalDateTime dateTime = LocalDateTime.parse("02 12 2020", dtf); // -> throws java.time.format.DateTimeParseException:
+
+DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("MM dd yyyy HH:mm");
+LocalDateTime dateTime = LocalDateTime.parse("02 12 2020 21:31", dtf2);
+LocalDate date = LocalDate.parse("02 12 2020 21:31", dtf2);
+```
+* the class that `parse()` uses must match the type being created
+* if the type contains time fields, the string must be able to handle them e.g. "h:mm" or "M D yy HH:mm"
+* if the type contains date fields, the string must have them e.g. "MMMM d yyyy"
+## Chapter 4 - Methods and Encapsulation
+**In this chapter:**
+
+---
+[Anatomy of a Method](#anatomy-of-a-method)
+
+[More on varargs](#more-on-varargs)
+
+---
+### Anatomy of a Method
+`access modifier` `optional specifiers` `return type` `methodName` `(` *required parentheses* `optional parameter list` `)` `optional exception list` `{`*requierd braces*`}`
+`public` `final` `void` `foo` `(` `int age, String name` `)` `throws Interrupeted Exception` `{``}`
+### #Access Modifiers
+* `public` -> can be called from any class -> `public void foo()`
+* `private` -> can only be called from within the same class -> `private void foo()`
+* `protected` -> can only be called from classes in the package or child classes -> `protected void foo()`
+* `Default (package private) Access` -> can only be called from classes within the same package -> `void foo()`
+* **Default doesn't have a keyword**
+#### Optional Specifiers
+* `static`
+* `final`
+* `abstract`
+* `synchronized` (**not on exam**)
+* `native` (**not on exam**)
+* `strictfp` (**not on exam**)
+* can have multiple specifiers (or one, or none)
+* must be before return type
+* can be before access modifier
+#### Return Type
+* method signature must contain return type
+* must contain a return statement matching return type that is reached by all branches
+* if void, return statement is optional; either omit or return with no value
+#### Method Name
+* must be a valid identifier
+#### Parameter List
+* must have parentheses
+* list can be comma-separated parameters or varargs - or both ([see below](#more-on-varags))
+#### Optional Exception List
+
+#### Method Body
+
+### More on varargs
