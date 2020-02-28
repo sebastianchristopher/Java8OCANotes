@@ -1459,6 +1459,12 @@ LocalDate date = LocalDate.parse("02 12 2020 21:31", dtf2);
 
 [Pass by Value](#pass-by-value)
 
+[Overloading Methods](#overloading-methods)
+
+[Overloading and Varargs](#overloading-and-varargs)
+
+[Methods and Autoboxing](#methods-and-autoboxing)
+
 ---
 ### Anatomy of a Method
 * `access modifier` `optional specifiers` `return type` `methodName` `(` *required parentheses* `optional parameter list` `)` `optional exception list` `{`*requierd braces*`}`
@@ -1768,8 +1774,170 @@ public class StaticImportPrecedence {
 * although they are called static imports, the syntax is `import static`
 * `import static java,util.Arrays;` -> DOES NOT COMPILE -> class not static member
 * you can use wildcards -> `import static java.util.Arrays.*;` -> imports all static members of Arrays statically
-* can't import two members with the same name: ????
+* can't import two static variables with the same name, or two static methods with the same signature:
 ```java
+package statics;
 
+public class A {
+	public static final String TYPE = "A";
+	public static final String DIFFERENT_SIGNATURE(String foo, String bar){
+		return foo + bar;
+	}
+	public static final String SAME_SIGNATURE(String foo){
+		return foo;
+	}
+}
+
+package statics;
+
+public class B {
+	public static final String TYPE = "B";
+	public static final String DIFFERENT_SIGNATURE(String bar){
+		return bar;
+	}
+	public static final String SAME_SIGNATURE(String foo){
+		return foo;
+	}
+}
+
+import static statics.A.TYPE;
+import static statics.B.TYPE;
+import static statics.A.SAME_SIGNATURE;
+import static statics.B.SAME_SIGNATURE;
+import static statics.A.DIFFERENT_SIGNATURE;
+import static statics.B.DIFFERENT_SIGNATURE;
+
+public class StaticImportClashTest {
+	public static void main(String... args) {
+		System.out.println(TYPE); // DOES NOT COMPILE -> reference to TYPE is ambiguous
+		//		System.out.println(TYPE);   
+		// ^ both variable TYPE in A and variable TYPE in B match
+
+		System.out.println(SAME_SIGNATURE("foo")); // DOES NOT COMPILE -> error: reference to SAME_SIGNATURE is ambiguous
+		//		System.out.println(SAME_SIGNATURE("foo"));
+		// ^ both method SAME_SIGNATURE(String) in B and method SAME_SIGNATURE(String) in A match
+					
+		System.out.println(DIFFERENT_SIGNATURE("foo")); // -> foo
+		System.out.println(DIFFERENT_SIGNATURE("foo", "bar")); // -> foo\nbar
+	}
+}
 ```
 ### Pass by Value
+> changes made to variables passed into methods don't persist outside those methods if they are assignments, but do if they are methods called on mutable variable types (*c.f. final members*)
+```java
+public class PassByValue {
+	public static void main(String... args) {
+		int i = 2;
+		String str = "Foo";
+		StringBuilder sb = new StringBuilder("Foo");
+		
+		change(i); // -> 2
+		change(str); // -> Foo
+		change(sb); // -> Foobar
+		
+		i = change(i); // -> 3
+		str = change(str); // -> Foobar
+		sb = change(sb); // -> Foobarbar
+	}
+	
+	public static int change(int x){
+		return x += 1;
+	}
+	public static String change(String x){
+		return x += "bar";
+	}
+	public static StringBuilder change(StringBuilder x){
+		return x.append("bar");
+	}
+}
+```
+* Java uses pass-by-value to get data into a method
+* assigning a new primitive or reference to a parameter doesn't change the caller
+* calling methods on a reference to an object does affect the caller
+* careful - if the assigning happens *outside* of the method, the value will change as normal
+### Overloading Methods
+* change the parameters of a named method to overload it
+* this includes changeing the order but not the variable names e.g.
+```java
+void foo(int i, long l){}
+void foo(long l, int i){} // overloads foo
+void foo(int blabla, long tactac){} // DOES NOT COMPILE -> same parameter list
+```
+* the return type isn't important
+```java
+String foo(int i){}
+Boolean foo(int j){} // DOES NOT COMPILE -> same parameter list
+```
+* watch for case: the following are two different methods, not overloaded
+```java
+void foo(int i);
+void Foo(int i);
+```
+* the signature is: the name, types and order of the parameters
+### Overloading and Varargs
+* Java treats varargs as an array so the following two signatures are identical:
+```java
+public void run(int[] distances){}
+public void run(int... dists){} // DOES NOT COMPILE
+```
+* when compiled, they behave slightly differently:
+```java
+public class VarargsVsArraySignatures {
+	public static void varargsSignature(int... nums){}
+	public static void arraySignature(int[] nums){}
+	
+	public static void main(String... args){
+		varargsSignature(new int[]{1, 2, 3});
+		varargsSignature(1, 2, 3);
+		
+		arraySignature(new int[]{1, 2, 3});
+		arraySignature(1, 2, 3); // DOES NOT COMPILE -> method arraySignature cannot be applied to given types
+		//	required: int[]
+		//	found: int,int,int
+		//	reason: actual and formal argument lists differ in length
+	}
+}
+```
+* a varargs parameter can accept an array or comma-separated values
+* an array parameter can only accept an array
+### Methods and Autoboxing
+* Java finds the most specific match it can, then autoboxes/converts
+* exact match -> numeric promotion -> autoboxed wrapper -> superclasses -> varargs exact match -> varargs numeric promotion -> varargs autoboxed wrapper -> varargs superclasses
+* can only perform one conversion
+* the following is the order in which an int would be matched
+```java
+public class MethodsAndAutoboxing {
+	public static void main(String... args){
+		foo(7);
+	}
+	
+	public static void foo(short x){ // WON'T MATCH THIS - can't demote to short
+		System.out.println("short");
+	}
+	public static void foo(int x){
+		System.out.println("int");
+	}
+	public static void foo(long x){
+		System.out.println("long");
+	}
+	public static void foo(double x){
+		System.out.println("double");
+	}
+	public static void foo(Integer x){
+		System.out.println("Integer");
+	}
+	public static void foo(Double x){ // WON'T MATCH THIS - can't promote to double then autobox to Double
+		System.out.println("Double");
+	}
+	// public static void foo(Number x){
+		// System.out.println("Number");
+	// }
+	public static void foo(Object x){
+		System.out.println("Object");
+	}
+	public static void foo(int... x){
+		System.out.println("int...");
+	}
+	}
+}
+```
