@@ -1455,6 +1455,10 @@ LocalDate date = LocalDate.parse("02 12 2020 21:31", dtf2);
 
 [Static initialization](#static-initialization)
 
+[Static imports](#static-imports)
+
+[Pass by Value](#pass-by-value)
+
 ---
 ### Anatomy of a Method
 * `access modifier` `optional specifiers` `return type` `methodName` `(` *required parentheses* `optional parameter list` `)` `optional exception list` `{`*requierd braces*`}`
@@ -1717,3 +1721,55 @@ public class Constants {
 }
 ```
 ### Static initialization
+* `static{}`
+* static initializers run when the class is first used
+* remember, FINAL variables can't be reassigned
+* but they can be declared in the class and then initialized in a static initializer block, as this will only be run once
+```java
+public class ConstantsAndStaticInitializers {
+	public static final int one;
+	public static final int two = 2;
+    public static final int three; // DOES NOT COMPILE -> variable three not initialized in the default constructor
+	static {
+		one = 1;
+	    two = 2; // DOES NOT COMPILE -> cannot assign a value to final variable two
+	};	
+}
+```
+### Static imports
+* regular imports are for importing classes
+* static imports are for importing static members of classes
+```java
+1. import java.util.List;
+2. import static java.util.Arrays.asList;
+3. public class StaticImports {
+4. 	public static void main(String... args) {
+5. 		List<String> list = asList("foo", "bar");
+6. 		List<String> list2 = Arrays.asList("foo", "bar"); // DOES NOT COMPILE -> cannot find symbol		List<String> list2 = Arrays.asList("foo", "bar");
+7. 	}
+8. }
+```
+* line 6 doesn't compile because the Arrays class hasn't been imported
+* local methods have precedence over static imports - if we created `asList()` in the class, that would be used:
+```java
+import static java.util.Arrays.asList;
+public class StaticImportPrecedence {
+	public static void main(String... args) {
+		asList("foo", "bar");
+	}
+	
+	public static void asList(String... args){
+		for(String arg : args){
+			System.out.print(arg); // -> foobar
+		}
+	}
+}
+```
+* although they are called static imports, the syntax is `import static`
+* `import static java,util.Arrays;` -> DOES NOT COMPILE -> class not static member
+* you can use wildcards -> `import static java.util.Arrays.*;` -> imports all static members of Arrays statically
+* can't import two members with the same name: ????
+```java
+
+```
+### Pass by Value
