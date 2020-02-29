@@ -2200,7 +2200,7 @@ public class ImmutableClasses{
   - `parameter` `arrow` `body`
   - `a ` `->` `a.isHat()`
 * with optional parts:
-  - `(``optional parameter type` `parameter name``)` `arrow` `{``return keyword` `body``;``}`
+  - `(` `optional parameter type` `parameter name` `)` `arrow` `{` `return keyword` `body` `;` `}`
   - `(Clothing a) -> {return a.isHat();}`
   
 
