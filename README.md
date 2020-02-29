@@ -1475,6 +1475,12 @@ LocalDate date = LocalDate.parse("02 12 2020 21:31", dtf2);
 
 [Order of Initialization](#orderoof-initialization)
 
+[Encapsulation](#encapsulation)
+
+[Creating Immutable Classes](#creating-immutable-classes)
+
+[Lambdas](#lambdas)
+
 ---
 ### Anatomy of a Method
 * `access modifier` `optional specifiers` `return type` `methodName` `(` *required parentheses* `optional parameter list` `)` `optional exception list` `{`*requierd braces*`}`
@@ -2062,5 +2068,131 @@ public class FinalFieldsTester {
 3. instnace members in order they appear (variables and initializers)
 4. the constructor
 ```java
-
+public class OrderOfInitialization {
+	static void print(int num){
+		System.out.print(num);
+	}
+	
+	static{print(1);}
+	
+	public OrderOfInitialization(){
+		print(5);
+	}
+	
+	{print(3);}
+	
+	static{print(2);}
+	
+	{print(4);}
+	
+	public static void main(String... args){
+		OrderOfInitialization foo = new OrderOfInitialization();
+	}
+}
+// output: 12345
 ```
+### Encapsulation
+```java
+class Encapsulation{
+	private int num;
+	public void setNum(int num){
+		this.num = num;
+	}
+	public int getNum(){
+		return num;
+	}		
+}
+public class EncapsulationTester{
+	public static void main(String... args){
+		EncapsulationTest foo = new EncapsulationTest();
+		
+		foo.num = 5; // DOES NOT COMPILE ->  error: num has private access in EncapsulationTest
+		foo.setNum(5);
+				
+		System.out.println(foo.num); // DOES NOT COMPILE ->  error: num has private access in EncapsulationTest
+		System.out.println(foo.getNum()); // -> 5
+	}
+}
+```
+* JavaBeans rules
+  - properties are private
+  - getter and setter methods are public
+  - getter prefix is `get` or `if` for boolean, `get` for everything else
+  - setter prefix is `set`
+  - followed by PascalCase identifier (the property name by convention)
+```java
+private int numberOfHats;
+private boolean hat;
+public int getNumberOfHats(){
+	return numberOfHats;
+}
+public booealn isHat(){
+	return hat;
+}
+public void setNumberOfHats(int num){
+	numberOfHats = num;
+}
+public void setHat(boolean hat){
+	this.hat = hat;
+}
+```
+### Creating Immutable Classes
+* omit the setters and initialize variables in the constructor
+```java
+public class Person {
+	private String name;
+	public String getName(){
+		return name;
+	}
+	public Person(String name){
+		this.name = name;
+	}
+}
+```
+* careful about the return type of variables - a mutable return type can have its value changed
+* to overcome this, either return a copy of the object (a defensive copy) or an immutable object type
+```java
+class Mutable{
+	private StringBuilder name;
+	public Mutable(String name){
+		this.name = new StringBuilder(name);
+	}
+	public StringBuilder getName(){
+		return name;
+	}
+}
+class DefensiveCopy{
+	private StringBuilder name;
+	public DefensiveCopy(String name){
+		this.name = new StringBuilder(name);
+	}
+	public StringBuilder getName(){
+		return new StringBuilder(name);
+	}
+}
+class ImmutableReturnType{
+	private StringBuilder name;
+	public ImmutableReturnType(String name){
+		this.name = new StringBuilder(name);
+	}
+	public String getName(){
+		return name.toString();
+	}
+}
+public class ImmutableClasses{
+	public static void main(String... args){
+		Mutable obj1 = new Mutable("Foo");
+		obj1.getName().append("bar");
+		System.out.println(obj1.getName()); // -> Foobar
+		
+		DefensiveCopy obj2 = new DefensiveCopy("Foo");
+		obj2.getName().append("bar");
+		System.out.println(obj2.getName()); // -> Foo
+		
+		ImmutableReturnType obj3 = new ImmutableReturnType("Foo");
+		// obj3.getName().append("bar"); // can't append this as it's a String not a StringBuilder
+		System.out.println(obj3.getName()); // -> Foo
+	}
+}
+```
+### Lambdas
