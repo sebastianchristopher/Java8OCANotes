@@ -1974,3 +1974,35 @@ public class Foo {
 	}
 }
 ```
+### Default constructor
+* if you provide **no** constructor, Java creates a default no args constructor
+* having a private constructor prevents Java creating a default constructor, and other classes from instantiating the class
+```java
+class PrivateConstructor {
+	private PrivateConstructor(){};
+}
+public class PrivateConstructorTest {
+	public static void main(String... args) {
+		PrivateConstructor foo = new PrivateConstructor(); // DOES NOT COMPILE -> PrivateConstructor() has private access in PrivateConstructor
+	}
+}
+```
+### Overloading constructors
+* DRYs up code and adds degulat values to variables
+* the first line of a constructor is always either:
+  - a call to another constructor in the same class using this
+  - a call to a constructor in the superclass
+    - a implicit call to a constructor in the superclass (added by the compiler)
+```java
+
+```
+* `this()` or a call to a constructor in the superclass **cannot** come after the first line:
+```java
+public class ConstructorAfterFirstLine {
+	public ConstructorAfterFirstLine(int i){}
+	public ConstructorAfterFirstLine(){
+		System.out.print("starting");
+		this(7); // DOES NOT COMPILE ->  error: call to this must be first statement in constructor
+	}
+}
+```	
