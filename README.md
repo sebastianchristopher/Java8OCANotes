@@ -1923,7 +1923,7 @@ public class VarargsVsArraySignatures {
   - Wrapper types cannot be widened to another wrapper type (e.g. a Byte cannot widen to an Integer).
   - Primitive types cannot be widened and then boxed (e.g. a byte cannot widen to an int and then be boxed as an Integer).
   - (*this is similar to how this won't compile without casting:* `Long x = 3; // DOES NOT COMPILE`)
-* the following is the order in which an int would be matched
+* the following is the order in which an int would be matched:
 ```java
 public class MatchingOverloadedMethods {
 	public static void main(String... args){
@@ -2196,3 +2196,11 @@ public class ImmutableClasses{
 }
 ```
 ### Lambdas
+* lambdas expression without optional parts:
+  - `parameter` `arrow` `body`
+  - `a ` `->` `a.isHat()`
+* with optional parts:
+  - `(``optional parameter type` `parameter name``)` `arrow` `{``return keyword` `body``;``}`
+  - `(Clothing a) -> {return a.isHat();}`
+  
+
