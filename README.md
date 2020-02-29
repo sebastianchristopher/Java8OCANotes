@@ -1467,6 +1467,14 @@ LocalDate date = LocalDate.parse("02 12 2020 21:31", dtf2);
 
 [Creating constructors](#creating-constructors)
 
+[Default constructor](#default-constructor)
+
+[Overloading constructors](#overloading-constructors)
+
+[Final fields](#final-fields)
+
+[Order of Initialization](#orderoof-initialization)
+
 ---
 ### Anatomy of a Method
 * `access modifier` `optional specifiers` `return type` `methodName` `(` *required parentheses* `optional parameter list` `)` `optional exception list` `{`*requierd braces*`}`
@@ -1994,7 +2002,28 @@ public class PrivateConstructorTest {
   - a call to a constructor in the superclass
     - a implicit call to a constructor in the superclass (added by the compiler)
 ```java
-
+public class OverloadingConstructors {
+	public int x;
+	public String y;
+	public OverloadingConstructors(){
+		this(7, "bla");
+	}
+	public OverloadingConstructors(int x){
+		this(x, "bla");
+	}
+	public OverloadingConstructors(String y){
+		this(7, y);
+	}
+	public OverloadingConstructors(int x, String y){
+		this.x = x;
+		this.y = y;
+	}
+	public static void main(String... args) {
+		OverloadingConstructors oc1 = new OverloadingConstructors(); // 			x: 7, y: bla
+		OverloadingConstructors oc2 = new OverloadingConstructors(1); // 			x: 1, y: bla
+		OverloadingConstructors oc3 = new OverloadingConstructors("word"); // 		x: 7, y: word
+		OverloadingConstructors oc4 = new OverloadingConstructors(3, "stuff"); // 	x: 3, y: stuff
+}
 ```
 * `this()` or a call to a constructor in the superclass **cannot** come after the first line:
 ```java
@@ -2005,4 +2034,33 @@ public class ConstructorAfterFirstLine {
 		this(7); // DOES NOT COMPILE ->  error: call to this must be first statement in constructor
 	}
 }
-```	
+```
+### Final fields
+* like final static variables, final instance variables must be assigned a value exaclty once
+* this can be in the line of declaration, an initialization block, or in the constructor
+```java
+class Rectangle {
+	private final double AREA;
+	public Rectangle(double w, double h){
+		AREA = w * h;
+	}
+	public String toString(){
+		return "Area is " + AREA;
+	}
+}
+public class FinalFieldsTester {
+	public static void main(String... args){
+		Rectangle r = new Rectangle(2.2, 4.5);
+		System.out.println(r); // -> Area is 9.9
+	}
+}
+```
+* by the stime the constructor completes, all final instance variables must have been assigned
+### Order of Initialization
+1. initialize superclass if present
+2. static members in order they appear (variables and initializers)
+3. instnace members in order they appear (variables and initializers)
+4. the constructor
+```java
+
+```
