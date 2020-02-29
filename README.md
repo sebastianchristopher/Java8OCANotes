@@ -1463,7 +1463,9 @@ LocalDate date = LocalDate.parse("02 12 2020 21:31", dtf2);
 
 [Overloading and Varargs](#overloading-and-varargs)
 
-[Methods and Autoboxing](#methods-and-autoboxing)
+[Matching Overloaded Methods](#matching-overloaded-methods)
+
+[Creating constructors](#creating-constructors)
 
 ---
 ### Anatomy of a Method
@@ -1900,13 +1902,16 @@ public class VarargsVsArraySignatures {
 ```
 * a varargs parameter can accept an array or comma-separated values
 * an array parameter can only accept an array
-### Methods and Autoboxing
+### Matching Overloaded Methods
 * Java finds the most specific match it can, then autoboxes/converts
-* exact match -> numeric promotion -> autoboxed wrapper -> superclasses -> varargs exact match -> varargs numeric promotion -> varargs autoboxed wrapper -> varargs superclasses
+* exact match -> numeric promotion -> autoboxed wrapper -> superclasses -> varargs
 * can only perform one conversion
+  - Wrapper types cannot be widened to another wrapper type (e.g. a Byte cannot widen to an Integer).
+  - Primitive types cannot be widened and then boxed (e.g. a byte cannot widen to an int and then be boxed as an Integer).
+  - (*this is similar to how this won't compile without casting:* `Long x = 3; // DOES NOT COMPILE`)
 * the following is the order in which an int would be matched
 ```java
-public class MethodsAndAutoboxing {
+public class MatchingOverloadedMethods {
 	public static void main(String... args){
 		foo(7);
 	}
@@ -1926,18 +1931,46 @@ public class MethodsAndAutoboxing {
 	public static void foo(Integer x){
 		System.out.println("Integer");
 	}
-	public static void foo(Double x){ // WON'T MATCH THIS - can't promote to double then autobox to Double
-		System.out.println("Double");
+	public static void foo(Long x){ // WON'T MATCH THIS - can't promote to long then autobox to Long
+		System.out.println("Long"); // foo(7L); or foo((long)); would match
 	}
-	// public static void foo(Number x){
+	public static void foo(Number x){
 		// System.out.println("Number");
-	// }
+	}
 	public static void foo(Object x){
 		System.out.println("Object");
 	}
 	public static void foo(int... x){
 		System.out.println("int...");
 	}
+}
+```
+[http://how2examples.com/java/method-overloading](http://how2examples.com/java/method-overloading)
+### Creating constructors
+* a constructor is a method that matches the name of the class
+* they are called when creating a new object - when Java sees the keyword `new`, it looking for a constructor and calls it
+```java
+public class Foo {
+	public Foo(){} // this is a constructor
+	public foo(){} // COMPILE ERROR - method name doesn't match class name so just a method without a return type, which is illegal
+	public void Foo(){} // not a constructor - regular method with return type void
+}
+```
+#### this
+* if two variables have the same name (a parameter and an instance variable) in a constructor, Java gives precedence to the parameter
+* use the `this` keyword to reference an instance variable in that context
+```java
+public class Foo {
+	public int myNum;
+	
+	public static void main(String... args){
+		Foo myFoo = new Foo(5);
+	}
+	
+	public Foo(int myNum){
+		// myNum = myNum; // -> sets parameter myNum to equal itself - won't persist outside method
+		// myNum = this.myNum; // -> sets parameter myNum to equal instance variable myNum - won't persist outside method
+		this.myNum = myNum; // -> sets instance variable myNum = parameter myNum
 	}
 }
 ```

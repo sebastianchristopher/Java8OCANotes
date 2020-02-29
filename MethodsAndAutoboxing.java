@@ -27,16 +27,16 @@ public class MethodsAndAutoboxing {
 	// public static void foo(Object x){
 		// System.out.println("Object");
 	// }
-	// public static void foo(int... x){
-		// System.out.println("int...");
-	// }
-	public static void foo(double... x){
-		System.out.println("double...");
+	public static void foo(int... x){
+		System.out.println("int...");
 	}
+	// public static void foo(double... x){
+// 		System.out.println("double...");
+// 	}
 	public static void foo(Integer... x){
 		System.out.println("Integer...");
 	}
-	public static void foo(Object... x){
-		System.out.println("Object...");
-	}
+// 	public static void foo(Object... x){
+// 		System.out.println("Object...");
+// 	}
 }
