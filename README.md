@@ -1481,6 +1481,8 @@ LocalDate date = LocalDate.parse("02 12 2020 21:31", dtf2);
 
 [Lambdas](#lambdas)
 
+[Predicates](#predicates)
+
 ---
 ### Anatomy of a Method
 * `access modifier` `optional specifiers` `return type` `methodName` `(` *required parentheses* `optional parameter list` `)` `optional exception list` `{`*requierd braces*`}`
@@ -2202,5 +2204,58 @@ public class ImmutableClasses{
 * with optional parts:
   - `(` `optional parameter type` `parameter name` `)` `arrow` `{` `return keyword` `body` `;` `}`
   - `(Clothing a) -> {return a.isHat();}`
-  
+* rules for omitting lambda parts:
+  1. parentheses can be omitted if there is only one parameter and the type is not explicitly stated
+  2. curly braces `{}` can be omitted if there is only one statement
+  3. the return keyword can be omitted if not using a code block `{}`
+  4. semidcolon can be omitted if not using a code block `{}`
+#### valid lambdas
+* `() -> true; ` -> 0 parameters
+* `a -> a.startsWith("foo")` -> 1 parameter
+* `(String a) -> a.startsWith("foo")` -> 1 parameter, named type
+* `(a, b) -> a.startsWith("foo")` -> 2 parameters
+* `(String a, String b) -> a.startsWith("foo")` -> 2 parameters, named type
+#### illegal examples
+* `a, b -> a.startsWith("foo")` -> illegal - doesn't have only one parameter
+* `a -> {a.startsWith("foo")}` -> illegal - curly braces with no return and no semicolon
+* `a -> {a.startsWith("foo");}` -> illegal - curly braces with no return
+* `a -> {return a.startsWith("foo")}` -> illegal - curly braces with no semicolon
+#### redeclaring variables
+* you can't redeclare variables in the code block, but you can change variables values and declare new variables:
+`(a, b) -> {int a = 3; return 5;}` -> illegal - redeclares variable in code block
+`(a, b) -> {a = 3; return 5;}` -> legal - reassigns variable in code block
+`(a, b) -> {int c = 3; return 5;}` -> legal - declares new variable in code block
+### Predicates
+* lambdas work with interfaces that only have one method
+* these are claled functional interfaces
+* Java provides a general interface for this purpose: `java.util.function.Predicate`
+```java
+public interface Predicate<T>{
+	boolean test(T t);
+}
+```
+* example:
+```java
+import java.util.function.*;
 
+public class PredicateExample{
+	static Predicate<Integer> isEven = i -> i % 2 == 0;
+	public static void main(String... args){
+		int[] ints = {1, 2, 3, 4, 5};
+		for(int i : ints){
+			System.out.println(isEven.test(i));
+		}
+	}
+}
+/* output:
+* false
+* true
+* false
+* true
+* false
+*/
+```
+* ArrayList has a method, `removeIf()`, that takes a predicate
+```java
+
+```
