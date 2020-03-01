@@ -11,6 +11,8 @@
 
 [Chapter 4 - Methods and Encapsulation](#chapter-4---methods-and-encapsulation)
 
+[Chapter 5 - Class Design](#chapter-5---class-design)
+
 ---
 
 ## Chapter 1 - Java Building Blocks
@@ -2275,3 +2277,30 @@ public class RemoveIfTest{
 	}	
 }
 ```
+## Chapter 5 - Class Design
+**In this chapter:**
+
+---
+[Class Inheritance](#class-inheritance)
+
+---
+
+### Class Inheritance
+* child class declaration structure:
+  - `public/[default] access modifier` `abstract/final (optional)` `class keyword` `class name` `extends parent class` `{}`
+  - `public` `abstract` `class` `Rectangle` `extends Shape` `{}`
+* final classes can't have any child classes
+* a child class can access all public and protected members of the parent class
+* a child class in a different package to the parent class won't compile unless it imports it:
+```java
+// parents/Parent.java
+package parents;
+public class Parent{}
+
+// children/Child.java
+package children;
+public class Child extends Parent{} // DOES NOT COMPILE -> cannot find symbol Parent{}
+
+```
+* a child class inherits the parent class's private methods **but is unable to access them**
+* all classes ultimately extend java.lang.Object
