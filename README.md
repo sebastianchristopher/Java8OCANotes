@@ -2283,6 +2283,38 @@ public class RemoveIfTest{
 ---
 [Class Inheritance](#class-inheritance)
 
+[Defining Constructors](#defining-constructors)
+
+[Reviewing constructor rules](#reviewing-constructor-rules)
+
+[Calling constructors](#calling-constructors)
+
+[Calling inherited class members](#calling-inherited-class-members)
+
+[Inheriting Methods](#inheriting-methods)
+
+[Overriding a method](#overriding-a-method)
+
+[Rules for overriding a method](#rules-for-overriding-a-method)
+
+[Redeclaring Private Methods](#redeclaring-private-methods)
+
+[Hiding Static Methods](#hiding-static-methods)
+
+[Overriding vs Hiding Methods](#overriding-vs-hiding-methods)
+
+[Creating final methods](#creating-final-methods)
+
+[Inheriting variables](#inheriting-variables)
+
+[Abstract Classes](#abstract-classes)
+
+[Creating a concrete class](#creating-a-concrete-class)
+
+[Abstract Class Definition Rules](#abstract-class-definition-rules)
+
+[Abstract Method Definition Rules](#abstract-method-definition-rules)
+
 ---
 
 ### Class Inheritance
@@ -2304,3 +2336,150 @@ public class Child extends Parent{} // DOES NOT COMPILE -> cannot find symbol Pa
 ```
 * a child class inherits the parent class's private methods **but is unable to access them**
 * all classes ultimately extend java.lang.Object
+### Defining Constructors
+* the first statement of every constructor is either:
+  - a call to another constructor in the class, using `this()`
+  - or a call to a constructor in the parent class, using `super()`
+* in the case of a parent class, this will probably be an implicity super() call to `java.lang.Object`, provided by the compiler:
+```java
+// the following are all equivalent:
+public class Foo{}
+
+public class Foo{
+	public Foo(){}
+}
+
+public class Foo{
+	public Foo(){
+		super();
+	}
+}
+```
+* an explicit constructor means the compiler won't insert a default no-args constructor
+* if the parent class has an explicit constructor, with an argument, the child must match this
+* a default constructor will not be inserted by the compiler
+```java
+public class Parent{
+	public Parent(int age); //explicit constructor so no default no-args constructor
+}
+
+public class Child extends Parent{ // DOES NOT COMPILE -> see below
+	
+	// the compiler will try to create a default no-args constructor e.g.
+	// public Child(){
+	//		super(); // NO MATCHING METHOD IN THE PARENT CLASS - this causes the compile error
+	//}
+	
+}
+```
+* however, you can use a no-args constructor in the child class if it calls a valid `super()` method:
+```java
+public class Child{
+	public Child(){
+		super(10);
+	}
+}
+```
+* the child constructor doesn't have to match, just the call to `super()`
+### Reviewing constructor rules
+1. the first statement in a constructor must be either a call to another constructor in the class, using `this()`, or a call to a constructor in the parent class, using `super()`
+2. the `super()` method must not be used after the first statement of the construct (i.e. at most once, and on the first line)
+3. if no `super()` call is declared in a constructor, Java inserts a no-args `super()` as the first statement
+4. if the parent hasn't got a default no-args constructor (i.e. it defines its own constructor with args) and the child doesn't define any constructors, it will not compile
+5. if the parent doesn't have a default no-args constructor, the compiler requires an explicit call to a parent constructor on the first line of each child constructor
+### Calling constructors
+* the parent constructor is always executed before the child constructor
+* as `super()` is always the first line, this makes sense!
+```java
+public class Parent{
+	public Parent(){
+		System.out.println("Parent");
+	}
+}
+
+public class Child{
+	public Child(){
+		System.out.println("Child");
+	}
+}
+
+public class Grandchild{
+	public static void main(String... args){
+		new Grandchild();
+	}
+}
+/* output of  running Grandchild is:
+* Parent
+* Child
+*/
+```
+### Calling inherited class members
+* child classes can use any public or protected members from the parent class
+* if they are in the same package, they can also use any default (package-private) members
+* they don't have direct access to any of the parent's private members, although encapsulation may provide getter/setter access
+* parent members can be called directly:
+```java
+public class Parent{
+	public String name = "Parent";
+}
+
+public class Child{
+	public static void main(String... args){
+		System.out.println(name); // -> Parent
+	}
+}
+```
+* if a member exists in the parent class but not the child class, `this.` will call it e.g. `System.out.println(this.name);`
+* you can use `super.` to call any accessible parent method e.g. `System.out.println(super.name);`
+* if a child method overrides a parent method, `this.` calls the child method and `super.` calls the parent method
+* if a method doesn't exist in the parent class, trying to call it with `super.` will cause a compile error
+> super() and super are different, like this() and this - watch out for this on the exam
+### Inheriting Methods
+* a subclass has access to all public and protected methods of the parent class
+* this can lead to collisions between methods
+### Overriding a method
+* you can override a parent class method by using the same signature (name and parameter list) in the child class
+* you can also reference the parent method in the override method using `super.`
+```java
+public class Parent{
+	public int getAge(){
+		return 50;
+	}
+}
+public class Child extends Parent{
+	public int getAge(){
+		return super.getAge() / 2;
+	}
+}
+```
+* what happens if we don't use `super.`?
+```java
+public int getAge(){
+	return getAge() / 2; // INFINITE RECURSION
+}
+```
+### Rules for overriding a method
+1. child method must have same signature as parent method
+2. the child method must be at least as accessible as the parent method
+3. the child method must not introduce any new checked exceptions unless they are broader than the parent method's checked exceptions
+4. the child method's return type must be the same or a subclass of the parent's return type
+* the last rule is known as *covariant returns* - the return type of an overriding method must be the same or a subtype
+
+
+### Redeclaring Private Methods
+
+### Hiding Static Methods
+
+### Overriding vs Hiding Methods
+
+### Creating final methods
+
+### Inheriting variables
+
+### Abstract Classes
+
+### Creating a concrete class
+
+### Abstract Class Definition Rules
+
+### Abstract Method Definition Rules
