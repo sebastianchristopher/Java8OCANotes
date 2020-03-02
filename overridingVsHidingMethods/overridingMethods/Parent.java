@@ -1,0 +1,9 @@
+public class Parent {
+	public String name(){
+		return "Parent";
+	}
+	
+	public void sayParentName(){
+		System.out.println("Parent is " + name());
+	}
+}

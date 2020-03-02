@@ -2465,13 +2465,80 @@ public int getAge(){
 4. the child method's return type must be the same or a subclass of the parent's return type
 * the last rule is known as *covariant returns* - the return type of an overriding method must be the same or a subtype
 
-
 ### Redeclaring Private Methods
 
 ### Hiding Static Methods
 
 ### Overriding vs Hiding Methods
+```java
+public class Parent {
+	public static String name(){
+		return "Parent";
+	}
+	
+	public void sayParentName(){
+		System.out.println("Parent is " + name());
+	}
+}
 
+public class Child extends Parent {
+	public static String name(){
+		return "Child";
+	}
+	
+	public void sayChildName(){
+		System.out.println("Child is " + name());
+	}
+}
+
+public class HidingMethods {
+	public static void main(String... args) {
+		Child child = new Child();
+		child.sayChildName(); // -> Child is Child
+		child.sayParentName(); -> Parent is Child
+	}
+}
+```
+* unlike overridden methods, hidden methods only replace parent methods in calls defined in the child class
+* compare the above example to the below, where the static methods have been replaced with non-static methods (i.e. overridden not hidden methods):
+```java
+public class Parent {
+	public String name(){
+		return "Parent";
+	}
+	
+	public void sayParentName(){
+		System.out.println("Parent is " + name());
+	}
+}
+
+public class Child extends Parent {
+	public String name(){
+		return "Child";
+	}
+	
+	public void sayChildName(){
+		System.out.println("Child is " + name());
+	}
+}
+
+public class OverridingMethods {
+	public static void main(String... args) {
+		Child child = new Child();
+		child.sayChildName(); // -> Child is Parent
+		child.sayParentName(); // -> Child is Parent
+	}
+}
+```
+* if a child instance calls a hidden method from the child class, it will use the child method
+* if the call to the hidden method is in the parent class, it will use the parent method
+* if a child instance calls an overridden method, it will use the child method whether the call is defined in the child class or the parent class
+* parent instance obviously can't call child method:
+```java
+Parent parent = new Parent();
+parent.sayParentName(); // -> Parent is Parent
+parent.sayChildName(); // DOES NOT COMPILE -> can't find symbol
+```
 ### Creating final methods
 
 ### Inheriting variables
