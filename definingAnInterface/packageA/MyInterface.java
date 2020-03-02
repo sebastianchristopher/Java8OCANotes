@@ -1,0 +1,3 @@
+package packageA;
+
+interface MyInterface {}

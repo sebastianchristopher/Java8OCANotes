@@ -2819,9 +2819,33 @@ public class Cat extends Mammal {
 * an interface is an abstract data type which defines a list of abstract public methods than any class implementing the interface must provide
 * it can also include a list of constant variables and default methods
 * a class invoking the interface `implements` it (c.f. `extends` for abstract classes)
-#### Defining an interface
-according to Boyarsky and Selikoff,
->All top-level interfaces are assumed to have public or default access
-q. how can they have public **or** default access? the two are different
-q. if a class in a different package tries to implement an interface which is "assumed to have public or default access", which does it assume it has?
+#### Public or default?
+* according to Boyarsky and Selikoff,
+> All top-level interfaces are assumed to have public or default access
+* if the class implementing is in a different package, it is assume to have public access or default access?
+* testing the following:
+```java
+// packageA/MyInterface.java
+package packageA;
+
+interface MyInterface {}
+
+// packageB/MyClass.java
+package packageB;
+import packageA.*;
+
+public class MyClass implements MyInterface{}
+```
+```shell
+> javac packageA/MyInterface.java packageB/MyClass.java
+	packageB/MyClass.java:4: error: cannot find symbol
+	public class MyClass implements MyInterface{}
+```
+* it seems that if they have the `public` keyword, they have public access, if not, they have default access
+#### Defining and implementing
+* Defining an interface:
+![Defining an interface](https://github.com/sebastianchristopher/Java8OCANotes/tree/master/statics/defining-an-interface.jpg "Defining an interface")
+* Implementing an interface:
+![Implementing an interface](https://github.com/sebastianchristopher/Java8OCANotes/tree/master/statics/implementing-an-interface.jpg "Implementing an interface")
+
 ### Defining an Interface
