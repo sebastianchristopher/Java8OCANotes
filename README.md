@@ -1485,6 +1485,8 @@ LocalDate date = LocalDate.parse("02 12 2020 21:31", dtf2);
 
 [Predicates](#predicates)
 
+[More on lambdas and predicates](#more-on-lambdas-and-predicates)
+
 ---
 ### Anatomy of a Method
 * `access modifier` `optional specifiers` `return type` `methodName` `(` *required parentheses* `optional parameter list` `)` `optional exception list` `{`*requierd braces*`}`
@@ -2277,6 +2279,8 @@ public class RemoveIfTest{
 	}	
 }
 ```
+### More on lambdas and predicates
+TODO
 ## Chapter 5 - Class Design
 **In this chapter:**
 
@@ -2314,6 +2318,36 @@ public class RemoveIfTest{
 [Abstract Class Definition Rules](#abstract-class-definition-rules)
 
 [Abstract Method Definition Rules](#abstract-method-definition-rules)
+
+[Implementing Interfaces](#implementing-interfaces)
+
+[Defining an Interface](#defining-an-interface)
+
+Inheriting an Interface
+
+Classes, Interfaces and Keywords
+
+Abstract Methods and Multiple Inheritance
+
+Interface Variables
+
+Default Interface Methods
+
+Default Methods and Multiple Inheritance
+
+Static Interface Methods
+
+Understanding Polymorphism
+
+Object vs Reference
+
+Casting Objects
+
+Virtual Methods
+
+Polymorphic Parameters
+
+More on hidden methods and variables
 
 ---
 
@@ -2684,9 +2718,110 @@ public class Piano extends Instrument {
 }
 ```
 * abstract classes may contain non-abstract members - these are inherited as concrete classes by any subclasses (as they would be from any class)
-
+* abstract classes are allowed to contain no abstract methods if they wish:
+```java
+public abstract class NoMethods {}; // compiles fine
+```
+* abstract methods can only be defined in abstract classes:
+```java
+public class Concrete {
+	public abstract void foo(); // DOES NOT COMPILE
+}
+```
+* the examiners will try to trick you with something like this
+```java
+public abstract class Cat {
+	public abstract void miaow(){} // DOES NOT COMPILE
+}
+```
+* remember, if it's an abstract method, there are no curly braces, just name, parentheses and optional parameter list, then semicolon:
+```java
+public abstract class Cat {
+	public abstract void miaow();
+}
+```
+* abstract classes can't be final - `final` prohibits extending a class, and abstract classes are there to be extended
+* abstract methods can't be final, for the same reason - they can't be overridden, and as it has no implementation it is useless
+* abstract methods can't be private - similar to above, if a subclass can't access a method, then it can't implement it
+```java
+public final abstract class Foo { // DOES NOT COMPILE -> abstract class can't be final
+	public abstract final int age(); // DOES NOT COMPILE -> abstract methods can't be final
+	private abstract void foobar(); // DOES NOT COMPILE -> abstract methods can't be private
+}
+```
+* even with abstract methods, the rules for overriding methods must be followed:
+```java
+public abstract class Animal {
+	public abstract void speak();
+}
+public class Cat extends Animal {
+	private String speak() throws Exception { // DOES NOT COMPILE
+		// some implementation
+	}
+}
+```
+* the above snippet breaks three of the rules of overriding:
+  - non-covariant return types
+  - subclass method is less accessible than its parent method
+  - child method introduces a new checked excpetion
 ### Creating a concrete class
+* abstract classes can't be instantiated so any non-abstract members they contain probably won't do more than define static variables and methods
+* remember that abstract classes can't be directly instantiated:
+```java
+public abstract class Animal{}
+public class AnimalTester{
+	public static void main(String... args){
+		Animal shark = new Animal(); // DOES NOT COMPILE
+	}
+}
+```
+* an abstract becomes useful when it is extended by a concrete subclass
+* a concrete class is the first non-abstract class to extend an abstract class
+* a concrete class must implement all the abstract methods it inherits
+> Abstract classes can be extended by other abstract classes. They don't have to implement its methods, but if they do they are passed to any class that extends it as concrete methods. Any inherited abstract methods not implemented, and any new abstract methods defined in the class, are passed to subclasses that extend it.
+```java
+public abstract class Animal {
+	public abstract String eats();
+	public abstract boolean givesBirth();
+}
 
+public abstract class Mammal extends Animal{
+	public boolean givesBirth() {
+		return true;
+	}
+	public abstract int numLegs();
+}
+
+public class Cat extends Mammal {
+	public String eats() {
+		return "Mice";
+	}
+	public int numLegs() {
+		return 4;
+	}
+}
+```
+* Cat is the concrete class (first non-abstract class to extend)
+* so it must implement all inherited abstract methods
+* as givesBirth() was implemented by Mammal, it inherits it as a concrete class and doesn't need to implement it
 ### Abstract Class Definition Rules
-
+1. can't be instantiated directly
+2. may be defined with any number (including zero) of abstract methods
+3. can't be marked `final` or `private`
+4. an abstract class that extends another abstract class inherits all its abstract methods as its own abstract methods
+5. the first concrete class that extends an abstract class must provide an implementation for all the inherited abstract methods
 ### Abstract Method Definition Rules
+1. can only be defined in abstract classes
+2. can't be declared `final` or `private`
+3. must not provide a method body/implementation in the class in which they are declared
+4. implementing an abstract method in a subclass follows the same rules for overriding a method
+### Implementing Interfaces
+* an interface is an abstract data type which defines a list of abstract public methods than any class implementing the interface must provide
+* it can also include a list of constant variables and default methods
+* a class invoking the interface `implements` it (c.f. `extends` for abstract classes)
+#### Defining an interface
+according to Boyarsky and Selikoff,
+>All top-level interfaces are assumed to have public or default access
+q. how can they have public **or** default access? the two are different
+q. if a class in a different package tries to implement an interface which is "assumed to have public or default access", which does it assume it has?
+### Defining an Interface
