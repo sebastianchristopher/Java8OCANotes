@@ -2517,14 +2517,7 @@ public class Child extends Parent {
 5. if the parent method is static, the child method must be static (method hiding). If the parent method is not static, the child method must not be static (method overriding)
 * in short, the child method should match the static-ness of the parent method - if both are static, the method is hidden not overriden
 ### Overriding vs Hiding Methods
-```java
-public class Parent {
-	public static String name(){return "Parent";}
-}
-public class Child extends Parent {
-	public static String name(){return "Child";}
-}
-```
+
 ### Creating final methods
 
 ### Inheriting variables
