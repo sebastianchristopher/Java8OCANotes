@@ -2464,11 +2464,58 @@ public int getAge(){
 3. the child method must not introduce any new checked exceptions unless they are broader than the parent method's checked exceptions
 4. the child method's return type must be the same or a subclass of the parent's return type
 * the last rule is known as *covariant returns* - the return type of an overriding method must be the same or a subtype
+```java
+public class Parent{
+	public void foo(){
+		System.out.println("foo");
+	}
+}
+public class Child extends Parent{
+	public String foo(){ // DOES NOT COMPILE -> non-covariant return types
+		return "foo";
+	}
+}
+```
+* overriding is a lot more restrictive than overloading (where only the method signature has to match)
+```java
+public class Parent{
+	public void foo(){
+		System.out.println("foo");
+	}
+}
+public class Child extends Parent{
+	protected void foo(){ // DOES NOT COMPILE -> child method less accessible than parent method
+		System.out.println("foo");
+	}
+}
+```
+* checked exceptions must be **as** or **less** broad
+```java
+class SpecificException extends Exception{}
 
+public class Parent {
+	public void foo() throws SpecificException {
+		System.out.println("foo");
+	}
+}
+public class Child extends Parent {
+	public String foo() throws Exception { // DOES NOT COMPILE -> child's checked exception is broader than parent's
+		return "foo";
+	}
+}
+```
+* exceptions in the child method must be the same or narrower
+* return types in the child method must be the same or narrower
+* access to the child method must be the same or broader
 ### Redeclaring Private Methods
-
+* private methods can't be overriden as the child class can't access them
+* they can be overwritten/redeclared
+* as it is a new method with no connection to the parent, none of the rules of overriding apply
 ### Hiding Static Methods
-
+* method hiding - a child static method with the same signature as a parent static method
+* follows the same rules as method overriding, plus:
+5. if the parent method is static, the child method must be static (method hiding). If the parent method is not static, the child method must not be static (method overriding)
+* in short, the child method should match the static-ness of the parent method - if both are static, the method is hidden not overriden
 ### Overriding vs Hiding Methods
 ```java
 public class Parent {
