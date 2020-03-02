@@ -2587,10 +2587,103 @@ parent.sayParentName(); // -> Parent is Parent
 parent.sayChildName(); // DOES NOT COMPILE -> can't find symbol
 ```
 ### Creating final methods
-
+* final methods cannot be overriden
+* the `final` keywords forbids methods from being hidden or overridden
 ### Inheriting variables
+* variables can't be overriden, only hidden
+* to hide a variable, define a variable in the child class with the same name as a variable in the parent class
+* as with hidden methods, if you reference the variable from within the parent class, the variable defined in the parent class is used
+* if referncing from within the child class, the variable defined in the child class is used
+```java
+public class Parent {
+	public String name = "Parent";
+		
+	public void sayParentName(){
+		System.out.println("Parent is " + name);
+	}
+}
 
+public class Child extends Parent {
+	public String name = "Child";
+	
+	public void sayChildName(){
+		System.out.println("Child is " + name);
+	}
+}
+
+public class HidingVariables {
+	public static void main(String... args) {
+		Child child = new Child();
+		child.sayChildName(); // -> Child is Child
+		child.sayParentName(); // -> Parent is Parent
+	}
+}
+```
+* this would be the same for static and non-static variables
+* you can explictly call the parent variable from a method defined in the child class by using `super.`:
+```java
+public class Parent {
+	public int age = 50;
+		
+	public void printAge() {
+		System.out.println(age);
+	}
+}
+
+public class Child extends Parent {
+	public int age = 20;
+	
+	public void printAgeAndParentAge() {
+		System.out.println("Age is " + age + "; Parent's age is " + super.age);
+	}
+}
+
+public class HidingVariables {
+	public static void main(String... args) {
+		Child child = new Child();
+		child.printAge(); // -> 50
+		child.printAgeAndParentAge(); // -> Age is 50; Parent's age is 20
+	}
+}
+```
+* the instance of Child contains two copies of the age variables - one defined in the parent and one in the child
+* the instances are kept separate, allowing the instance of child to access both independently
+* *the rules are the same for static and non-static variables*
 ### Abstract Classes
+* abstract classes allow you to create a blueprint parent class, for other class to extend, without hacing to implement any of the methods in the parent class
+* abstract classes cannot be instantiated
+* abstract methods have no implementation in the class they are declared in
+```java
+public abstract class Instrument {
+	protected String name = "Instrument"; // protected member is accessible by subclasses 
+	public String describe() { // public member is accessible by subclasses  and inherited as concrete method
+		return "is a " + name;
+	}
+	
+	public abstract void play(); // no implementation
+}
+```
+```java
+public class Piano extends Instrument { // DOES NOT COMPILE -> error: Piano is not abstract and does not override abstract method play() in Instrument
+	public static void main(String... args) {
+		Piano piano = new Piano();
+	}
+}
+```
+* any concrete class that extends an abstract class must implement/override all its abstract methods:
+```java
+public class Piano extends Instrument {
+	public void play() {
+		System.out.println("Piano is playing!");
+	}
+	public static void main(String... args) {
+		Piano piano = new Piano();
+		System.out.println(piano.describe()); // -> is a instrument
+		piano.play(); // -> Piano is playing!
+	}
+}
+```
+* abstract classes may contain non-abstract members - these are inherited as concrete classes by any subclasses (as they would be from any class)
 
 ### Creating a concrete class
 
