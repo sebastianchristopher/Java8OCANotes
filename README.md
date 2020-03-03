@@ -2339,7 +2339,7 @@ TODO
 
 [Understanding Polymorphism](#understanding-polymorphism)
 
-Object vs Reference
+[Object vs Reference](#object-vs-reference)
 
 Casting Objects
 
@@ -3164,3 +3164,89 @@ public class Rabbit implements Hop {
 ```
 > unlike default methods, two interfaces with identical static methods can both be implemented by a class without a compile error - they aren't inherited so there is no conflict
 ### Understanding Polymorphism
+* Polymorphism is the property of an object to take on many different forms
+* more precisely, a Java object may be accessed using:
+  - a reference with the same type as the object
+  - a reference that is a superclass of the object
+  - a reference that defines an interface that the object implements, either directly or through a superclass
+* a cast is not required if the the object is being reassigned to a supertype or interface of the object
+```java
+class Mammal {
+	public boolean isWarmBlooded() {
+		return true;
+	}
+}
+
+interface Swims {
+	void swim();
+}
+
+class Dog extends Mammal implements Swims {
+	public void swim() {
+		System.out.println("Swimming!");
+	}
+	public int age = 10;
+}
+public class UnderstandingPolymorphism {
+	public static void main(String... args) {
+		Dog dog = new Dog();
+		System.out.println(dog.age); // -> 10
+		
+		Swims swims = dog;
+		swims.swim(); // -> Swimming!
+		
+		Mammal mammal = dog;
+		System.out.println(mammal.isWarmBlooded()); // -> true
+	}
+}
+```
+* only one object, Dog, is created and referenced
+* the ability of a Dog instance to be passed as an instance of an interface it implements, and as an instance of one of its superclasses, is the nature of polymorphism
+* once the object has been assigned a new reference type, only the methods and variables available to that reference tyoe are callable on the object without an explicit class
+```java
+class Mammal {
+	public boolean isWarmBlooded() {
+		return true;
+	}
+}
+
+interface Swims {
+	void swim();
+}
+
+class Dog extends Mammal implements Swims {
+	public void swim() {
+		System.out.println("Swimming!");
+	}
+	public int age = 10;
+}
+public class MisunderstandingPolymorphism {
+	public static void main(String... args) {
+		Dog dog = new Dog();
+		
+		Swims swims = dog;
+		System.out.println(swims.age); // DOES NOT COMPILE -> error: cannot find symbol
+		System.out.println(swims.isWarmBlooded()); // DOES NOT COMPILE -> error: cannot find symbol
+		
+		Mammal mammal = dog;
+		System.out.println(mammal.age); // DOES NOT COMPILE -> error: cannot find symbol
+		mammal.swim(); // DOES NOT COMPILE -> error: cannot find symbol
+	}
+}
+```
+* dog has access to all its superclasses' methods, and any inherited concrete and default methods - swims and mammal only have access to their members
+### Object vs Reference
+* in Java, all objects are accessed by reference
+* conceptually, the object is the entity that exists in memory
+* regardless of the type of the reference you have for the object in memory, the object itself doesn't change
+* for example, all object inherit `java.lang.Object`, so are reassignable to it:
+  - `Dog dog = new Dog();`
+  - `Object dogAsObject = dog;`
+* even though the Dog/dog object has been assigned a reference with a different type, the object itself has not changed and still remains a Dog object in memory
+* what has changed is out ability to access methods within the Dog class with the dogAsObj reference
+* without an explicit cast back to a Dog reference, we don't have access to them
+#### Rules for this principle
+1. the type of the object determines which properties exist within the object in memory
+2. the type of reference to the object determines which methods and variables are available to the Java program
+* changing a reference of an object to a new reference may give **access** to **new properties** - but these properties **existed** before the change
+![Object vs Reference](https://github.com/sebastianchristopher/Java8OCANotes/blob/master/media/object-vs-reference.png "Object vs Reference")
