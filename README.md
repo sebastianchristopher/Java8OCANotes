@@ -2329,9 +2329,9 @@ TODO
 
 [Abstract Methods and Multiple Inheritance](#abstract-methods-and-multiple-inheritance)
 
-Interface Variables
+[Interface Variables](#interface-variables)
 
-Default Interface Methods
+[Default Interface Methods](#default-interface-methods)
 
 Default Methods and Multiple Inheritance
 
@@ -2924,6 +2924,12 @@ public class LeopardSeal implements HasTail, HasWhiskers {} // DOES NOT COMPILE
 * HarbourSeal is an abstract class so inherits the parent abstract methods without being required to implement them
 * Leop0-['ardSeal is a concrete class so it is required to implement all the abstract methods it inherits
 ### Classes, Interfaces and Keywords
+```java
+public interface CanRun {}
+public class Cheetah extends CanRun {} // DOES NOT COMPILE
+public class Hyena {}
+public interface HasFur extends Hyena {} // DOES NOT COMPILE
+```
 * the will have questions mixing class and interface terminology - so:
   - a class can implement an interface
   - a class cannot extend an interface
@@ -2938,3 +2944,119 @@ public class LeopardSeal implements HasTail, HasWhiskers {} // DOES NOT COMPILE
 * `class` `extends` `class`
 ### Abstract Methods and Multiple Inheritance
 * what happens if two interfaces contain the same abstract method and a concrete class implements them both?
+* if they have the same name but a different signature, they are overloaded methods and follow those rules
+* if they have the same name and signature, **and** the same return type, they are considered duplicates and the class only needs one implementation
+```java
+package abstractMethodsAndMultipleInheritance.sameNameAndReturn;
+interface Foo {
+	void foo();
+}
+
+interface Bar {
+	public abstract void foo();
+}
+
+public class SameNameAndReturn implements Foo, Bar {
+	public void foo(){
+		System.out.println("Foo!");
+	}
+	public static void main(String... args){
+		SameNameAndReturn test =  new SameNameAndReturn();
+		test.foo(); // -> Foo!
+	}
+}
+```
+* if they have the same name and signature but a different return type, that violates the laws of methods in classes - any class that tries to implement both will not compile
+* the same is true of an interface extending both or an abstract class implementing both:
+```java
+package abstractMethodsAndMultipleInheritance.sameNameDifferentReturn;
+interface Foo {
+	void foo();
+}
+
+interface Bar {
+	public abstract int foo();
+}
+
+public class SameNameDifferentReturn implements Foo, Bar { // DOES NOT COMPILE -> error: SameNameDifferentReturn is not abstract and does not override abstract method foo() in Bar
+	public void foo(){ // DOES NOT COMPILE -> error: foo() in SameNameDifferentReturn cannot implement foo() in Bar
+		System.out.println("Foo!");
+	}
+	public int foo(){ // DOES NOT COMPILE -> error: method foo() is already defined in class SameNameDifferent
+		return 0;
+	}
+	public static void main(String... args){
+		SameNameDifferentReturn test =  new SameNameDifferentReturn();
+		test.foo();
+	}
+}
+```
+* even without implementation, Java will recognize the conflict and throw a compiler error:
+```java
+package abstractMethodsAndMultipleInheritance.sameNameDifferentReturn;
+interface Foo {
+	void foo();
+}
+
+interface Bar {
+	public abstract int foo();
+}
+
+abstract class AbstractClassSameNameDifferentReturn implements Foo, Bar {} // DOES NOT COMPILE
+// -> error: types Bar and Foo are incompatible; both define foo(), but with unrelated return types
+
+interface InterfaceSameNameDifferentReturn extends Foo, Bar {} // DOES NOT COMPILE
+// -> error: types Bar and Foo are incompatible; both define foo(), but with unrelated return types
+
+```
+### Interface Variables
+### Interface Variables
+* are, like interface methods, assumed to be public
+* are, unlike interface methods, assumed to be static and final
+#### Rules
+1. interface variables are assumed to be public, static and final - therefore, marking an interface variable as `private`, `prtected` or `abstract` will cause a compile error
+2. the value of an interface variable must be set when it is declared, as it is marked final
+* so, interface variables are essentially constant variables defined at the interface level
+* as they are static, they are available even without an instance of the interface (or a concrete class implementing it):
+```java
+interface AnInterface {
+	int MAX_LENGTH = 99; // compiler adds public final static
+}
+
+public class InterfaceVariables implements AnInterface {
+	public static void main(String... args) {
+		System.out.println(MAX_LENGTH); // -> 99
+	}	
+}
+```
+* anything conflicting with the assumed keywords will trigger a compiler error:
+```java
+public interface IllegalExamples {
+	private int one = 1; // DOES NOT COMPILE -> public private conflict
+	protected int two = 2; // DOES NOT COMPILE -> public protected conflict
+	abstract int three = 3; // DOES NOT COMPILE -> final abstract conflict
+	int 4; // DOES NOT COMPILE -> not assigned a value
+}
+```
+### Default Interface Methods
+* Java 8 introduced the `default` method to interfaces
+* marked `default`, it has a method body unlike regular interface methods which are assumed abstract and have no implementation
+* classes have the option to override the default implementation, but are not required to do so
+* if they don't, the default implementation is used
+```java
+interface DefaultMethods {
+	default void HelloWorld() { // compiler adds public
+		System.out.println("Hello World!");
+	}
+}
+```
+* the method is assumed to be public, as all methods in an interface are assumed to be public
+> **the keyword `default` is not the same as default access**
+> default access is denoted by the lack of an access modifier in normal classes
+> because all interface methods are public, the access modifier (assumed or explicit) for a default method is always public
+####Rules
+1. a default method can only be declared in an interface, not in a class or abstract class
+2. a default method must be marked with the default keyword
+3. a default method must provide a method body
+4. unlike regular abstract methods, a default method is **not** assumed to be static, final or abstract, as it may be overridden by a class that implements the interface
+5. like all methods in an interface, a default method is assumed to be public and will not compile if marked as private or protected
