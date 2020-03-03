@@ -255,7 +255,7 @@ int x = null; // DOES NOT COMPILE
 * primitives do not have methods
 ```java
 char c = 'c';
-System.out.println(c.length()); //DOES NOT COMPILE
+System.out.println(c.length()); // DOES NOT COMPILE
 ```
 ### Declaring and initializing variables
 * declare:
@@ -303,7 +303,7 @@ String class = "class"; // DOES NOT COMPILE
 public int foo() {
     int x = 1;
 	int y;
-	int z = x + y; //DOES NOT COMPILE
+	int z = x + y; // DOES NOT COMPILE
 	return z;
 }
 ```
@@ -2323,11 +2323,11 @@ TODO
 
 [Defining an Interface](#defining-an-interface)
 
-Inheriting an Interface
+[Inheriting an Interface](#inheriting-an-interface)
 
-Classes, Interfaces and Keywords
+[Classes, Interfaces and Keywords](#classes-interfaces-and-keywords)
 
-Abstract Methods and Multiple Inheritance
+[Abstract Methods and Multiple Inheritance](#abstract-methods-and-multiple-inheritance)
 
 Interface Variables
 
@@ -2842,10 +2842,99 @@ public class MyClass implements MyInterface{}
 	public class MyClass implements MyInterface{}
 ```
 * it seems that if they have the `public` keyword, they have public access, if not, they have default access
+[https://docs.oracle.com/javase/tutorial/java/IandI/interfaceDef.html](https://docs.oracle.com/javase/tutorial/java/IandI/interfaceDef.html)
 #### Defining and implementing
 * Defining an interface:
-![Defining an interface](https://github.com/sebastianchristopher/Java8OCANotes/tree/master/statics/defining-an-interface.jpg "Defining an interface")
+![Defining an interface](https://github.com/sebastianchristopher/Java8OCANotes/blob/master/media/defining-an-interface.jpg "Defining an interface")
 * Implementing an interface:
-![Implementing an interface](https://github.com/sebastianchristopher/Java8OCANotes/tree/master/statics/implementing-an-interface.jpg "Implementing an interface")
-
+![Implementing an interface](https://github.com/sebastianchristopher/Java8OCANotes/blob/master/media/implementing-an-interface.jpg "Implementing an interface")
+* The public access specifier indicates that the interface can be used by any class in any package. If you do not specify that the interface is public, then your interface is accessible only to classes defined in the same package as the interface.
+* abstract is assumed and optional for the interface
+* public static for variables is assumed and therefore optional
+* public abstract for methods is assumed and therefore optional
+* classes may implement multiple interfaces, separated by comma:
+```java
+public class Rectangle implements isDrawable, isScalable{}
+```
+* in the above example, Recangle is requireed to implement all abstract methods defined in isDrawable and isScalable (if any)
 ### Defining an Interface
+1. interfaces cannot be instantiated diredctly
+2. an interface doesn't have to have methods if it doesn't want to
+3. can't be marked as `final`
+4. all top-level interfaces can only have `public` or default access (they are "assumed" to have "`public` or default" access) - therefore marking an interfaces as private or protected will trigger a compilation error, since this is incompatible with these assumptions
+5. the `abstract` keyword in an interface definition is assumed (and allowed although its use is discouraged) - therefore marking an interface as `final` will cause a compile error
+6. all non-default methods in an interface are assumed to have the modifiers `abstract` and `public` in their definition - therefore, marking a method as private, protected or final will trigger compiler errors as these are incompatible with the `abstract` and `public` keywords
+* assumed keywords - essentially the compiler inserts them if they aren't present
+* **n.b. the compiler won't add `public` to an interface definition - no access modifier keyword means it has default access**
+* hence the following two examples are the same:
+```java
+public interface Animal {
+	void sayName();
+	abstract void eat();
+	public void sleep();
+}
+```
+```java
+public abstract interface Animal {
+	public abstract void sayName();
+	public abstract void eat();
+	public abstract void sleep();
+}
+```
+* the following example violates assumed keyword rules:
+```java
+1. private final interface Animal { // DOES NOT COMPILE -> (public or default) conflicts with private, abstract conflicts with final
+2. 		private void sayName(); // DOES NOT COMPILE -> (public or default) conflicts with private
+3. 		protected void eat(); // DOES NOT COMPILE -> (public or default) conflicts with protected
+4. 		public final void sleep(); // DOES NOT COMPILE -> final conflicts with abstract
+5. }
+```
+### Inheriting an Interface
+1. an interface that extends another interface, as well as an abstract class that implements an interface, inherits all the abstract methods as its own abstract methods
+2. the first concrete class that implements an interface, or extends an abstract class that implements an interface, must provide an implementation for all of the inherited abstract methods
+* like an abstract class, an interface may be extended using the exends keyword - the new child interface inherits all the abstract methods
+* unlike an abstract class, an interface may extend multiple interfaces
+```java
+public interface HasTail {
+	public int getTailLength();
+}
+
+public interface HasWhiskers {
+	public int getNumberOfWhiskers();
+}
+
+public interface Seal extends HasTail, HasWhiskers {}
+```
+* any concrete class that implements the Seal interface must provide implementation for all of its abstract methods - in this case, getTailLength() inherited from HasTail interface, and getNumberOfWhiskers() inherited from HasWhiskers
+* an abstract class that implements an interface is treated in the same way - it inherits all the abstract methods but is not required to implement them
+* the first concrete class to extend that abstract class must provide implementation for all of its (inherited and defined) abstract methods
+```java
+public interface HasTail {
+	public int getTailLength();
+}
+
+public interface HasWhiskers {
+	public int getNumberOfWhiskers();
+}
+
+public abstract class HarbourSeal implements HasTail, HasWhiskers {}
+
+public class LeopardSeal implements HasTail, HasWhiskers {} // DOES NOT COMPILE
+```
+* HarbourSeal is an abstract class so inherits the parent abstract methods without being required to implement them
+* Leop0-['ardSeal is a concrete class so it is required to implement all the abstract methods it inherits
+### Classes, Interfaces and Keywords
+* the will have questions mixing class and interface terminology - so:
+  - a class can implement an interface
+  - a class cannot extend an interface
+  - a class cannot extend an interface
+  - a class can extend a class
+  - a class cannot implement a class
+  - an interface can extend an interface
+  - an interface cannot extend a class
+  - an interface cannot implement a class or interface
+* `interface` `extends` `interface`
+* `class` `implements` `interface`
+* `class` `extends` `class`
+### Abstract Methods and Multiple Inheritance
+* what happens if two interfaces contain the same abstract method and a concrete class implements them both?
