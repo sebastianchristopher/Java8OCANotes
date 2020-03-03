@@ -2333,11 +2333,11 @@ TODO
 
 [Default Interface Methods](#default-interface-methods)
 
-Default Methods and Multiple Inheritance
+[Default Methods and Multiple Inheritance](#default-methods-and-multiple-inheritance)
 
-Static Interface Methods
+[Static Interface Methods](#static-interface-methods)
 
-Understanding Polymorphism
+[Understanding Polymorphism](#understanding-polymorphism)
 
 Object vs Reference
 
@@ -3060,3 +3060,107 @@ interface DefaultMethods {
 3. a default method must provide a method body
 4. unlike regular abstract methods, a default method is **not** assumed to be static, final or abstract, as it may be overridden by a class that implements the interface
 5. like all methods in an interface, a default method is assumed to be public and will not compile if marked as private or protected
+* so, default methods will only ever be defined in interfaces - if one appears in a class, assume it won't compile
+* default methods must be marked default and must have a method body - if not, they won't compile
+```java
+public interface IllegalDefaultDeclarations {
+	default void foo(); // DOES NOT COMPILE -> default keyword and no method body
+	public void foobar(){}; // DOES NOT COMPILE -> method body provided for non-default method
+}
+```
+* unlike interface variables, which are assumed static, default methods cannot be marked as static and require an instance of the implementing class in order to be invoked
+* they also can't be marked as final or abstract, as they are allowed to be overridden in subclasses
+* when an interface extends/an abstract class implements an interface with a default method, it can:
+  - ignore it, in which case the default implementation will be used
+  - override it, using the standard rules
+  - redeclare the method as abstract, reequiring that classes implementing the new interface explicitly provide a method body
+```java
+interface DefaultMethod {
+	default void foo() {
+		System.out.println("Foo in DefaultMethod");
+	}
+}
+
+interface RedeclaresAbstract extends DefaultMethod {
+	void foo(); // redeclares foo() as abstract
+}
+
+interface OverridesBackToDefault extends RedeclaresAbstract{
+	default void foo() { // overrides abstract foo() as default method
+		System.out.println("Foo in OverridesBackToDefault");
+	}
+}
+
+class ImplementsDefaultMethod implements DefaultMethod {} // inherits default method so doesn't need to implement foo()
+
+class ImplementsRedeclaresAbstract implements RedeclaresAbstract {  // inherits abstract method so needs to implement foo()
+	public void foo() { // follows overriding rules so must be as accessible as parent method - which is assumed public
+		System.out.println("Foo in ImplementsDefaultMethod");
+	}
+}
+
+class ImplementsOverridesBackToDefault implements OverridesBackToDefault { // inherits default method so doesn't need to implement foo() but it is allowed to so we will
+	public void foo() { // follows overriding rules so must be as accessible as parent method - which is assumed public
+		System.out.println("Foo in ImplementsOverridesBackToDefault");
+	}
+}
+
+public class DefaultInheritance {
+	public static void main(String... args) {
+		ImplementsDefaultMethod obj1 =  new ImplementsDefaultMethod();
+		ImplementsRedeclaresAbstract obj2 = new ImplementsRedeclaresAbstract();
+		ImplementsOverridesBackToDefault obj3 = new ImplementsOverridesBackToDefault();
+		
+		obj1.foo(); // -> Foo in DefaultMethod
+		obj2.foo(); // -> Foo in ImplementsDefaultMethod
+		obj3.foo(); // -> Foo in ImplementsOverridesBackToDefault
+	}
+}
+```
+### Default Methods and Multiple Inheritance
+* if a class implements two interfaces that have default methods with the same name and signature, the compiler will error
+* however, overriding the method removes the ambiguity over which method to use (i.e., neither)
+```java
+interface Walk {
+	default int getSpeed(){
+		return 5;
+	}
+}
+
+interface Run {
+	default int getSpeed(){
+		return 10;
+	}
+}
+
+class DoesNotOverride implements Walk, Run {} // DOES NOT COMPILE -> error: class DoesNotOverride inherits unrelated defaults for getSpeed() from types Walk and Run
+	
+public class DefaultMethodsAndMultipleInheritance implements Walk, Run {
+	public int getSpeed() {
+		return 20;
+	}
+}
+```
+### Static Interface Methods
+* Java 8 also introduced static methods within interfaces
+* static methods are marked with the `static` keyword
+* static methods function mearly identically to static methods defined in classes, except that any classes that implement the interface do not inherit the static method
+#### Rules;
+1. is assumed to be `public` - cannot be marked `private` or `protected`
+2. to reference the static method, a reference to the name of the interface must be used - as it isn't inherited, it won't be present in the concrete class or its instances, so this is the only way to invoke it
+```java
+interface Hop {
+	public static int getHeight() {
+		return 10;
+	}
+}
+
+public class Rabbit implements Hop {
+	public void printHeight() {
+		System.out.println(getHeight()); // DOES NOT COMPILE
+		System.out.println(Hop.getHeight()); // -> 10
+	}
+}
+```
+> unlike default methods, two interfaces with identical static methods can both be implemented by a class without a compile error - they aren't inherited so there is no conflict
+### Understanding Polymorphism
