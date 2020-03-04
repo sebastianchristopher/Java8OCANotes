@@ -3248,5 +3248,85 @@ public class MisunderstandingPolymorphism {
 #### Rules for this principle
 1. the type of the object determines which properties exist within the object in memory
 2. the type of reference to the object determines which methods and variables are available to the Java program
-* changing a reference of an object to a new reference may give **access** to **new properties** - but these properties **existed** before the change
+> changing a reference of an object to a new reference may give **access** to **new properties** - but these properties **existed** before the change
 ![Object vs Reference](https://github.com/sebastianchristopher/Java8OCANotes/blob/master/media/object-vs-reference.png "Object vs Reference")
+
+* in order to get access to those properties again, we can. use casting:
+```java
+class Mammal {
+	public boolean isWarmBlooded() {
+		return true;
+	}
+}
+
+interface Swims {
+	void swim();
+}
+
+class Dog extends Mammal implements Swims {
+	public void swim() {
+		System.out.println("Swimming!");
+	}
+	public int age = 10;
+}
+public class CastingObjects {
+	public static void main(String... args) {
+		Dog dog = new Dog();
+		Mammal m = dog; // doesn't require cast
+		// Dog dog2 = m; // DOES NOT COMPILE -> error: incompatible types: Mammal cannot be converted to Dog
+		Dog dog3 = (Dog)m; // cast back to dog
+		System.out.println(dog3.age); // now has access to Dog methods
+		System.out.println(( (Dog)m).age) ; // or use a temporary cast to gain access to Dog methods
+		// must be in parentheses, or the compiler will look for m.age rather than ((Dog)m).age
+	}
+}
+```
+#### Basic rules:
+1. casting an object from a subclass to a superclass does not require an explicit cast
+2. casting an object from a superclass to a subclass requires an explicit cast
+3. the compiler will not allow casts to unrelated types
+4. even when the code compiles without an issue, an exception will be thrown at runtime if the object being cast is not actually an instance of that class
+* trying to cast unrelated types causes a compile error:
+```java
+class Cat {}
+class Canary {}
+public class CastingUnrelatedTypes {
+	public static void main(String... args) {
+		Cat cat = new Cat();
+		Canary canary = (Canary)cat; // DOES NOT COMPILE -> error: incompatible types: Cat cannot be converted to Canary
+	}
+}
+```
+* Cat and Canary are not related through any class hierarchy so this won't compile
+* if the types share a related hierarchy, it will compile, but if the object being referenced is not an instance of the type being cast to, it will throw a ClassCastException at runtime:
+```java
+class Cat {}
+class Tabby extends Cat {}
+
+public class CastingRuntimeErrors {
+	public static void main(String... args) {		
+		Cat cat = new Cat();
+		Tabby tabby = (Tabby)cat; // compiles, but throws RuntimeError
+		// java.lang.ClassCastException: class Cat cannot be cast to class Tabby		
+	}
+}
+```
+* if they share a hierarchy, it will compile
+* at runtime, it will check whether the cat object is an instance of Tabby - it is not, so throws a runtime error
+* we can rewrite the previous code to demonstrate that
+```java
+class Cat {}
+class Tabby extends Cat {}
+
+public class CastingRuntimeErrors {
+	public static void main(String... args) {	
+		Cat cat = new Cat();
+		if(cat instanceof Tabby) {
+			Tabby tabby = (Tabby)cat;
+		} else {
+			System.out.println("Cannot cast");
+		}
+	}
+}
+// output -> Cannot cast
+```
