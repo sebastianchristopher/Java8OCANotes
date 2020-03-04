@@ -3503,6 +3503,32 @@ class was marked as protected and overridden in the subclass, then the method on
 * an exception is an event that alters program flow
 *  all objects that represent these events come from the `Throwable` superclass
 * **n.b. not all have the word exception in them**
+#### Key Subclasses of Throwable
+![Key Subclasses of Throwable](https://github.com/sebastianchristopher/Java8OCANotes/blob/master/media/key-subclasses-of-throwable.png "Key Subclasses of Throwable")
+* `Error` means something irrecoverable went wrong
+* `RuntimeException` and its subclasses  are *runtime exceptions*  - unexpected but not fatal
+		- e.g. accessing an invalid array index
+* they are also know as **Unchecked Exceptions**
+* **Checked Exceptions** include `Excpetion` and all subclasses that do not extend `RuntimeException`
+* Java has a rule called *handle or declare*
+* for checked exceptions, Java requires that the code either handle or the, or declare them in the method signature
+```java
+public class Fail {
+	void fail() {
+		throw new Exception(); // DOES NOT COMPILE
+	}
+}
+```
+```java
+public class CatchFail  {
+	void fail() throws Exception {
+		throw new Exception(); // DOES NOT COMPILE
+	}
+}
+```
+* throws **delcares** it *might* throw a an exception
+* the `throws` keyword tells Java you want to have the option of throwing an exception
+  
 ### Throwing an Exception
 
 ### Types of Exception
