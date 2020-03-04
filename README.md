@@ -1,5 +1,7 @@
 # Java OCA
 
+My notes from Boyarsky and Selikoff's *Oracle Certtified Associate Java SE 8 Programmer I Study Guide*
+
 **Table of contents**
 
 ---
@@ -2341,13 +2343,13 @@ TODO
 
 [Object vs Reference](#object-vs-reference)
 
-Casting Objects
+[Casting Objects](#casting-objects)
 
-Virtual Methods
+[Virtual Methods](#virtual-methods)
 
-Polymorphic Parameters
+[Polymorphic Parameters](#polymorphic-parameters)
 
-More on hidden methods and variables
+[More on hidden methods and variables](#more-on-hidden-methods-and-variables)
 
 ---
 
@@ -2369,7 +2371,7 @@ public class Child extends Parent{} // DOES NOT COMPILE -> cannot find symbol Pa
 
 ```
 * a child class inherits the parent class's private methods **but is unable to access them**
-* all classes ultimately extend java.lang.Object
+* all classes ultimately extend java.lang.Object **n.b. but interfaces don't - interfaces can only extend other interfaces**
 ### Defining Constructors
 * the first statement of every constructor is either:
   - a call to another constructor in the class, using `this()`
@@ -2545,6 +2547,28 @@ public class Child extends Parent {
 * private methods can't be overriden as the child class can't access them
 * they can be overwritten/redeclared
 * as it is a new method with no connection to the parent, none of the rules of overriding apply
+* their implementation at runtime depends on the reference - if the reference type is to the parent, as the method is hidden and not overridden, the parent method will be used:
+```java
+public class RedeclaringPrivateMethods {
+	private void foo() {
+		System.out.println("RedeclaringPrivateMethods");
+	}
+	
+	public static void main(String... args) {
+		RedeclaringPrivateMethods parentReference = new AChildClass();
+		parentReference.foo(); // -> RedeclaringPrivateMethods
+		
+		AChildClass childReference = new AChildClass();
+		childReference.foo(); // -> AChildClass
+	}
+}
+
+class AChildClass extends RedeclaringPrivateMethods {
+	public void foo() {
+		System.out.println("AChildClass");
+	}
+}
+```
 ### Hiding Static Methods
 * method hiding - a child static method with the same signature as a parent static method
 * follows the same rules as method overriding, plus:
@@ -2581,6 +2605,7 @@ public class HidingMethods {
 }
 ```
 * unlike overridden methods, hidden methods only replace parent methods in calls defined in the child class
+* **hidden is basically the opposite of overridden - any child method with a parent method that isn't overridden is therefore hidden**
 * compare the above example to the below, where the static methods have been replaced with non-static methods (i.e. overridden not hidden methods):
 ```java
 public class Parent {
@@ -2922,7 +2947,7 @@ public abstract class HarbourSeal implements HasTail, HasWhiskers {}
 public class LeopardSeal implements HasTail, HasWhiskers {} // DOES NOT COMPILE
 ```
 * HarbourSeal is an abstract class so inherits the parent abstract methods without being required to implement them
-* Leop0-['ardSeal is a concrete class so it is required to implement all the abstract methods it inherits
+* LeopardSeal is a concrete class so it is required to implement all the abstract methods it inherits
 ### Classes, Interfaces and Keywords
 ```java
 public interface CanRun {}
@@ -3250,7 +3275,7 @@ public class MisunderstandingPolymorphism {
 2. the type of reference to the object determines which methods and variables are available to the Java program
 > changing a reference of an object to a new reference may give **access** to **new properties** - but these properties **existed** before the change
 ![Object vs Reference](https://github.com/sebastianchristopher/Java8OCANotes/blob/master/media/object-vs-reference.png "Object vs Reference")
-
+### Casting Objects
 * in order to get access to those properties again, we can. use casting:
 ```java
 class Mammal {
@@ -3281,6 +3306,7 @@ public class CastingObjects {
 	}
 }
 ```
+
 #### Basic rules:
 1. casting an object from a subclass to a superclass does not require an explicit cast
 2. casting an object from a superclass to a subclass requires an explicit cast
@@ -3330,3 +3356,153 @@ public class CastingRuntimeErrors {
 }
 // output -> Cannot cast
 ```
+### Virtual Methods
+* the most important feature of polymorphism is virtual methods
+* a virtual method is a method in which the specific implementation is not determined until runtime
+* all non-final, non-static and non-private methods are considered virtual method
+* if you call a method that ovverrides a method on an object, you get the overridden method, even if the call to the method is on a parent method or within the parent class
+```java
+class Mammal {
+	public void info() {
+		System.out.println("This mammal is " + getName());
+	}
+	
+	public String getName() {
+		return "undefined";
+	}
+}
+
+class Cat extends Mammal {
+	public String getName() {
+		return "a cat";
+	}
+}
+
+public class VirtualMethods {
+	public static void main(String... args) {
+		Mammal mammal = new Cat();
+		mammal.info();
+	}
+}
+// output -> This mammal is a cat
+```
+* the method `getName()` is overridden in the Cat class
+* more importantly, the value of the `getName()` method in the `info()` method is replaced at runtime with the value of the implementation in the subclass Cat
+* even though the parent class Mammal defines its own `getName()` method and knows nothing about the Cat class at compilation, at runtime the instance uses the overridden version of the method, as defined on the instance of the object
+### Polymorphic Parameters
+* allows you to pass various instances of a subclass or interface to a method
+* for example, you could define a method that takes an instance of an interface as a parameter
+* any class that implements the interface can then be passed to the method
+* you don't need to cast explicitly as it's casting a subclass to a superclass
+```java
+interface Mammal {
+	default void info() {
+		System.out.println("This is " + getName());
+	}
+	
+	public String getName();
+}
+
+class Cat implements Mammal {
+	public String getName() {
+		return "a cat";
+	}
+}
+
+class Dog implements Mammal {
+	public String getName() {
+		return "a dog";
+	}
+}
+
+class Mouse implements Mammal {
+	public String getName() {
+		return "a mouse";
+	}
+}
+
+public class PolymorphicParameters {
+	public static void mammalInfo(Mammal m) {
+		m.info();
+	}
+	
+	public static void main(String... args) {
+		mammalInfo(new Cat()); // -> This is a cat
+		mammalInfo(new Dog()); // -> This is a dog
+		mammalInfo(new Mouse()); // ->This is a mouse	
+	}
+}
+```
+* we can pass any class that implements Mammal to the `mammalInfo()` method
+* it will call the overridden method, depending on the object passed in
+* otherwise to achieve this, we would have to define a method for each type:
+```java
+public void catInfo(Cat c) {
+	c.info();
+}
+
+public void dogInfo(Dog d) {
+	d.info();
+}
+
+public void mouseInfo(Mouse m) {
+	m.info();
+}
+```
+* you obviously can't pass an unrelated type:
+```java
+class Rectangle {}
+mammalInfo(new Rectangle()); // DOES NOT COMPILE - > Rectangle cannot be converted to a Mammal (incompatible types)
+```
+### More on hidden methods and variables
+* Chapter 5 Review Question 20:
+  - What is the result of the following code?
+```java
+1: 	public abstract class Bird {
+2: 		private void fly() { System.out.println("Bird is flying"); }
+3: 		public static void main(String[] args) {
+4: 			Bird bird = new Pelican();
+5: 			bird.fly();
+6: 		}
+7: 	}
+8: 	class Pelican extends Bird {
+9: 		protected void fly() { System.out.println("Pelican is flying"); }
+10: 	}
+```
+A. Bird is flying
+B. Pelican is flying
+C. The code will not compile because of line 4.
+D. The code will not compile because of line 5.
+E. The code will not compile because of line 9.
+
+* the answer is A
+> The trick here is that the method fly() is marked as private in the parent class Bird,
+which means it may only be hidden, not overridden. With hidden methods, the specific
+method used depends on where it is referenced. Since it is referenced within the Bird
+class, the method declared on line 2 was used, and option A is correct. Alternatively,
+if the method was referenced within the Pelican class, or if the method in the parent
+class was marked as protected and overridden in the subclass, then the method on line
+9 would have been used.
+* **n.b. it makes no difference that Bird is an abstract class, the result would be the same even if it weren't**
+* remember, [private methods can't be overridden](#https://github.com/sebastianchristopher/Java8OCANotes#redeclaring-private-methods)
+* private methods that have a child method with the same name and signature are hidden methods
+
+## Chapter 6 - Exceptions
+**In this chapter:**
+
+---
+[What are exceptions](#what-are-exceptions)
+
+[Throwing an Exception](#throwing-an-exception)
+
+[Types of Exception](#types-of-exception)
+
+---
+
+### What are exceptions
+* an exception is an event that alters program flow
+*  all objects that represent these events come from the `Throwable` superclass
+* **n.b. not all have the word exception in them**
+### Throwing an Exception
+
+### Types of Exception
