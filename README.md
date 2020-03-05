@@ -15,6 +15,8 @@ My notes from Boyarsky and Selikoff's *Oracle Certtified Associate Java SE 8 Pro
 
 [Chapter 5 - Class Design](#chapter-5---class-design)
 
+[Chapter 6 - Exceptions](#chapter-6---exceptions)
+
 ---
 
 ## Chapter 1 - Java Building Blocks
