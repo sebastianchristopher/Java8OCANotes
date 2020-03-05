@@ -3497,6 +3497,30 @@ class was marked as protected and overridden in the subclass, then the method on
 
 [Types of Exception](#types-of-exception)
 
+[Try statement](#try-statement)
+
+[Finally block](#finally-block)
+
+[Catching various types of exception](#catching-various-types-of-exception)
+
+[Order of catch blocks](#order-of-catch-blocks)
+
+[Throwing a second exception](#throwing-a-second-exception)
+
+[Common Exception Types](#common-exception-types)
+
+[Runtime Exceptions](#runtime-exceptions)
+
+[Checked Exceptions](#checked-exceptions)
+
+[Errors](#errors)
+
+[Calling methods that throw exceptions](#calling-methods-that-throw-exceptions)
+
+[Overriding methods with an exception in the method declaration](#overriding-methods-with-an-exception-in-the-method-declaration)
+
+[Printing an exception](#printing-an-exception)
+
 ---
 
 ### What are exceptions
@@ -3530,7 +3554,331 @@ public class CatchFail  {
 * the `throws` keyword tells Java you want to have the option of throwing an exception
 * `throw` tells Java to throw an exception
 > An example of an unchecked (or runtime) exception is NullPointerException. This can happen in any method - but you don't see `throws NullPointerException` everywhere because it is unchecked
-
 ### Throwing an Exception
-
+* there may be made up exceptions on the exam but threat them as real exceptions - `class MyMadeUpException extends Exception {}`
+* for the exam, there are two types of code that throw exceptions:
+  - code that is wrong e.g.
+  ```java
+  String[] foo = new String[0];
+  System.out.println(foo[0]); // throws ArrayIndexOutOfBoundsException
+  ```
+  - code that explicitly throws an exception e.g.
+  ```java
+  throw new Exception("No money in the bank");
+  throw new Exception();
+  throw new RuntimeException("You have exceded your overdraft");
+  ```
+* exception classes usually take an optional string constructor argument - both types above
 ### Types of Exception
+| Type                        | How to recognize                                                  | OK for program to catch? | Required to declare or handle? |
+| -------------------- | --------------------------------------------------- | -------------------------- | --------------------------------- |
+| Runtime exception  | subclass of RuntimeException                               | Yes                                   | No                                              |
+| Checked exception | subclass of Exception but not RuntimeException  | Yes                                   | Yes                                             |
+| Error                       | subclass of Error                                                   | No                                    | No                                               |
+
+### Try statement
+```java
+try {
+	// this block is known as the try block, or protected code
+} catch(RuntimeException e) {
+	// exception handler block
+}
+```
+* if the code in the try clause throws an exception, it stop running and excecution passes to the catch statement
+* curly braces are **required**
+* try statements and methods always require curly braces
+* if statements and loops allow you to omit curly braces if there is only one statement inside the code block
+* a `try` block needs to have `catch` or `finally`
+```java
+try { // DOES NOT COMPILE
+	// do something
+}
+```
+### Finally block
+```java
+try {
+	// something
+} catch(Exception e) {
+	// handle exception
+} finally {
+	// this always occurs, whether or not an exception is thrown
+}
+```
+* the order is: `try` -> `catch` -> `finally` - any other order won't compile
+* `catch` is optional if `finally` is present:
+```java
+try {
+	// try something
+} finally {
+	// this always runs
+}
+```
+### Catching various types of exception
+```java
+class ACheckedException extends Exception {}
+class AnUncheckedException extends RuntimeException {}
+
+public class CatchingVariousTypesOfException {
+	static void foo(int i) throws ACheckedException {
+		if(i == 1) {
+			throw new ACheckedException();
+		} else if(i == 2) {
+			throw new AnUncheckedException();
+		}
+	}
+	
+	static void test(int i) {
+		try {
+			foo(i);
+		} catch(ACheckedException e) {
+			System.out.println("Checked");
+		} catch(AnUncheckedException e) {
+			System.out.println("Unchecked");
+		} finally {
+			System.out.println("I run regardless");
+		}
+	}
+	
+	public static void main(String... args) {
+		test(1); // -> Checked \n I run regardless
+		test(2); // -> Unchecked \n I run regardless
+		test(3); // -> I run regardless
+	}
+}
+```
+* in the method `test()`, if `foo()` doesn't throw an exception, runs as normal then goes to finally
+* if it throws `AnUncheckedException`, it goes to the `catch(AnUncheckedException e) ` block
+* if it throws a different unchecked exception, e.g. `RuntimeException`, it won't be caught as it's not in a catch block
+* if it throws `ACheckedException`, it will be caught
+* if it throws a different checked exception e.g. `Exception`, there will be a compiler error - checked exceptions must be declared or handled, and `main()` and `test()` don't handle Exception
+* all callers, including main, must either declare or handle all checked exceptions
+* the callers here are `main()` and `test()`, so if `Exception` was thrown in the try block, both those callers would have to handle or declare that
+### Order of catch blocks
+* the order must be such that all catch blocks can be reached
+* Java executes each in order then moves to the next until it matches the type(c.f. switch statements)
+```java
+try {
+	foo();
+} catch(Exception e) {
+	// do something
+} catch(RuntimeException e) { // DOES NOT COMPILE -> RuntimeException has already been caught
+	// do something
+}
+```
+* superclasses can't be caught before subclasses
+* order should go upwards, from the narrowest subclass up to the superclass
+### Throwing a second exception
+```java
+try {
+	throw new RuntimeException();
+} catch(RuntimeException e){
+	throw new RuntimeException();
+}
+```
+* output is: Exception in thread "main" java.lang.RuntimeException
+* however, if we include a finally clause:
+```java
+try {
+	throw new RuntimeException();
+} catch(RuntimeException e){
+	throw new RuntimeException();
+} finally {
+	throw new Exception();
+}
+```
+* output is: Exception in thread "main" java.lang.Exception
+> because the finally lbock **always** has to run, the catch clause will execute up until the exception, then pass to finally - it can't throw two exceptions so has to go to finally
+* another example:
+```java
+public class ThrowingASecondException {
+	public static void main(String... args){
+		String result = "";
+		String x = null;
+		try {
+			try {
+				result += "before ";
+				System.out.println(x.length());
+				result += "after ";
+			} catch(NullPointerException e){
+				result += "catch ";
+				throw new RuntimeException();
+			} finally {
+				result += "finally ";
+				throw new Exception();
+			}
+		} catch(Exception e) {
+			result += "done ";
+		}
+		System.out.println(result); // -> before catch finally done
+	}
+}
+```
+### Common Exception Types
+* 3 types for the exam:
+  1. runtime exceptions (also known as unchecked exceptions)
+  2. checked exceptions
+  3. errors
+### Runtime Exceptions
+* `ArithmeticException` - thrown by the JVM when code attempts to divide by zero e.g. `int x = ``/0;`
+* `ArrayOutOfBoundsException` - thrown by the JVM e.g.
+  ```java
+  String[] arr = new String[0];
+  System.out.println(arr[-1]); // -> throws ArrayOutOfBoundsException -> array indices can't be negative
+  System.out.println(arr[3]); // -> throws ArrayOutOfBoundsException -> arraysize is 0 - so 3 is out of bounds
+  ```
+* `ClassCastException` - thrown by the JVM when an attempt is made to cast an object to a subclass of which it is not an instance e.g.
+  ```java
+  String foo = "foo";
+  Integer num = (Integer)foo; // DOES NOT COMPILE
+  ```
+  - Java knows Integer isn't a subclass of String so compile fails
+  ```java
+  Object foo = new String("foo");
+  Integer num = (Integer)foo; // throws ClassCastException
+  ```
+  - Integer is a subclass of Object, so it compiles
+  - but at runtime, it checks if the object in memory (foo, a String) is an instance of Integer
+  - `foo instanceof Integer` -> `false`
+  - it isn't, so throws ClassCastException
+* `IllegalArgumentException` - thrown by the programmer to indicate that a method has been passed an illegal or inappropriate argument
+  ```java
+  class Dog {
+	int numLegs;
+	public void setNumLegs(int legs) throws IllegalArgumentException{ // n.b. doesn't need to be declared as it's an unchecked exception
+		if(legs < 0 || legs > 4){
+			throw new IllegalArgumentException();
+		} else {
+			numLegs = legs;
+		}
+	}
+}
+  ```
+* `NullPointerException` - thrown by the JVM when there is a null reference where an object is required - instance variables and methods must be called on a non-null reference
+  ```java
+  class Foo {
+	String name;
+	void bla() {
+		System.out.println(name.length()); // -> throws NullPointerException -> null.length();
+	}
+} // watch out for this with objects whose initializing default value is null
+  ```
+* `NumberFormatException` - thrown by the programmer when an attempt is made to convert a string to a numeric type but the string doesn't have an appropriate format
+  - subclass of `IllegalArgumentException`, used for example by Integer:
+  ```java
+  Integer.parseInt("abc"); // -> NumberFormatException
+  ```
+### Checked Exceptions
+* checked exceptions:
+  - are subclasses of `Exception` but not of `RuntimeException`
+  - must be handled or declared
+  - can be thrown by the JVM or the programmer
+* `FileNotFoundException` - subclass of `IOException`
+* `IOException` - thrown programmatically when there's a problem reading/writing a file
+### Errors
+* errors:
+  - are thrown by the JVM
+  - are not handled or declared
+  - extend the `Error` class
+* `ExceptionInitializerError` - thrown when a static initializer throws an exception and doesn't handle it
+  ```java
+  public class ExceptionInitializerErrorExample {
+	static int age;
+	static {
+		int[] ages = {1, 17, 28, 32};
+		age = ages[ages.length];
+	}
+	public static void main(String[] args){
+		System.out.println(age);
+	}
+}
+/*
+* Exception in thread "main" java.lang.ExceptionInInitializerError
+* Caused by: java.lang.ArrayIndexOutOfBoundsException: 4
+*         at ExceptionInitializerErrorExample.<clinit>(ExceptionInitializerErrorExample.java:5)
+*/
+  ```
+* `NoClassDefFoundError` - occurs when Java can't find a class at runtime
+### Calling methods that throw exceptions
+```java
+static void foo() throws Exception {}
+public static void main(String... args){
+	foo(); // DOES NOT COMPILE
+}
+```
+* if a method throws (or even just declares it throws) a checked exception, the caller must either handle or declare it:
+```java
+static void foo() throws Exception {}
+public static void main(String... args) throws Exception{
+	foo();
+}
+```
+* or:
+```java
+static void foo() throws Exception {}
+public static void main(String... args){
+	try {
+		foo();
+	} catch(Exception e) {
+		System.out.println("no can foo");
+	}
+}
+```
+### Overriding methods with an exception in the method declaration
+* an overriding method in the subclass must not introduce new checked exceptions
+```java
+class Parent {
+	public void foo() {}
+}
+
+class Child extends Parent {
+	public void foo() throws Exception {} // DOES NOT COMPILE
+}
+```
+* an overriding method in a subclass is allowed to throw fewer exceptions than the parent method as the parent method takes care of them:
+```java
+class Parent {
+	public void foo() throws Exception {}
+}
+
+class Child extends Parent {
+	public void foo() {}
+}
+```
+* similarly, they are also allowed to throw subtypes as the superclass/interface has also taken care of the broader type:
+```java
+class SubException extends Exception {}
+class Parent {
+	public void foo() throws Exception {}
+}
+
+class Child extends Parent throws SubException{
+	public void foo() {}
+}
+```
+* they can also throw whatever unchecked/runtime exceptions they want, as these aren't required to be handled or declared
+### Printing an exception
+```java
+public class PrintingAnException {
+	static void foo() {
+		throw new RuntimeException("Whoops");
+	}
+	
+	public static void main(String... args) {
+		try {
+			foo();
+		} catch(RuntimeException e) {
+			System.out.println(e);
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		}
+	}
+}
+/*
+* output:
+* java.lang.RuntimeException: Whoops
+* Whoops
+* java.lang.RuntimeException: Whoops
+*         at PrintingAnException.foo(PrintingAnException.java:3)
+*         at PrintingAnException.main(PrintingAnException.java:8)
+*/
+```
