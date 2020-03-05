@@ -3528,7 +3528,9 @@ public class CatchFail  {
 ```
 * throws **delcares** it *might* throw a an exception
 * the `throws` keyword tells Java you want to have the option of throwing an exception
-  
+* `throw` tells Java to throw an exception
+> An example of an unchecked (or runtime) exception is NullPointerException. This can happen in any method - but you don't see `throws NullPointerException` everywhere because it is unchecked
+
 ### Throwing an Exception
 
 ### Types of Exception
