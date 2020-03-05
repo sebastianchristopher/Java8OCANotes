@@ -3792,12 +3792,12 @@ public class ThrowingASecondException {
 	public static void main(String[] args){
 		System.out.println(age);
 	}
-}
-/*
-* Exception in thread "main" java.lang.ExceptionInInitializerError
-* Caused by: java.lang.ArrayIndexOutOfBoundsException: 4
-*         at ExceptionInitializerErrorExample.<clinit>(ExceptionInitializerErrorExample.java:5)
-*/
+  }
+  /*
+  * Exception in thread "main" java.lang.ExceptionInInitializerError
+  * Caused by: java.lang.ArrayIndexOutOfBoundsException: 4
+  *         at ExceptionInitializerErrorExample.<clinit>(ExceptionInitializerErrorExample.java:5)
+  */
   ```
 * `NoClassDefFoundError` - occurs when Java can't find a class at runtime
 ### Calling methods that throw exceptions
