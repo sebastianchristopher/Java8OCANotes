@@ -2298,7 +2298,19 @@ public class RemoveIfTest{
 }
 ```
 ### More on lambdas and predicates
-TODO
+* `java.util.function.Predicate`
+```java
+interface Predicate<T> {
+	boolean test(T t);
+}
+```
+* Predicate is an interface that has only one abstract method (among other non-abstract methods)
+* its signature is `boolean test(T t)`
+* where T is the type it receives
+* as Predicate only has one <T> argument, it can only accept lambdas with one parameter
+  - `Predicate<Integer> p = i -> i > 5;`
+  - not `Predicate<Integer> p = (i ,j) -> i < 5 || j < 10;` // DOES NOT COMPILE -> `PredicateTester.java:5: error: incompatible types: incompatible parameter types in lambda expression`
+* Unlike regular interfaces, Functional interfaces can be instantiated by a lambda expression, as shown above, as long as the lambda arguments match the interface arguments
 ## Chapter 5 - Class Design
 **In this chapter:**
 

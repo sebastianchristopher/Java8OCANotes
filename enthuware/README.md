@@ -254,16 +254,11 @@ public class A{
 ### Which of the following are valid operators in Java?
 Answered Incorrectly
 You had to select 4 option(s)
-`!`
-operates only on booleans
-`~`
-bitwise negation. Operates only on integral types. **bitwise negation is not on the exam**
-`&`
-bitwise AND
-`%=`
-similar to += or /= **I got this right but was unsure about it - don't think it's on the exam but have added it to main README**
-`$`
-It is not an operator!
+* `!`  **TRUE** - > operates only on booleans
+* `~`  **TRUE** -> bitwise negation. Operates only on integral types. **bitwise negation is not on the exam**
+* `&`  **TRUE** -> bitwise AND
+* `%=`  **TRUE** -> similar to += or /= **I got this right but was unsure about it - don't think it's on the exam but have added it to main README**
+* `$`  **FALSE** -> It is not an operator!
 ### Which of the following statements are true?
 Answered Incorrectly
 You had to select 2 option(s)
