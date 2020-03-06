@@ -424,7 +424,7 @@ You had to select 1 option(s)
         case -1 :        System.out.println("-1"); break; // This will not compile : "possible loss of precision"
         default:        System.out.println("default");    
     }
-	```
+  ```
   - e) switch expression of type boolean and case label value of type boolean.
 
 * You should remember the following rules for a switch statement:
