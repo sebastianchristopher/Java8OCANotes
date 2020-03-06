@@ -163,6 +163,7 @@ public class ClassB{
 ```
 > java packageb.ClassB
 ```
+* [More on compiling and running programs with packages and classpath](#https://javahungry.blogspot.com/2018/11/solved-error-could-not-find-or-load-main-class.html)
 ### Code formatting on the exam
 * if the code starts after line 1, assume all imports are correct
 * if it starts on line 1, or there are no line numbers, make sure there are no imports missing
@@ -423,11 +424,12 @@ public class Foobar { // class declaration; required
 | additive              | `+`, `-`                           |
 | relational            | `<`, `>`, `<=`, `>=`, `instanceof` |
 | equality              | `==`, `!=`                         |
-| logical               | `&`, `|`, `^`                      |
-| short-circuit logical | `&&`, `||`                         |
+| bitwise               | `&`, `\|`, `^`                      |
+| short-circuit logical | `&&`, `\|\|`                         |
 | ternary               | `x == true ? y : z`                |
 | assignment            | `=`, `+=`, `-=`                    |
 
+*if the above table isn't rendering properly, [see here](#https://github.com/jbt/markdown-editor/issues/20)*
 
 ### Pre unary and post unary increment and decrement
 * pre unary increments/decrements and returns a new value
@@ -499,6 +501,7 @@ long z = x + y; // x promoted to long; z is also a long
 ### Primitive conversion
 * Java automatically promotes from smaller to larger data types, but not the other way round
 ```java
+float f = 1; // promotes integer to float
 int x = 1.0; // DOES NOT COMPILE -> double can't assign to int
 short y = 1921222; // DOES NOT COMPILE -> too large to fit into short type
 int z = 9f; // DOES NOT COMPILE -> float can't assign to int
@@ -582,6 +585,10 @@ if(true){
 	System.out.print("foobar"); // no longer in if-else
 ```
 * output is "truefoobar"
+* it is possible to create a single empty statement using the semi-colon, hence the following is legal:
+```java
+ if (false) ; else ;
+ ```
 ---
 * if statement must evaluate to boolean
 ```java
@@ -874,7 +881,7 @@ int three = 3;
 String four = "4";
 System.out.println(1 + 2 + three  + four); // -> 64
 ```
-* Strings are *immutable*
+* Strings are *immutable*, and they are **final** -> the String class can't be extended
 * **String pool**
   - string literals are stored in the string pool
   - they are not garbage collected
@@ -924,6 +931,7 @@ sb.append("World"); // HelloWorld
   - `new StringBuilder(String str)` -> *creates with that value*
   - `new StringBuilder(int size)` -> *reserves slots for characters, but not fixed size (as is mutable)*
 ### StringBuilder Methods
+* **StringBuilder is final, and therefore can't be extended**
 * charAt, indexOf, length methods all identical to String methods
 * substring() - also identical to String method, and **returns new String object**, not mutated StringBuilder
 ```java
@@ -945,6 +953,7 @@ System.out.print(sb); // -> 1falsec
 * `reverse()` -> `new StringBuilder("Hello").reverse();` -> `olleH`
 #### StringBuffer
 * StringBuffer is an older, thread-safe (therefore, less efficient) version of StringBuilder which has the same methods
+* **StringBuffer is final, and therefore can't be extended**
 ### Understanding Equality
 ```java
 StringBuilder sb1 = new StringBuilder();
@@ -1167,6 +1176,7 @@ Collections.sort(list);
 System.out.println(list.toString()); // -> [1, 5, 10]
 ```
 ### Wrapper Classes and ArrayList
+* **Wrapper classes are final, and therefore can't be extended**
 * `parseInt(String str)` -> `int` *String to primitive*
 * `valueOf(String s)` -> `Integer` *String to wrapper class*
 ```java
@@ -2000,6 +2010,7 @@ public class Foo {
 ```
 ### Default constructor
 * if you provide **no** constructor, Java creates a default no args constructor
+* **the access type of a default constructor is same as the access type of the class.** Thus, if a class is public, the default constructor will be public.
 * having a private constructor prevents Java creating a default constructor, and other classes from instantiating the class
 ```java
 class PrivateConstructor {
@@ -3571,6 +3582,36 @@ public class CatchFail  {
   throw new RuntimeException("You have exceded your overdraft");
   ```
 * exception classes usually take an optional string constructor argument - both types above
+* **you can throw Throwable and all of its subclasses:**
+```java
+public class ThrowableClasses {
+	public static void main(String[] args) {
+		try {
+			throw new Throwable();
+		} catch(Throwable e) {
+			System.out.println(e);
+		}
+		
+		try {
+			throw new Error();
+		} catch(Error e) {
+			System.out.println(e);
+		}
+		
+		try {
+			throw new Exception();
+		} catch(Exception e) {
+			System.out.println(e);
+		}
+		
+		try {
+			throw new RuntimeException();
+		} catch(RuntimeException e) {
+			System.out.println(e);
+		}
+	}
+}
+```
 ### Types of Exception
 | Type                        | How to recognize                                                  | OK for program to catch? | Required to declare or handle? |
 | -------------------- | --------------------------------------------------- | -------------------------- | --------------------------------- |
