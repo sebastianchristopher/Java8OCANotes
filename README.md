@@ -1,6 +1,7 @@
 # Java OCA
 
 My notes from Boyarsky and Selikoff's *Oracle Certtified Associate Java SE 8 Programmer I Study Guide*
+*[Notes on Enthuware exams](#https://github.com/sebastianchristopher/Java8OCANotes/blob/master/enthuware/README.md) *
 
 **Table of contents**
 
@@ -89,6 +90,7 @@ My notes from Boyarsky and Selikoff's *Oracle Certtified Associate Java SE 8 Pro
 ### Package declarations and imports
 * classes in the same package do not need to be imported to be used
 * (java.lang.* is already imported)
+* put another way, only two packages are automatically imported - `java.lang` and the current package
 ```java
 import java.util.*; // imports all classes in java.util
 ```
@@ -429,7 +431,7 @@ public class Foobar { // class declaration; required
 | ternary               | `x == true ? y : z`                |
 | assignment            | `=`, `+=`, `-=`                    |
 
-*if the above table isn't rendering properly, [see here](#https://github.com/jbt/markdown-editor/issues/20)*
+*if the above table isn't rendering properly, [see here](#https://github.com/jbt/markdown-editor/issues/20) *
 
 ### Pre unary and post unary increment and decrement
 * pre unary increments/decrements and returns a new value

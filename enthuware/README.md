@@ -12,10 +12,9 @@ You had to select 1 option(s)
   - c) It is an abstract class that has only one abstract method (among other non-abstract methods) with the signature - `public abstract void test(T t);` **FALSE**
   - d) It is an abstract class that has only one abstract method (among other non-abstract methods) with the signature - `public abstract boolean test(T t);` **FALSE**
 
-```
-java.util.function.Predicate is one of the several functional interfaces that have been added to Java 8. This interface has exactly one abstract method named test, which takes any object as input and returns a boolean. This comes in very handy when you have a collection of objects and you want to go through each object of that collection and see if that object satisfies some criteria. For example, you may have a collection of Employee objects and, in one place of your application, you want to remove all such employees whose age is below 50, while in other place, you want to remove all such employees whose salary is above 100,000. In both the cases, you want to go through your collection of employees, and check each Employee object to determine if it fits the criteria. This can be implemented by writing an interface named CheckEmployee and having a method check(Employee ) which would return true if the passed object satisfies the criteria. The following code fragments illustrate how it can be done -
 
-
+> java.util.function.Predicate is one of the several functional interfaces that have been added to Java 8. This interface has exactly one abstract method named test, which takes any object as input and returns a boolean. This comes in very handy when you have a collection of objects and you want to go through each object of that collection and see if that object satisfies some criteria. For example, you may have a collection of Employee objects and, in one place of your application, you want to remove all such employees whose age is below 50, while in other place, you want to remove all such employees whose salary is above 100,000. In both the cases, you want to go through your collection of employees, and check each Employee object to determine if it fits the criteria. This can be implemented by writing an interface named CheckEmployee and having a method check(Employee ) which would return true if the passed object satisfies the criteria. The following code fragments illustrate how it can be done -
+```java
 //define the interface for creating criteria
 interface CheckEmployee {
   boolean check(Employee e );
@@ -45,11 +44,9 @@ class MyCheckEmployee implements CheckEmployee{
 
 //use the filter method with the specific criteria to filter the collection.
 filterEmployees(employeeList, new MyCheckEmployee());
-
-
-This is a very common requirement across applications. The purpose of Predicate interface (and other standard functional interfaces) is to eliminate the need for every application to write a customized interface.  For example, you can do the same thing with the Predicate interface as follows -
-
-
+```
+> This is a very common requirement across applications. The purpose of Predicate interface (and other standard functional interfaces) is to eliminate the need for every application to write a customized interface.  For example, you can do the same thing with the Predicate interface as follows -
+```java
 public void filterEmployees(ArrayList<Employee> dataList, Predicate<Employee> p){
    Iterator<Employee> i = dataList.iterator();
    while(i.hasNext()){
@@ -60,8 +57,9 @@ public void filterEmployees(ArrayList<Employee> dataList, Predicate<Employee> p)
 }
 
 ...
-
-// Instead of defining a MyPredicate class (like we did with MyCheckEmployee), we could also define and instantiate an anonymous inner class to reduce code clutter
+```
+> Instead of defining a MyPredicate class (like we did with MyCheckEmployee), we could also define and instantiate an anonymous inner class to reduce code clutter
+```java
 Predicate<Employee> p = new Predicate<Employee>(){
   public boolean test(Employee e){
      return e.getSalary()>100000;
@@ -70,14 +68,12 @@ Predicate<Employee> p = new Predicate<Employee>(){
 ...
 
 filterEmployees(employeeList, p);
-
-
-Note that both the interfaces (CheckEmployee and Predicate) can be used with lambda expressions in exactly the same way.  Instead of creating an anonymous inner class that implements the CheckEmployee or Predicate interface, you could just do -
-
-filterEmployees(employeeList, e->e.getSalary()>100000);
-
-The benefit with Predicate is that you don't have to write it. It is already there in the standard java library.
 ```
+> Note that both the interfaces (CheckEmployee and Predicate) can be used with lambda expressions in exactly the same way.  Instead of creating an anonymous inner class that implements the CheckEmployee or Predicate interface, you could just do -
+```java
+filterEmployees(employeeList, e->e.getSalary()>100000);
+```
+> The benefit with Predicate is that you don't have to write it. It is already there in the standard java library.
 ### Which of the following statements are correct regarding a functional interface?
 Answered Incorrectly
 You had to select 1 option(s)
@@ -85,53 +81,45 @@ You had to select 1 option(s)
   - b) It has exactly one method and it may or may not be abstract.
   - c) It must have exactly one abstract method and may have other default or static methods.
   - d) It must have exactly one static method and may have other default or abstract methods.
-```
-A functional interface is an interface that contains exactly one abstract method. It may contain zero or more default methods and/or static methods. Because a functional interface contains exactly one abstract method, you can omit the name of that method when you implement it using a lambda expression. For example, consider the following interface -
+> A functional interface is an interface that contains exactly one abstract method. It may contain zero or more default methods and/or static methods. Because a functional interface contains exactly one abstract method, you can omit the name of that method when you implement it using a lambda expression. For example, consider the following interface -
+```java
 interface Predicate<T> {
     boolean test(T t);
 }
-
-The purpose of this interface is to provide a method that operates on an object of class T and return a boolean.
-
-You could have a method that takes an instance of class that implements this interface defined like this -
+```
+* The purpose of this interface is to provide a method that operates on an object of class T and return a boolean.
+* You could have a method that takes an instance of class that implements this interface defined like this -
+```java
 public void printImportantData(ArrayList<Data> dataList, Predicate<Data> p){
    for(Data d: dataList){
       if(p.test(d)) System.out.println(d);
    }
 }
-
-where Data class could be as simple as public class Data{ public int value; }
-
-Now, you can call the above method as follows:
-
-        printImportantData(al, (Data d)->{ return d.value>1; } );
-Notice the lack of method name here. This is possible because the interface has only one abstract method so the compiler can figure out the name. This can be shortened to:
-
-        printImportantData(al, (Data d)->d.value>1);  
-Notice the lack of curly brackets, the return keyword, and the semicolon. This is possible because the method returns a boolean and the expression d.value>1 also returns a boolean. The compiler is therefore able to figure out that the value of this expression is to be returned from the method. This can be shortened even more to:
-
-        printImportantData(al, d->d.value>1);
-Notice that there is no declaration of d! The compiler can figure out all information it needs because the interface has only one abstract method and that method has only one parameter. So you don't need to write all those things in your code.
-        
-
-Compare the above approach to the old style using an inner class that does the same thing -
-
-       printImportantData(al,  new Predicate<Data>(){
-                            public boolean test(Data d){
-                                 return d.value>1;
-                             }   }   );
-
-The Predicate interface described above can be used anywhere there is a need to "do something with an object and return a boolean" and is actually provided by the standard java library in java.util.function package. This package provides a few other useful functional interfaces.
-
-Predicate<T>    Represents a predicate (boolean-valued function) of one argument of type T.
-Consumer<T> Represents an operation that accepts a single input argument of type T and returns no result.
-Function<T,R> Represents a function that accepts one argument of type T and produces a result of type R
-Supplier<T> Represents a supplier of results of type T.
-
-For the exam, you only need to be aware of Predicate.
+```
+* where Data class could be as simple as public class Data{ public int value; }
+* Now, you can call the above method as follows:
+  - `printImportantData(al, (Data d)->{ return d.value>1; } );`
+* Notice the lack of method name here. This is possible because the interface has only one abstract method so the compiler can figure out the name. This can be shortened to:
+  - `printImportantData(al, (Data d)->d.value>1);  `
+* Notice the lack of curly brackets, the return keyword, and the semicolon. This is possible because the method returns a boolean and the expression d.value>1 also returns a boolean. The compiler is therefore able to figure out that the value of this expression is to be returned from the method. This can be shortened even more to:
+  - `printImportantData(al, d->d.value>1);`
+* Notice that there is no declaration of d! The compiler can figure out all information it needs because the interface has only one abstract method and that method has only one parameter. So you don't need to write all those things in your code.
+* Compare the above approach to the old style using an inner class that does the same thing -
+```java
+   printImportantData(al,  new Predicate<Data>(){
+	public boolean test(Data d){
+		 return d.value>1;
+	 }   }   );
+```
+> The Predicate interface described above can be used anywhere there is a need to "do something with an object and return a boolean" and is actually provided by the standard java library in java.util.function package. This package provides a few other useful functional interfaces.
+* Predicate<T>    Represents a predicate (boolean-valued function) of one argument of type T.
+* Consumer<T> Represents an operation that accepts a single input argument of type T and returns no result.
+* Function<T,R> Represents a function that accepts one argument of type T and produces a result of type R
+* Supplier<T> Represents a supplier of results of type T.
+> For the exam, you only need to be aware of Predicate.
 
 Please see http://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html for learning Lambda expressions in Java.
-```
+
 ### Protected Methods
 ```java
 //In file AccessTest.java
@@ -337,21 +325,21 @@ You had to select 3 option(s)
   - c) parseBoolean(boolean ) **FALSE**
   - d) FALSE **TRUE** -> TRUE and FALSE are valid static members of Boolean class.
   - e) Boolean(Boolean ) **FALSE** -> There is no constructor that takes a Boolean.
-```
-You need to remember the following points about Boolean:
+
+* You need to remember the following points about Boolean:
 
 1. Boolean class has two constructors - Boolean(String) and Boolean(boolean)
-The String constructor allocates a Boolean object representing the value true if the string argument is not null and is equal, ignoring case, to the string "true". Otherwise, allocate a Boolean object representing the value false. Examples: new Boolean("True") produces a Boolean object that represents true. new Boolean("yes") produces a Boolean object that represents false.
+> The String constructor allocates a Boolean object representing the value true if the string argument is not null and is equal, ignoring case, to the string "true". Otherwise, allocate a Boolean object representing the value false. Examples: new Boolean("True") produces a Boolean object that represents true. new Boolean("yes") produces a Boolean object that represents false.
 
 The boolean constructor is self explanatory.
 
 2. Boolean class has two static helper methods for creating booleans - parseBoolean and valueOf.
-Boolean.parseBoolean(String ) method returns a primitive boolean and not a Boolean object (Note - Same is with the case with other parseXXX methods such as Integer.parseInt - they return primitives and not objects). The boolean returned represents the value true if the string argument is not null and is equal, ignoring case, to the string "true".
+> Boolean.parseBoolean(String ) method returns a primitive boolean and not a Boolean object (Note - Same is with the case with other parseXXX methods such as Integer.parseInt - they return primitives and not objects). The boolean returned represents the value true if the string argument is not null and is equal, ignoring case, to the string "true".
 
-Boolean.valueOf(String ) and its overloaded Boolean.valueOf(boolean ) version, on the other hand, work similarly but return a reference to either Boolean.TRUE or Boolean.FALSE wrapper objects. Observe that they dont create a new Boolean object but just return the static constants TRUE or FALSE defined in Boolean class.
+> Boolean.valueOf(String ) and its overloaded Boolean.valueOf(boolean ) version, on the other hand, work similarly but return a reference to either Boolean.TRUE or Boolean.FALSE wrapper objects. Observe that they dont create a new Boolean object but just return the static constants TRUE or FALSE defined in Boolean class.
 
 3. When you use the equality operator ( == ) with booleans, if exactly one of the operands is a Boolean wrapper, it is first unboxed into a boolean primitive and then the two are compared (JLS 15.21.2). If both are Boolean wrappers, then their references are compared just like in the case of other objects. Thus, new Boolean("true") == new Boolean("true") is false, but new Boolean("true") == Boolean.parseBoolean("true") is true.
-```
+
 ### Identify the correct statements.
 Answered Incorrectly
 You had to select 1 option(s)
@@ -359,8 +347,8 @@ You had to select 1 option(s)
   - b) LocalDate, LocalTime, and LocalDateTime implement TemporalAccessor. ** TRUE**
   - c) Both - LocalDate and LocalTime extend LocalDateTime, which extends java.util.Date. **FALSE**
   - d) LocalDate, LocalTime, and LocalDateTime implement TemporalAccessor and extend java.util.Date. **FALSE** -> **answered incorrectly**
-```
-Here are some points that you should keep in mind about the new Date/Time classes introduced in Java 8 -
+
+* Here are some points that you should keep in mind about the new Date/Time classes introduced in Java 8 -
 
 1. They are in package java.time and they have no relation at all to the old java.util.Date and java.sql.Date.
 
@@ -368,7 +356,7 @@ Here are some points that you should keep in mind about the new Date/Time classe
 
 3. LocalDate, LocalTime, and LocalDateTime classes do not have any parent/child relationship among themselves. As their names imply, LocalDate contains just the date information and no time information, LocalTime contains only time and no date, while LocalDateTime contains date as well as time. None of them contains zone information. For that, you can use ZonedDateTime.
 
-These classes are immutable and have no public constructors. You create objects of these classes using their static factory methods such as of(...) and from(TemporalAccessor ).  For example,
+> These classes are immutable and have no public constructors. You create objects of these classes using their static factory methods such as of(...) and from(TemporalAccessor ).  For example,
 LocalDate ld = LocalDate.of(2015, Month.JANUARY, 1); or LocalDate ld = LocalDate.from(anotherDate); or LocalDateTime ldt = LocalDateTime.of(2015, Month.JANUARY, 1, 21, 10); //9.10 PM
 
 Since you can't modify them once created, if you want to create new object with some changes to the original, you can use the instance method named with(...). For example,
@@ -378,17 +366,17 @@ LocalDate sunday = ld.with(java.time.temporal.TemporalAdjusters.next(DayOfWeek.S
         
 LocalDate d1 = LocalDate.parse("2015-01-01", DateTimeFormatter.ISO_LOCAL_DATE);
 
-The parameter type and return type of the methods of DateTimeFormatter class is the base interface TemporalAccessor instead of concrete classes such as LocalDate or LocalDateTime. So you shouldn't directly cast the returned values to concrete classes like this -
+> The parameter type and return type of the methods of DateTimeFormatter class is the base interface TemporalAccessor instead of concrete classes such as LocalDate or LocalDateTime. So you shouldn't directly cast the returned values to concrete classes like this -
    LocalDate d2 = (LocalDate) DateTimeFormatter.ISO_LOCAL_DATE.parse("2015-01-01"); //will compile but may or may not throw a ClassCastException at runtime.
 You should do like this -
    LocalDate d2 = LocalDate.from(DateTimeFormatter.ISO_LOCAL_DATE.parse("2015-01-01"));
 
 5. Besides dates, java.time package also provides Period and Duration classes. Period is used for quantity or amount of time in terms of years, months and days, while Duration is used for quantity or amount of time in terms of hour, minute, and seconds.
 
-Durations and periods differ in their treatment of daylight savings time when added to ZonedDateTime. A Duration will add an exact number of seconds, thus a duration of one day is always exactly 24 hours. By contrast, a Period will add a conceptual day, trying to maintain the local time.
+> Durations and periods differ in their treatment of daylight savings time when added to ZonedDateTime. A Duration will add an exact number of seconds, thus a duration of one day is always exactly 24 hours. By contrast, a Period will add a conceptual day, trying to maintain the local time.
 
-For example, consider adding a period of one day and a duration of one day to 18:00 on the evening before a daylight savings gap. The Period will add the conceptual day and result in a ZonedDateTime at 18:00 the following day. By contrast, the Duration will add exactly 24 hours, resulting in a ZonedDateTime at 19:00 the following day (assuming a one hour DST gap).
-```
+> For example, consider adding a period of one day and a duration of one day to 18:00 on the evening before a daylight savings gap. The Period will add the conceptual day and result in a ZonedDateTime at 18:00 the following day. By contrast, the Duration will add exactly 24 hours, resulting in a ZonedDateTime at 19:00 the following day (assuming a one hour DST gap).
+
 ### Which statements concerning conversion are true?
 Answered Incorrectly
 You had to select 4 option(s)
@@ -398,17 +386,15 @@ You had to select 4 option(s)
   - d) Conversion from int to float needs a cast. **FALSE** -> It does not need a cast because a float can hold any int value. Note that the opposite is not true.
   - e) Conversion from byte, char or short to int, long or float does not need a cast. **TRUE** -> Because int, long or float are bigger that byte char or short.
 
-```
-Think of it as transferring contents of one bucket into another. You can always transfer the contents of a smaller bucket to a bigger one. But the opposite is not always possible. You can transfer the contents of the bigger bucket into the smaller bucket only if the actual content in the bigger bucket can fit into the smaller one. Otherwise, it will spill.
+> Think of it as transferring contents of one bucket into another. You can always transfer the contents of a smaller bucket to a bigger one. But the opposite is not always possible. You can transfer the contents of the bigger bucket into the smaller bucket only if the actual content in the bigger bucket can fit into the smaller one. Otherwise, it will spill.
 
-It is the same with integral types as well. byte is smaller than short or int. So you can assign a byte to an int (or an int to a float, or a float to a double) without any cast. But for the reverse you need to assure the compiler that the actual contents in my int will be smaller than a byte so let me assign this int to a byte. This is achieved by the cast.
+> It is the same with integral types as well. byte is smaller than short or int. So you can assign a byte to an int (or an int to a float, or a float to a double) without any cast. But for the reverse you need to assure the compiler that the actual contents in my int will be smaller than a byte so let me assign this int to a byte. This is achieved by the cast.
 int i = 10;
 byte b = 20;
 b = i;//will not compile because byte is smaller than int
 b = (byte) i; //OK
 
-
-Further, if you have a final variable and its value fits into a smaller type, then you can assign it without a cast because compiler already knows its value and realizes that it can fit into the smaller type. This is called implicit narrowing and is allowed between byte, int, char, and, short but not for long, float, and double.
+> Further, if you have a final variable and its value fits into a smaller type, then you can assign it without a cast because compiler already knows its value and realizes that it can fit into the smaller type. This is called implicit narrowing and is allowed between byte, int, char, and, short but not for long, float, and double.
 
 
 final int k = 10;
@@ -416,7 +402,7 @@ b = k; //Okay because k is final and 10 fits into a byte
 
 final float f = 10.0;//will not compile because 10.0 is a double even though the value 10.0 fits into a float
 i = f;//will not compile.
-```
+
 ### Which of these combinations of switch expression types and case label value types are legal within a switch statement?
 Answered Incorrectly
 You had to select 1 option(s)
@@ -428,7 +414,7 @@ You had to select 1 option(s)
     case 'a' : System.out.println("a");
   }
   ```
-	- b) switch expression of type float and case label value of type int.
+  - b) switch expression of type float and case label value of type int.
   - c) switch expression of type byte and case label value of type float.
   - d) switch expression of type char and case label value of type byte.
   ```
@@ -440,8 +426,8 @@ You had to select 1 option(s)
     }
 	```
   - e) switch expression of type boolean and case label value of type boolean.
-```
-You should remember the following rules for a switch statement:
+
+* You should remember the following rules for a switch statement:
 
 1. Only String, byte, char, short, int, and enum values can be used as types of a switch variable. (String is allowed since Java 7.) Wrapper classes Byte, Character, Short, and Integer are allowed as well.
 
@@ -459,7 +445,7 @@ switch(by){
 5. No two of the case constant expressions associated with a switch statement may have the same value.
 
 6. At most one default label may be associated with the same switch statement.
-```
+
 ### Which of these statements are true?
 Answered Correctly
 You had to select 2 option(s)
