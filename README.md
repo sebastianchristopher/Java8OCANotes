@@ -2,7 +2,7 @@
 
 My notes from Boyarsky and Selikoff's *Oracle Certtified Associate Java SE 8 Programmer I Study Guide*
 
-*[Notes on Enthuware exams](#https://github.com/sebastianchristopher/Java8OCANotes/blob/master/enthuware/README.md) *
+*[Notes on Enthuware exams](https://github.com/sebastianchristopher/Java8OCANotes/blob/master/enthuware/README.md) *
 
 **Table of contents**
 
