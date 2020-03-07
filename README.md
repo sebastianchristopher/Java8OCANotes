@@ -2,7 +2,7 @@
 
 My notes from Boyarsky and Selikoff's *Oracle Certtified Associate Java SE 8 Programmer I Study Guide*
 
-*[Notes on Enthuware exams](https://github.com/sebastianchristopher/Java8OCANotes/blob/master/enthuware/README.md) *
+[Notes on Enthuware exams](https://github.com/sebastianchristopher/Java8OCANotes/blob/master/enthuware/README.md)
 
 **Table of contents**
 
@@ -688,6 +688,22 @@ public void fooBar(String bla, final String tac) {
 	case java.time.DayOfWeek.SUNDAY: // DOES NOT COMPILE -> final constant, but of type enum
 }
 ```
+* You should remember the following rules for a switch statement:
+  1. Only byte, char, short, int, their wrapper classes Byte, Character, Short, and Integer, String, and enum values can be used as types of a switch variable.
+  2. The case constants must be assignable to the switch variable. For example, if your switch variable is of class int, your case labels must use ints as well.
+  3. The switch variable must be big enough to hold all the case constants. For example, the following will not compile because 300 cannot be assigned to `byte b`, which can only hold values from -128 to 127
+  ```java
+  byte b = 10;
+  switch(b){
+	  case 200 : 
+	  	//some code;
+	  case 300 :
+		//some code; 
+  }
+  ```
+  4. All case labels should be COMPILE TIME CONSTANTS.
+  5. No two of the case constant expressions associated with a switch statement may have the same value.
+  6. At most one default label may be associated with the same switch statement.
 ### while
 * braces optional for single-line statement
 ```java
@@ -1211,6 +1227,17 @@ Double wrapperClass = Integer.parseInt("1"); // DOES NOT COMPILE -> incompatible
 double primitive = Double.valueOf("1");
 Double wrapperClass = Double.parseDouble("1");
 ```
+#### Boolean members
+* Constructors:
+  - `Boolean(boolean value)`
+  - `Boolean(String s)`
+* Fields
+  - `static Boolean`	`FALSE`
+  - `static Boolean`	`TRUE`
+* Methods
+  - `static boolean`	`parseBoolean(String s)`
+  - `static Boolean`	`valueOf(boolean b)`
+  - `static Boolean`	`valueOf(String s)`
 ### Autoboxing
 ```java
 List<Double> doubleList = new ArrayList<>();
@@ -1291,10 +1318,13 @@ stringList.remove(1);
 System.out.print(stringList.toString()); // -> [One, Four]
 ```
 ### Dates and Times
-** all immutable**
+** all immutable, all have no public constructor**
 * `java.time.LocalDate`
 * `java.time.LocalTime`
 * `java.time.LocalDateTime`
+* `LocalDate`, `LocalTime`, and `LocalDateTime` implement `TemporalAccessor`
+* `LocalDate`, `LocalTime`, and `LocalDateTime` classes do not have any parent/child relationship among themselves
+
 #### Signatures
 * `public static LocalDate of(int year, int month, int dayOfMonth)` -> `LocalDate ld = LocalDate.of(2020, 2, 12);`
 * `public static LocalDate of(int year, Month month, int dayOfMonth)` -> `LocalDate ld = LocalDate.of(2020, Month.FEBRUARY, 12);`
