@@ -401,7 +401,7 @@ i = f;//will not compile.
 ### Which of these combinations of switch expression types and case label value types are legal within a switch statement?
 Answered Incorrectly
 You had to select 1 option(s)
-  - a) switch expression of type int and case label value of type char.
+  - a) switch expression of type int and case label value of type char. **TRUE**
   ```
   Note that the following is invalid though because a char cannot be assigned to an Integer:
   Integer x = 1;  // int x = 1; is valid.
@@ -409,9 +409,9 @@ You had to select 1 option(s)
     case 'a' : System.out.println("a");
   }
   ```
-  - b) switch expression of type float and case label value of type int.
-  - c) switch expression of type byte and case label value of type float.
-  - d) switch expression of type char and case label value of type byte.
+  - b) switch expression of type float and case label value of type int. **FALSE** -> a float value isn't a valid switch variable
+  - c) switch expression of type byte and case label value of type float. **FALSE** -> float won't automatically cast to byte
+  - d) switch expression of type char and case label value of type byte. **FALSE**
   ```
   This will not work in all cases because a byte may have negative values which cannot be assigned to a char. For example, char ch = -1; does not compile. Therefore, the following does not compile either:
     char ch = 'x';
@@ -420,7 +420,7 @@ You had to select 1 option(s)
         default:        System.out.println("default");    
     }
   ```
-  - e) switch expression of type boolean and case label value of type boolean.
+  - e) switch expression of type boolean and case label value of type boolean. **FALSE** a boolean value isn't a valid switch variable
 
 * You should remember the following rules for a switch statement:
 

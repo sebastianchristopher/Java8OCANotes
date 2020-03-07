@@ -690,7 +690,7 @@ public void fooBar(String bla, final String tac) {
 ```
 * You should remember the following rules for a switch statement:
   1. Only byte, char, short, int, their wrapper classes Byte, Character, Short, and Integer, String, and enum values can be used as types of a switch variable.
-  2. The case constants must be assignable to the switch variable. For example, if your switch variable is of class int, your case labels must use ints as well.
+  2. The case constants must be assignable to the switch variable. For example, if your switch variable is of class String, your case labels must use strings as well.
   3. The switch variable must be big enough to hold all the case constants. For example, the following will not compile because 300 cannot be assigned to `byte b`, which can only hold values from -128 to 127
   ```java
   byte b = 10;
