@@ -70,6 +70,10 @@ My notes from Boyarsky and Selikoff's *Oracle Certtified Associate Java SE 8 Pro
 ```java
 // single line comment
 ```
+```java
+String s = /* mid-line comment */ "foo";
+System.out.println(s); // -> foo
+```
 
 ### Classes and Files
 * a file doesn't have to have a public class
@@ -83,11 +87,39 @@ My notes from Boyarsky and Selikoff's *Oracle Certtified Associate Java SE 8 Pro
 * return type must be `void`
 * can have other modifiers (but these must not clash with `public` and `static`)
 * args can be `(String[] args)`, `(String args[])`, `(String... args)`
-* spaces are used to separate the arguments
+* when running the program, spaces are used to separate the arguments
 * if a string has spaces, surround it with quotes e.g. `> java Foo 'arg one' two three`
 * trying to access an argument not supplied will throw a runtime error
 * `args` can be any legal identifier e.g. `public static void main(String... blarguments){}`
-
+* a Java class with a properly defined `main()` method is an *executable class*
+* you can overload the `main()` method, in which case Java will still only call the main method with the correct signature:
+```java
+public class OverloadingMain {
+  public static void main(){
+	System.out.println("Running overloaded main method");
+  }
+  
+  public static final void main(String[] args) {
+	System.out.println("Running exectuable main method");
+    main(); 
+  }
+}
+/* output:
+ * Running exectuable main method
+ * Running overloaded main method
+*/
+```
+#### Running with class path
+* given the following source file `Java8OCANotes/myFolder/HelloWorld.java`
+* from `Java8OCANotes:`
+```bash
+> javac myFolder/HelloWorld.java
+> javac HelloWorld
+Error: Could not find or load main class HelloWorld
+Caused by: java.lang.ClassNotFoundException: HelloWorld
+> java -cp myFolder HelloWorld
+```
+* if not in the directory, use classpath (`-cp` or `-classpath`) to specify
 ### Package declarations and imports
 * classes in the same package do not need to be imported to be used
 * (java.lang.* is already imported)
@@ -2926,6 +2958,7 @@ public class MyClass implements MyInterface{}
 ```
 * it seems that if they have the `public` keyword, they have public access, if not, they have default access
 [https://docs.oracle.com/javase/tutorial/java/IandI/interfaceDef.html](https://docs.oracle.com/javase/tutorial/java/IandI/interfaceDef.html)
+* **a file can have at most one public interface (or class) and it should match the file name**
 #### Defining and implementing
 * Defining an interface:
 ![Defining an interface](https://github.com/sebastianchristopher/Java8OCANotes/blob/master/media/defining-an-interface.jpg "Defining an interface")
