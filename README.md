@@ -122,12 +122,12 @@ Caused by: java.lang.ClassNotFoundException: HelloWorld
 * if not in the directory, use classpath (`-cp` or `-classpath`) to specify
 ### Package declarations and imports
 * classes in the same package do not need to be imported to be used
-* (java.lang.* is already imported)
+* (`java.lang.*` is already imported)
 * put another way, only two packages are automatically imported - `java.lang` and the current package
 ```java
 import java.util.*; // imports all classes in java.util
 ```
-* doesn't import child packages e.g. java.util.concurrent
+* doesn't import classes in child packages e.g. the classes in `java.util.concurrent` won't be imported with `import java.util.*;`
 ---
 here is an example using the classes `Files` and `Paths`, both in `java.nio.file`:
 * to import, either use wildcard:
@@ -199,6 +199,7 @@ public class ClassB{
 > java packageb.ClassB
 ```
 * [More on compiling and running programs with packages and classpath](#https://javahungry.blogspot.com/2018/11/solved-error-could-not-find-or-load-main-class.html)
+* if no package is specified, it will be part of the *default package*
 ### Code formatting on the exam
 * if the code starts after line 1, assume all imports are correct
 * if it starts on line 1, or there are no line numbers, make sure there are no imports missing
