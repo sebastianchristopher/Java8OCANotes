@@ -127,7 +127,8 @@ Caused by: java.lang.ClassNotFoundException: HelloWorld
 ```java
 import java.util.*; // imports all classes in java.util
 ```
-* doesn't import classes in child packages e.g. the classes in `java.util.concurrent` won't be imported with `import java.util.*;`
+* doesn't import classes in child packages/subpackages e.g. the classes in `java.util.concurrent` won't be imported with `import java.util.*;`
+* similarly, `import java.util.concurrent.*;` won't import the classes in `java.util`
 ---
 here is an example using the classes `Files` and `Paths`, both in `java.nio.file`:
 * to import, either use wildcard:
@@ -200,6 +201,7 @@ public class ClassB{
 ```
 * [More on compiling and running programs with packages and classpath](#https://javahungry.blogspot.com/2018/11/solved-error-could-not-find-or-load-main-class.html)
 * if no package is specified, it will be part of the *default package*
+* members of a named package can’t access classes and interfaces defined in the default package, as there is no way to reference them
 ### Code formatting on the exam
 * if the code starts after line 1, assume all imports are correct
 * if it starts on line 1, or there are no line numbers, make sure there are no imports missing
@@ -2448,8 +2450,63 @@ interface Predicate<T> {
 * child class declaration structure:
   - `public/[default] access modifier` `abstract/final (optional)` `class keyword` `class name` `extends parent class` `{}`
   - `public` `abstract` `class` `Rectangle` `extends Shape` `{}`
+* a top-level class (or interface) can be defined only by using the public or default access modifiers
+* a class with default access can only be referenced by classes in the same package:
+```java
+// in source file privateAccess/PrivateClass.java
+package privateAccess;
+
+class PrivateClass {}
+```
+```java
+// in source file publicAccess/PublicClass.java
+package publicAccess;
+import privateAccess.PrivateClass;
+
+public class PublicClass {
+	public static void main(){}
+}
+```
+```bash
+> javac publicAccess/PublicClass.java privateAccess/PrivateClass.java
+publicAccess/PublicClass.java:2: error: PrivateClass is not public in privateAccess; cannot be accessed from outside package
+import privateAccess.PrivateClass;
+
+```
+
 * final classes can't have any child classes
-* a child class can access all public and protected members of the parent class
+* a child class can access all public members of the parent class
+* a child class can, through inheritance, access all protected  members of the parent class
+* if it is in the same package can access all its protected members directly, otherwise it can only through the child class:
+```java
+// in source file packageOne/Parent.java
+package packageOne;
+
+public class Parent {
+	protected String name = "Chris";
+}
+```
+```java
+// in source file packageTwo/Child.java
+package packageTwo;
+import packageOne.Parent;
+
+public class Child extends Parent {
+	public static void main(String[] args){
+		Child c = new Child();
+		System.out.println(c.name);
+		
+		Parent p = new Parent();
+		System.out.println(p.name); // DOES NOT COMPILE
+	}
+}
+```
+```bash
+> javac packageOne/Parent.java packageTwo/Child.java
+packageTwo/Child.java:11: error: name has protected access in Parent
+		System.out.println(p.name);
+```
+
 * a child class in a different package to the parent class won't compile unless it imports it:
 ```java
 // parents/Parent.java
@@ -2459,8 +2516,8 @@ public class Parent{}
 // children/Child.java
 package children;
 public class Child extends Parent{} // DOES NOT COMPILE -> cannot find symbol Parent{}
-
 ```
+
 * a child class inherits the parent class's private methods **but is unable to access them**
 * all classes ultimately extend java.lang.Object **n.b. but interfaces don't - interfaces can only extend other interfaces**
 ### Defining Constructors
