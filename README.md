@@ -268,6 +268,8 @@ public class Foo {
 |  char    | 16-bit unicode value          | 'a'      |
 * each numeric type uses twice as many bits as its next smallest type
 * byte can hold a value between -128 and 127
+* char can be assigned a character literal e.g. `char c = z` or a positive integer e.g. `char c = 122` (both examples are equivalent)
+* char can't be assigned a negative value (except through casting e.g. `char c = (char)-1` which will store an unexpected value)
 ##### Other bases
 * **Octal** - starts with 0 e.g. `017` - digits 0-7
 * **Hexadecimal** - starts with 0X or 0x e.g. `0xFF` - digits 0-9 letters A-F
@@ -279,7 +281,7 @@ public class Foo {
   - right before a decimal point
   - right after a decimal point
   - right after the prefixes 0b, 0B, 0x, and 0X (but legal after octal prefix 0)
-  - prior to an L suffix
+  - prior to an L or F suffix (or l, f, D, etc)
 ```java
 double d1 = _0.1; // illegal
 double d2 = 0._1; // illegal
@@ -358,12 +360,36 @@ int x = 3, int x = 4; //DOES NOT COMPILE
 int x = 3; int y = 4; // compiles - semi-colon means it's a new statement
 ```
 ### Identifiers
-* must begin with a letter or _ or $
+* must begin with a letter or `_` or `$` (also `£`, `¢`, `¥` and various other currency symbols)
 * subsequent characters may be numbers
 * must not be a Java reserved word (case-sensitive)
 ```java
 String Class = "Class"; // legal
 String class = "class"; // DOES NOT COMPILE
+```
+#### Keywords and reserved words that can't be used as identifiers
+| (primitives)  | (branching)  | (files, objects)    | (access modifiers, inheritance, constructors)  | (err handling) | (misc)      | (modifiers)  |
+| ------------- | ------------ | ------------------- | ---------------------------------------------- | -------------- | ----------- | ------------ |
+| 	boolean	    | 	if	       | 	package	         | 	public	                                      | 	try	       | 	new	     | abstract	    |
+| 	byte	    | 	else	   | 	import	         | 	protected	                                  | 	catch	   | 	null     | default	    |
+| 	short	    | 	for	       | 		             | 	private	                                      | 	finally	   | 	void	 | static	    |
+| 	int         | 	do	       | 	class	         | 		                                          | 	throw	   | 	return	 | final	    |
+| 	long	    | 	while	   | 	interface	     | 	extends	                                      | 	throws	   | 	true	 | strictfp	    |
+| 	float	    | 	switch	   | 	enum	         | 	implements	                                  | 		       | 	false	 | transient	|
+| 	double	    | 	case	   | 		             | 		                                          | 		       | instanceof	 | 	native	    |
+| 	char	    | 	break	   | 		             | 	this	                                      | 		       | 	assert	 | synchronized |
+| 		        | 	continue   | 		             | 	super	                                      | 		       | 	const	 | volatile	    |
+| 		        | 		       | 		             | 		                                          | 		       | 	goto	 | 		        |
+
+* **all these are lowercase**, so using any spelled differently is legal
+* class names are legal identifiers for variables:
+```java
+public class AStringCalledString {
+	public static void main(String... args) {
+		String String = "String";
+		System.out.println(String); // -> String
+	}
+}
 ```
 ### Default initialization of variables
 * *local variables* (i.e. variables in a method) must be initialized before use
