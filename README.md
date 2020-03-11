@@ -207,10 +207,15 @@ public class ClassB{
 * if it starts on line 1, or there are no line numbers, make sure there are no imports missing
 * if there is no `main()` method, assume that the main() method, the class definition, and all imports are present
 ### Benefits of Java
-* OOP
-* Encapsulation
+* Object Oriented Programming
+  - Abstraction
+  - Encapsulation
+  - Inheritance
+  - Polymorphism
 * Platform-independent
-* Robust - prevents memory leaks with automatic garbage collection
+* Type-safety
+* Multithreading and concurrency
+* Robust - prevents memory leaks with automatic garbage collection/automatic memory management
 * Simple - no pointers or operator overloading
 * Secure - runs in JVM sandbox environment
 ### Creating objects
@@ -273,13 +278,35 @@ public class Foo {
   - at the end
   - right before a decimal point
   - right after a decimal point
+  - right after the prefixes 0b, 0B, 0x, and 0X (but legal after octal prefix 0)
+  - prior to an L suffix
 ```java
 double d1 = _0.1; // illegal
 double d2 = 0._1; // illegal
 double d3 = 100.01_; // illegal
 double d4 = 101_.001; // illegal
 double d5 = 1_0_1_1.0_123_5_0; // legal!
+
+long l1 = 123_L; // illegal
+_
+long octVal = 0_413; // legal
+
+long hexVal1 = 0x_10_BA_75; // illegal
+long hexVal2 = 0x10_BA_75; // legal
+
+long binVal1 = 0b_1_0000_10_11; // illegal
+long binVal2 = 0b1_0000_10_11; // legal
 ```
+* an edge example is that you can’t use an underscore in positions where a string of digits is expected:
+```java
+public class ParseIntUnderscores {
+	public static void main(String... args) {
+		int x = 12_34;
+		int y = Integer.parseInt("12_34");
+	}
+}
+```
+* this will compile, as `parseInt()` expects a String, but throws java.lang.NumberFormatException at runtime
 ### Reference Types
 * a reference points to the location in memory where an object is stored
 * a value is assigned to a reference in one of two ways:
@@ -2856,6 +2883,7 @@ public class HidingVariables {
 * the instance of Child contains two copies of the age variables - one defined in the parent and one in the child
 * the instances are kept separate, allowing the instance of child to access both independently
 * *the rules are the same for static and non-static variables*
+> The nonprivate static variables and methods are inherited by derived classes. The static members aren’t involved in runtime polymorphism. You can’t override the static members in a derived class, but you can redefine them.
 ### Abstract Classes
 * abstract classes allow you to create a blueprint parent class, for other class to extend, without hacing to implement any of the methods in the parent class
 * abstract classes cannot be instantiated
