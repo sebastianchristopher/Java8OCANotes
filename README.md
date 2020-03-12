@@ -547,8 +547,9 @@ a = a++ + a + a-- - a-- + ++a;
 System.out.println(a);
 ```
 ![Pre unary and post unary increment and decrement](https://github.com/sebastianchristopher/Java8OCANotes/blob/master/media/unary-operators.png "Unary Operators")
-[More on this](https://coderanch.com/t/653797/certification/Post-Pre-unary-operator-precedence)  
-[Princeton on precedence](https://introcs.cs.princeton.edu/java/11precedence/)
+
+* [More on this](https://coderanch.com/t/653797/certification/Post-Pre-unary-operator-precedence)  
+* [Princeton on precedence](https://introcs.cs.princeton.edu/java/11precedence/)
 
 ### Logical complement (!) and negation (-) operators
 * `!` flips the value of a boolean expression e.g.
@@ -1330,6 +1331,13 @@ Double wrapperClass = Integer.parseInt("1"); // DOES NOT COMPILE -> incompatible
 double primitive = Double.valueOf("1");
 Double wrapperClass = Double.parseDouble("1");
 ```
+#### How to create a wrapper instance
+* wrapper classes are created by:
+  - assignment e.g. `Boolean a = true;`, `Boolean b = Boolean.TRUE;`
+  - constructors e.g. `Boolean e = new Boolean(true);`, `Boolean d = new Boolean("truE");
+  - static methods e.g. `Boolean.valueOf(true);`, `Boolean.valueOf("TrUe");`
+* this is true for all wrapper classes, below are the full Boolean signatures as an example
+* **n.b.** String argument is non-case-sensitive
 #### Boolean members
 * Constructors:
   - `Boolean(boolean value)`
@@ -1338,9 +1346,9 @@ Double wrapperClass = Double.parseDouble("1");
   - `static Boolean`	`FALSE`
   - `static Boolean`	`TRUE`
 * Methods
-  - `static boolean`	`parseBoolean(String s)`
-  - `static Boolean`	`valueOf(boolean b)`
-  - `static Boolean`	`valueOf(String s)`
+  - `static boolean`	`parseBoolean(String s)` -> returns primitive
+  - `static Boolean`	`valueOf(boolean b)` -> returns wrapper class
+  - `static Boolean`	`valueOf(String s)` -> returns wrapper class
 ### Autoboxing
 ```java
 List<Double> doubleList = new ArrayList<>();
