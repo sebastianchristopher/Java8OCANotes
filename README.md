@@ -661,6 +661,9 @@ int x = 6;
 boolean y = (x >= 6) || (++x <= 7);
 System.out.println(x); // 6, as right hand operation never reached
 ```
+* there are two situations in which short-circuiting happens:
+  - the first condition of an `&&` is false (i.e. both can't be true)
+  - the first condition of an `||` is true (i.e. it doesn't matter what the other is)
 ### if....
 ```java
 if(booleanExpression)
