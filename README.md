@@ -539,7 +539,14 @@ System.out.println("y is " + y);
     - `--x` -> decrement, then assign -> `4 * 5 / 4 + 2` -> x is 2
   - evaluate the operations:
     - `20 / 4 + 2` -> `5 + 2` -> `7`
-
+* another example:
+```java
+int a = 10;
+a = a++ + a + a-- - a-- + ++a;
+// 10 + 11 + 11 - 10 + 10 -> 32
+System.out.println(a);
+```
+![Pre unary and post unary increment and decrement](https://github.com/sebastianchristopher/Java8OCANotes/blob/master/media/unary-operators.png "Unary Operators")
 [More on this](https://coderanch.com/t/653797/certification/Post-Pre-unary-operator-precedence)  
 [Princeton on precedence](https://introcs.cs.princeton.edu/java/11precedence/)
 
@@ -582,6 +589,11 @@ System.out.println(x + y); // x promoted to double
 short x = 1;
 byte y = 1;
 System.out.println(x + y); // both promoted to int
+short z = x + y; // DOES NOT COMPILE -> int won't fit into short
+
+final short xx = 1;
+final byte yy = 1;
+short zz = xx + yy; // compiles - the value is known at compile time and can fit into short
 ```
 4. after all promotion, all operands will have the same type and the resulting value will be of that type:
 ```java
