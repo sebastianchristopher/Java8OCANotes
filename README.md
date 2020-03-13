@@ -406,7 +406,7 @@ public class AStringCalledString {
 ```
 ### Default initialization of variables
 * *local variables* (i.e. variables in a method) must be initialized before use
-* their scope is confined to the method they are declared in
+* their scope is confined to the method or block they are declared in
 * they can't be marked with access modifiers
 * they do not have a default value and must be initialized before use
 * the compiler won't let you read an uninitialized local variable value:
