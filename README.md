@@ -270,6 +270,19 @@ public class Foo {
 * byte can hold a value between -128 and 127
 * char can be assigned a character literal e.g. `char c = z` or a positive integer e.g. `char c = 122` (both examples are equivalent)
 * char can't be assigned a negative value (except through casting e.g. `char c = (char)-1` which will store an unexpected value)
+* when char is used as an operand to arithmetic operators, its corresponding ASCII value is used in the arithmetic operation, and the result is numeric
+* this is not the case when using unary or compound assignment operators, as they will [automatically cast](#automatic-casting)
+```java
+class CharAddition {
+	public static void main(String[] args) {
+		char a = 'a';
+		char b = 'b';
+		System.out.println(a + b); // -> 195
+		System.out.println(++a); // -> b
+		System.out.println(a += b); // -> Ä
+	}
+}
+```
 ##### Other bases
 * **Octal** - starts with 0 e.g. `017` - digits 0-7
 * **Hexadecimal** - starts with 0X or 0x e.g. `0xFF` - digits 0-9 letters A-F
@@ -393,7 +406,9 @@ public class AStringCalledString {
 ```
 ### Default initialization of variables
 * *local variables* (i.e. variables in a method) must be initialized before use
-* they do not have a default value
+* their scope is confined to the method they are declared in
+* they can't be marked with access modifiers
+* they do not have a default value and must be initialized before use
 * the compiler won't let you read an uninitialized local variable value:
 ```java
 public int foo() {
@@ -425,6 +440,20 @@ public int foo() {
 | All object references  | null                          |
 ### Variable scope
 * local variables are in scope from declaration to the end of the block
+* in the following example, `int i` is in scope from its declaration to the end of the method
+* `int j` is in scope from its declaration to the end of the `{}` block
+```java
+class LocalVariableScope {
+	public static void main(String[] args) {
+		int i = 1;
+		{
+			int j = 2;
+			System.out.println(i + j); // -> 3
+		}
+		System.out.println(i + j); // -> error: cannot find symbol j
+	}
+}
+```
 * there are two local variables in the following snippet - the argument foo, and the local variable bar:
 ```java
 public void fooPlus(int foo) {
@@ -630,6 +659,7 @@ int x = 2;
 x *= 3;
 System.out.println("x is " + x); // x is 6
 ```
+###### Automatic casting
 * not just shorthand - also saves having to cast a value:
 ```java
 long x = 10;
@@ -980,6 +1010,8 @@ b == x; // compiles -> false
 
 [Wrapper Classes and ArrayList](#wrapper-classes-and-arraylist)
 
+[Caching and Wrapper Class Equality](#caching-and-wrapper-class-equality)
+
 [Autoboxing](#autoboxing)
 
 [Converting between array and List](#converting-between-array-and-list)
@@ -1302,6 +1334,8 @@ System.out.println(list.toString()); // -> [1, 5, 10]
 * **Wrapper classes are final, and therefore can't be extended**
 * `parseInt(String str)` -> `int` *String to primitive*
 * `valueOf(String s)` -> `Integer` *String to wrapper class*
+* **Character has a `valueOf` method, which takes a character, but not a String, and has no `parseChar`**
+* all throw NumberFormatException for incorrect values **except** `parseBoolean` which returns `false`
 ```java
 int primitive = Integer.parseInt("123");
 Integer wrapperClass = Integer.valueOf("123");
@@ -1315,7 +1349,7 @@ Integer wrapperClass = Integer.valueOf("123");
 | Long           | Long.parseLong("123")        | Long.valueOf("123")      |
 | Float          | Float.parseFloat("123.23")   | Float.("123.23")         |
 | Double         | Double.parseDouble("123.23") | Double.valueOf("123.23") |
-| Character      | *n/a*                        | *n/a*                    |
+| Character      | *n/a*                        | Character.valueOf('c')   |
 * must be valid for type:
 ```java
 int i = Integer.parseInt("a"); //throws java.lang.NumberFormatException
@@ -1331,6 +1365,52 @@ Double wrapperClass = Integer.parseInt("1"); // DOES NOT COMPILE -> incompatible
 double primitive = Double.valueOf("1");
 Double wrapperClass = Double.parseDouble("1");
 ```
+### Caching and Wrapper Class Equality
+> Wrapper classes Byte, Short, Integer, and Long cache objects with values in the range of -128 to 127. The Character class caches objects with values 0 to 127. These classes define inner static classes that store objects for the primitive values -128 to 127 or 0 to 127 in an array. If you request an object of any of these classes, from this range, the valueOf() method returns a reference to a predefined object; otherwise, it cre- ates a new object and returns its reference
+* compare with Boolean, whose cached instances are accessible directly because only two exist: static constants Boolean.TRUE and Boolean.FALSE.
+* Wrapper classes Float and Double don’t cache objects for any range of values.
+* this has an effect on comparing classes:
+```java
+public class CachingAndWrapperClassEquality {
+	public static void main(String[] args) {
+		
+		Integer i = Integer.valueOf("1");
+		Integer j = 1;
+		System.out.println(i == j); // true
+		
+		Integer k = new Integer(1);
+		Integer l = new Integer(1);
+		System.out.println(k == l); // false
+		
+		Integer m = Integer.valueOf("128");
+		Integer n = Integer.valueOf("128");
+		System.out.println(m == n); // false
+	}
+}
+```
+* because wrapper classes are immutable, performing operations on them will return a new object:
+```java
+public class ImmutableWrappers {
+	public static void main(String[] args) {
+		
+		Integer i = Integer.valueOf(1);
+		Integer j = i;
+		
+		System.out.println(i == j); // true
+		System.out.println(++i == ++j); // true
+		
+		Integer k = Integer.valueOf(128);
+		Integer l = k;
+		
+		System.out.println(k == l); // true
+		System.out.println(++k == ++l); // false
+	}
+	
+}
+```
+* essentially: `Byte`, `Short`, `Integer` or `Long` between -128 and 127 created using `valueOf` or through autoboxing will point to the same object and have `==` equality
+* the same for `Character` between 0 and 127
+* constructors always create new objects
 #### How to create a wrapper instance
 * wrapper classes are created by:
   - assignment e.g. `Boolean a = true;`, `Boolean b = Boolean.TRUE;`
@@ -1349,6 +1429,7 @@ Double wrapperClass = Double.parseDouble("1");
   - `static boolean`	`parseBoolean(String s)` -> returns primitive
   - `static Boolean`	`valueOf(boolean b)` -> returns wrapper class
   - `static Boolean`	`valueOf(String s)` -> returns wrapper class
+  - `boolean`			`booleanValue()` -> returns primitive
 ### Autoboxing
 ```java
 List<Double> doubleList = new ArrayList<>();
@@ -1360,8 +1441,8 @@ doubleList.add(20.6); // double literal autoboxes to Double
 List<Double> doubleList = new ArrayList<>();
 doubleList.add(null); // legal -> Double is an object, so can be null
 double d = doubleList.remove(0); // NullPointerException
-// equivalent of saying double d = null.unbox() -> NullPointerException
-// n.b. unbox() isn't a real method
+// equivalent of saying double d = null.doubleValue() -> NullPointerException
+* don't worry about the doubleValue method - it takes a Double and returns a double, but hopefully won't be on the exam
 ```
 * careful unboxing into Integer and other numerics when using remove:
 ```java
