@@ -1,6 +1,6 @@
 # Java OCA
 
-My notes from Boyarsky and Selikoff's *Oracle Certtified Associate Java SE 8 Programmer I Study Guide*
+My notes from Boyarsky and Selikoff's *Oracle Certtified Associate Java SE 8 Programmer I Study Guide*, with top-ups from Mala Gupta's *OCA Java SE 8 Programmer I Certification Guide*
 
 [Notes on Enthuware exams](https://github.com/sebastianchristopher/Java8OCANotes/blob/master/enthuware/README.md)
 
@@ -18,6 +18,10 @@ My notes from Boyarsky and Selikoff's *Oracle Certtified Associate Java SE 8 Pro
 [Chapter 5 - Class Design](#chapter-5---class-design)
 
 [Chapter 6 - Exceptions](#chapter-6---exceptions)
+
+---
+
+[Index](#index)
 
 ---
 
@@ -231,7 +235,7 @@ public class Foo {
 	public void Foo(){}
 }
 ```
-* a method name starting with a capital and with a return type is not a constructor - the exam will try to trip you up on this
+* a method name with a return type is not a constructor - the exam will try to trip you up on this
 #### Instance initializer blocks
 * code blocks in a method are run when the method is called
 * code blocks outside a method are instance initializers, run when the object is created:
@@ -2233,6 +2237,26 @@ public class Foo {
 	}
 }
 ```
+* constructors can't call themselves:
+```java
+public class RecursiveConstructorInvocation {
+	RecursiveConstructorInvocation() { // DOES NOT COMPILE -> error: recursive constructor invocation
+		this();
+	}
+}
+```
+* nor can they refer back to themselves (call a constructor that has already been called):
+```java
+public class RecursiveConstructorInvocation {
+	RecursiveConstructorInvocation(int i){
+		this("foo");
+	}
+	
+	RecursiveConstructorInvocation(String s){ // DOES NOT COMPILE -> error: recursive constructor invocation
+		this(7); 
+	}
+}
+```
 ### Default constructor
 * if you provide **no** constructor, Java creates a default no args constructor
 * **the access type of a default constructor is same as the access type of the class.** Thus, if a class is public, the default constructor will be public.
@@ -4219,3 +4243,258 @@ public class PrintingAnException {
 *         at PrintingAnException.main(PrintingAnException.java:8)
 */
 ```
+
+---
+### Index
+
+[Comments](#comments)
+
+[Classes and Files](#classes-and-files)
+
+[main() method](#main-method)
+
+[Package declarations and imports](#package-declarations-and-imports)
+
+[Code formatting on the exam](#code-formatting-on-the-exam)
+
+[Benefits of Java](#benefits-of-java)
+
+[Creating Objects](#creating-objects)
+
+[Reference types and primitives](#reference-types-and-primitives)
+
+[Reference Types](#reference-types)
+
+[Declaring and initializing variables](#declaring-and-initializing-variables)
+
+[Identifiers](#identifiers)
+
+[Default initialization of variables](#default-initialization-of-variables)
+
+[Order of elements in a class](#order-of-elements-in-a-class)
+
+[Destroying objects](#destroying-objects)
+
+[Order of Precedence](#order-of-precedence)
+
+[Pre unary and post unary increment and decrement](#pre-unary-and-post-unary-increment-and-decrement)
+
+[Numeric promotion](#numeric-promotion)
+
+[Logical complement (!) and negation (-) operators](#logical-complement--and-negation--operators)
+
+[Primitive conversion](#primitive-conversion)
+
+[Compound assignment operator](#compound-assignment-operator)
+
+[Assignment operator](#assignment-operator)
+
+[Logical operators](#logical-operators)
+
+[if....](#if)
+
+[if else](#if-else)
+
+[Ternary](#ternary)
+
+[switch](#switch)
+
+[while](#while)
+
+[do while](#do-while)
+
+[for](#for)
+
+[for each](#for-each)
+
+[Labels](#labels)
+
+[break](#break)
+
+[continue](#continue)
+
+[break and continue with labelled statements](#break-and-continue-with-labelled-statements)
+
+[Advanced control flow usage](#advanced-control-flow-usage)
+
+[Extra things](#extra-things)
+
+[Strings](#strings)
+
+[String Methods](#string-methods)
+
+[StringBuilder](#stringbuilder)
+
+[StringBuilder Methods](#stringBuilder-methods)
+
+[Understanding Equality](#understanding-equality)
+
+[Arrays](#arrays)
+
+[Array Methods](#array-methods)
+
+[varargs](#varargs)
+
+[Multidimensional Array](#multidimensional-array)
+
+[ArrayList](#arraylist)
+
+[ArrayList Methods](#arraylist-methods)
+
+[Wrapper Classes and ArrayList](#wrapper-classes-and-arraylist)
+
+[Caching and Wrapper Class Equality](#caching-and-wrapper-class-equality)
+
+[Autoboxing](#autoboxing)
+
+[Converting between array and List](#converting-between-array-and-list)
+
+[Dates and Times](#dates-and-times)
+
+[Manipulating Dates and Times](#manipulating-dates-and-times)
+
+[Periods](#periods)
+
+[Formatting Dates and Times](#formatting-dates-and-times)
+
+[Parsing dates and Times](#parsing-dates-and-times)
+
+[Anatomy of a Method](#anatomy-of-a-method)
+
+[More on varargs](#more-on-varargs)
+
+[Applying Access Modifiers](#applying-access-modifiers)
+
+[Designing Static Methods and Fields](#designing-static-methods-and-fields)
+
+[Static vs Instance](#static-vs-instance)
+
+[Static variables](#static-variables)
+
+[Static initialization](#static-initialization)
+
+[Static imports](#static-imports)
+
+[Pass by Value](#pass-by-value)
+
+[Overloading Methods](#overloading-methods)
+
+[Overloading and Varargs](#overloading-and-varargs)
+
+[Matching Overloaded Methods](#matching-overloaded-methods)
+
+[Creating constructors](#creating-constructors)
+
+[Default constructor](#default-constructor)
+
+[Overloading constructors](#overloading-constructors)
+
+[Final fields](#final-fields)
+
+[Order of Initialization](#orderoof-initialization)
+
+[Encapsulation](#encapsulation)
+
+[Creating Immutable Classes](#creating-immutable-classes)
+
+[Lambdas](#lambdas)
+
+[Predicates](#predicates)
+
+[More on lambdas and predicates](#more-on-lambdas-and-predicates)
+
+[Class Inheritance](#class-inheritance)
+
+[Defining Constructors](#defining-constructors)
+
+[Reviewing constructor rules](#reviewing-constructor-rules)
+
+[Calling constructors](#calling-constructors)
+
+[Calling inherited class members](#calling-inherited-class-members)
+
+[Inheriting Methods](#inheriting-methods)
+
+[Overriding a method](#overriding-a-method)
+
+[Rules for overriding a method](#rules-for-overriding-a-method)
+
+[Redeclaring Private Methods](#redeclaring-private-methods)
+
+[Hiding Static Methods](#hiding-static-methods)
+
+[Overriding vs Hiding Methods](#overriding-vs-hiding-methods)
+
+[Creating final methods](#creating-final-methods)
+
+[Inheriting variables](#inheriting-variables)
+
+[Abstract Classes](#abstract-classes)
+
+[Creating a concrete class](#creating-a-concrete-class)
+
+[Abstract Class Definition Rules](#abstract-class-definition-rules)
+
+[Abstract Method Definition Rules](#abstract-method-definition-rules)
+
+[Implementing Interfaces](#implementing-interfaces)
+
+[Defining an Interface](#defining-an-interface)
+
+[Inheriting an Interface](#inheriting-an-interface)
+
+[Classes, Interfaces and Keywords](#classes-interfaces-and-keywords)
+
+[Abstract Methods and Multiple Inheritance](#abstract-methods-and-multiple-inheritance)
+
+[Interface Variables](#interface-variables)
+
+[Default Interface Methods](#default-interface-methods)
+
+[Default Methods and Multiple Inheritance](#default-methods-and-multiple-inheritance)
+
+[Static Interface Methods](#static-interface-methods)
+
+[Understanding Polymorphism](#understanding-polymorphism)
+
+[Object vs Reference](#object-vs-reference)
+
+[Casting Objects](#casting-objects)
+
+[Virtual Methods](#virtual-methods)
+
+[Polymorphic Parameters](#polymorphic-parameters)
+
+[More on hidden methods and variables](#more-on-hidden-methods-and-variables)
+
+[What are exceptions](#what-are-exceptions)
+
+[Throwing an Exception](#throwing-an-exception)
+
+[Types of Exception](#types-of-exception)
+
+[Try statement](#try-statement)
+
+[Finally block](#finally-block)
+
+[Catching various types of exception](#catching-various-types-of-exception)
+
+[Order of catch blocks](#order-of-catch-blocks)
+
+[Throwing a second exception](#throwing-a-second-exception)
+
+[Common Exception Types](#common-exception-types)
+
+[Runtime Exceptions](#runtime-exceptions)
+
+[Checked Exceptions](#checked-exceptions)
+
+[Errors](#errors)
+
+[Calling methods that throw exceptions](#calling-methods-that-throw-exceptions)
+
+[Overriding methods with an exception in the method declaration](#overriding-methods-with-an-exception-in-the-method-declaration)
+
+[Printing an exception](#printing-an-exception)
+
+---
