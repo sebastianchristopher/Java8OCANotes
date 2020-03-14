@@ -4247,254 +4247,254 @@ public class PrintingAnException {
 ---
 ### Index
 
-[Comments](#comments)
+[Abstract Class Definition Rules](#abstract-class-definition-rules)
 
-[Classes and Files](#classes-and-files)
+[Abstract Classes](#abstract-classes)
 
-[main() method](#main-method)
+[Abstract Method Definition Rules](#abstract-method-definition-rules)
 
-[Package declarations and imports](#package-declarations-and-imports)
-
-[Code formatting on the exam](#code-formatting-on-the-exam)
-
-[Benefits of Java](#benefits-of-java)
-
-[Creating Objects](#creating-objects)
-
-[Reference types and primitives](#reference-types-and-primitives)
-
-[Reference Types](#reference-types)
-
-[Declaring and initializing variables](#declaring-and-initializing-variables)
-
-[Identifiers](#identifiers)
-
-[Default initialization of variables](#default-initialization-of-variables)
-
-[Order of elements in a class](#order-of-elements-in-a-class)
-
-[Destroying objects](#destroying-objects)
-
-[Order of Precedence](#order-of-precedence)
-
-[Pre unary and post unary increment and decrement](#pre-unary-and-post-unary-increment-and-decrement)
-
-[Numeric promotion](#numeric-promotion)
-
-[Logical complement (!) and negation (-) operators](#logical-complement--and-negation--operators)
-
-[Primitive conversion](#primitive-conversion)
-
-[Compound assignment operator](#compound-assignment-operator)
-
-[Assignment operator](#assignment-operator)
-
-[Logical operators](#logical-operators)
-
-[if....](#if)
-
-[if else](#if-else)
-
-[Ternary](#ternary)
-
-[switch](#switch)
-
-[while](#while)
-
-[do while](#do-while)
-
-[for](#for)
-
-[for each](#for-each)
-
-[Labels](#labels)
-
-[break](#break)
-
-[continue](#continue)
-
-[break and continue with labelled statements](#break-and-continue-with-labelled-statements)
+[Abstract Methods and Multiple Inheritance](#abstract-methods-and-multiple-inheritance)
 
 [Advanced control flow usage](#advanced-control-flow-usage)
 
-[Extra things](#extra-things)
-
-[Strings](#strings)
-
-[String Methods](#string-methods)
-
-[StringBuilder](#stringbuilder)
-
-[StringBuilder Methods](#stringBuilder-methods)
-
-[Understanding Equality](#understanding-equality)
-
-[Arrays](#arrays)
-
-[Array Methods](#array-methods)
-
-[varargs](#varargs)
-
-[Multidimensional Array](#multidimensional-array)
-
-[ArrayList](#arraylist)
-
-[ArrayList Methods](#arraylist-methods)
-
-[Wrapper Classes and ArrayList](#wrapper-classes-and-arraylist)
-
-[Caching and Wrapper Class Equality](#caching-and-wrapper-class-equality)
-
-[Autoboxing](#autoboxing)
-
-[Converting between array and List](#converting-between-array-and-list)
-
-[Dates and Times](#dates-and-times)
-
-[Manipulating Dates and Times](#manipulating-dates-and-times)
-
-[Periods](#periods)
-
-[Formatting Dates and Times](#formatting-dates-and-times)
-
-[Parsing dates and Times](#parsing-dates-and-times)
-
 [Anatomy of a Method](#anatomy-of-a-method)
-
-[More on varargs](#more-on-varargs)
 
 [Applying Access Modifiers](#applying-access-modifiers)
 
-[Designing Static Methods and Fields](#designing-static-methods-and-fields)
+[Array Methods](#array-methods)
 
-[Static vs Instance](#static-vs-instance)
+[ArrayList Methods](#arraylist-methods)
 
-[Static variables](#static-variables)
+[ArrayList](#arraylist)
 
-[Static initialization](#static-initialization)
+[Arrays](#arrays)
 
-[Static imports](#static-imports)
+[Assignment operator](#assignment-operator)
 
-[Pass by Value](#pass-by-value)
+[Autoboxing](#autoboxing)
 
-[Overloading Methods](#overloading-methods)
+[Benefits of Java](#benefits-of-java)
 
-[Overloading and Varargs](#overloading-and-varargs)
+[break and continue with labelled statements](#break-and-continue-with-labelled-statements)
 
-[Matching Overloaded Methods](#matching-overloaded-methods)
+[break](#break)
 
-[Creating constructors](#creating-constructors)
-
-[Default constructor](#default-constructor)
-
-[Overloading constructors](#overloading-constructors)
-
-[Final fields](#final-fields)
-
-[Order of Initialization](#orderoof-initialization)
-
-[Encapsulation](#encapsulation)
-
-[Creating Immutable Classes](#creating-immutable-classes)
-
-[Lambdas](#lambdas)
-
-[Predicates](#predicates)
-
-[More on lambdas and predicates](#more-on-lambdas-and-predicates)
-
-[Class Inheritance](#class-inheritance)
-
-[Defining Constructors](#defining-constructors)
-
-[Reviewing constructor rules](#reviewing-constructor-rules)
+[Caching and Wrapper Class Equality](#caching-and-wrapper-class-equality)
 
 [Calling constructors](#calling-constructors)
 
 [Calling inherited class members](#calling-inherited-class-members)
 
-[Inheriting Methods](#inheriting-methods)
+[Calling methods that throw exceptions](#calling-methods-that-throw-exceptions)
 
-[Overriding a method](#overriding-a-method)
+[Casting Objects](#casting-objects)
 
-[Rules for overriding a method](#rules-for-overriding-a-method)
+[Catching various types of exception](#catching-various-types-of-exception)
 
-[Redeclaring Private Methods](#redeclaring-private-methods)
+[Checked Exceptions](#checked-exceptions)
 
-[Hiding Static Methods](#hiding-static-methods)
+[Class Inheritance](#class-inheritance)
 
-[Overriding vs Hiding Methods](#overriding-vs-hiding-methods)
-
-[Creating final methods](#creating-final-methods)
-
-[Inheriting variables](#inheriting-variables)
-
-[Abstract Classes](#abstract-classes)
-
-[Creating a concrete class](#creating-a-concrete-class)
-
-[Abstract Class Definition Rules](#abstract-class-definition-rules)
-
-[Abstract Method Definition Rules](#abstract-method-definition-rules)
-
-[Implementing Interfaces](#implementing-interfaces)
-
-[Defining an Interface](#defining-an-interface)
-
-[Inheriting an Interface](#inheriting-an-interface)
+[Classes and Files](#classes-and-files)
 
 [Classes, Interfaces and Keywords](#classes-interfaces-and-keywords)
 
-[Abstract Methods and Multiple Inheritance](#abstract-methods-and-multiple-inheritance)
+[Code formatting on the exam](#code-formatting-on-the-exam)
 
-[Interface Variables](#interface-variables)
+[Comments](#comments)
+
+[Common Exception Types](#common-exception-types)
+
+[Compound assignment operator](#compound-assignment-operator)
+
+[continue](#continue)
+
+[Converting between array and List](#converting-between-array-and-list)
+
+[Creating a concrete class](#creating-a-concrete-class)
+
+[Creating constructors](#creating-constructors)
+
+[Creating final methods](#creating-final-methods)
+
+[Creating Immutable Classes](#creating-immutable-classes)
+
+[Creating Objects](#creating-objects)
+
+[Dates and Times](#dates-and-times)
+
+[Declaring and initializing variables](#declaring-and-initializing-variables)
+
+[Default constructor](#default-constructor)
+
+[Default initialization of variables](#default-initialization-of-variables)
 
 [Default Interface Methods](#default-interface-methods)
 
 [Default Methods and Multiple Inheritance](#default-methods-and-multiple-inheritance)
 
-[Static Interface Methods](#static-interface-methods)
+[Defining an Interface](#defining-an-interface)
 
-[Understanding Polymorphism](#understanding-polymorphism)
+[Defining Constructors](#defining-constructors)
 
-[Object vs Reference](#object-vs-reference)
+[Designing Static Methods and Fields](#designing-static-methods-and-fields)
 
-[Casting Objects](#casting-objects)
+[Destroying objects](#destroying-objects)
 
-[Virtual Methods](#virtual-methods)
+[do while](#do-while)
 
-[Polymorphic Parameters](#polymorphic-parameters)
-
-[More on hidden methods and variables](#more-on-hidden-methods-and-variables)
-
-[What are exceptions](#what-are-exceptions)
-
-[Throwing an Exception](#throwing-an-exception)
-
-[Types of Exception](#types-of-exception)
-
-[Try statement](#try-statement)
-
-[Finally block](#finally-block)
-
-[Catching various types of exception](#catching-various-types-of-exception)
-
-[Order of catch blocks](#order-of-catch-blocks)
-
-[Throwing a second exception](#throwing-a-second-exception)
-
-[Common Exception Types](#common-exception-types)
-
-[Runtime Exceptions](#runtime-exceptions)
-
-[Checked Exceptions](#checked-exceptions)
+[Encapsulation](#encapsulation)
 
 [Errors](#errors)
 
-[Calling methods that throw exceptions](#calling-methods-that-throw-exceptions)
+[Extra things](#extra-things)
+
+[Final fields](#final-fields)
+
+[Finally block](#finally-block)
+
+[for each](#for-each)
+
+[for](#for)
+
+[Formatting Dates and Times](#formatting-dates-and-times)
+
+[Hiding Static Methods](#hiding-static-methods)
+
+[Identifiers](#identifiers)
+
+[if else](#if-else)
+
+[if....](#if)
+
+[Implementing Interfaces](#implementing-interfaces)
+
+[Inheriting an Interface](#inheriting-an-interface)
+
+[Inheriting Methods](#inheriting-methods)
+
+[Inheriting variables](#inheriting-variables)
+
+[Interface Variables](#interface-variables)
+
+[Labels](#labels)
+
+[Lambdas](#lambdas)
+
+[Logical complement (!) and negation (-) operators](#logical-complement--and-negation--operators)
+
+[Logical operators](#logical-operators)
+
+[main() method](#main-method)
+
+[Manipulating Dates and Times](#manipulating-dates-and-times)
+
+[Matching Overloaded Methods](#matching-overloaded-methods)
+
+[More on hidden methods and variables](#more-on-hidden-methods-and-variables)
+
+[More on lambdas and predicates](#more-on-lambdas-and-predicates)
+
+[More on varargs](#more-on-varargs)
+
+[Multidimensional Array](#multidimensional-array)
+
+[Numeric promotion](#numeric-promotion)
+
+[Object vs Reference](#object-vs-reference)
+
+[Order of catch blocks](#order-of-catch-blocks)
+
+[Order of elements in a class](#order-of-elements-in-a-class)
+
+[Order of Initialization](#orderoof-initialization)
+
+[Order of Precedence](#order-of-precedence)
+
+[Overloading and Varargs](#overloading-and-varargs)
+
+[Overloading constructors](#overloading-constructors)
+
+[Overloading Methods](#overloading-methods)
+
+[Overriding a method](#overriding-a-method)
 
 [Overriding methods with an exception in the method declaration](#overriding-methods-with-an-exception-in-the-method-declaration)
 
+[Overriding vs Hiding Methods](#overriding-vs-hiding-methods)
+
+[Package declarations and imports](#package-declarations-and-imports)
+
+[Parsing dates and Times](#parsing-dates-and-times)
+
+[Pass by Value](#pass-by-value)
+
+[Periods](#periods)
+
+[Polymorphic Parameters](#polymorphic-parameters)
+
+[Pre unary and post unary increment and decrement](#pre-unary-and-post-unary-increment-and-decrement)
+
+[Predicates](#predicates)
+
+[Primitive conversion](#primitive-conversion)
+
 [Printing an exception](#printing-an-exception)
+
+[Redeclaring Private Methods](#redeclaring-private-methods)
+
+[Reference types and primitives](#reference-types-and-primitives)
+
+[Reference Types](#reference-types)
+
+[Reviewing constructor rules](#reviewing-constructor-rules)
+
+[Rules for overriding a method](#rules-for-overriding-a-method)
+
+[Runtime Exceptions](#runtime-exceptions)
+
+[Static imports](#static-imports)
+
+[Static initialization](#static-initialization)
+
+[Static Interface Methods](#static-interface-methods)
+
+[Static variables](#static-variables)
+
+[Static vs Instance](#static-vs-instance)
+
+[String Methods](#string-methods)
+
+[StringBuilder Methods](#stringBuilder-methods)
+
+[StringBuilder](#stringbuilder)
+
+[Strings](#strings)
+
+[switch](#switch)
+
+[Ternary](#ternary)
+
+[Throwing a second exception](#throwing-a-second-exception)
+
+[Throwing an Exception](#throwing-an-exception)
+
+[Try statement](#try-statement)
+
+[Types of Exception](#types-of-exception)
+
+[Understanding Equality](#understanding-equality)
+
+[Understanding Polymorphism](#understanding-polymorphism)
+
+[varargs](#varargs)
+
+[Virtual Methods](#virtual-methods)
+
+[What are exceptions](#what-are-exceptions)
+
+[while](#while)
+
+[Wrapper Classes and ArrayList](#wrapper-classes-and-arraylist)
 
 ---
