@@ -1750,6 +1750,22 @@ LocalDate date = LocalDate.parse("02 12 2020 21:31", dtf2);
 * method signature must contain return type
 * must contain a return statement matching return type that is reached by all branches
 * if void, return statement is optional; either omit or return with no value
+* **return value can be a subclass of the return type**
+* **return value can be a primitive that automatically promotes to the return type**
+```java
+public class ReturnValues {
+	static int foo() {
+		byte b = 1;
+		return b;
+	}
+	static Parent parent() {
+		Child c = new Child();
+		return c;
+	}
+}
+class Parent {}
+class Child extends Parent {}
+```
 #### Method Name
 * must be a [valid identifier](#identifiers)
 #### Parameter List
