@@ -1032,6 +1032,34 @@ b == x; // compiles -> false
 
 ---
 ### Strings
+* Strings are *immutable*, and they are **final** -> the String class can't be extended
+* Strings can be created in three ways:
+  - with a constructor:
+  ```java
+  String s1 = new String(); // an empty string
+  
+  String s2 = new String("Foo"); // takes String as an argument
+  
+  StringBuilder sb = new StringBuilder("Foo");
+  String s3 - new String(sb); // takes StringBuilder as an argument
+  
+  char[] chars = {'f', 'o', 'o'};
+  String s4 = new String(chars); // takes an char array as an agrument
+  ```
+  - with a String literal assignment:
+  ```java
+  String s5 = "Foo";
+  ```
+  - assignment to an existing variable:
+  ```java
+  String s6 = "Foo";
+  String s7 = s6;
+  ```
+* using a constructor always creates a new String object in memory, whereas using a string literal only creates a new object if it isn't already in the string pool
+* **String pool**
+  - string literals are stored in the string pool
+  - they are not garbage collected
+  - they are added to the string pool any time a new String literal is used e.g. `System.out.println("Foo");` adds a new String object to the string pool
 * concatenation
 ```java
 System.out.println("hello" + 1 + 2); // -> hello12
@@ -1040,10 +1068,16 @@ int three = 3;
 String four = "4";
 System.out.println(1 + 2 + three  + four); // -> 64
 ```
-* Strings are *immutable*, and they are **final** -> the String class can't be extended
-* **String pool**
-  - string literals are stored in the string pool
-  - they are not garbage collected
+* using `toString()` on a null String reference prints `null`, rather than nothing:
+```java
+public class PrintingNullString {
+	static String s1 = "Hello";
+	static String s2;
+	public static void main(String[] args) {
+		System.out.println(s1 + " " + s2); // Hello null
+	}
+}
+```
 ### String Methods
 * `length()` -> `"Hello".length()` -> `5`
 * `charAt(int index)` -> `"Hello".charAt(4);` -> `o`
@@ -1060,11 +1094,11 @@ System.out.println(1 + 2 + three  + four); // -> 64
 ```
 * substring
   - `substring(int beginIndex)` -> `"Hello".substring(1);` -> `ello`
-  - `substring(int beginIndex, int endIndex)` -> `"s".substring(0,1);` -> `s` (**n.b. endIndex not included**)
+  - `substring(int beginIndex, int endIndex)` -> `"s".substring(0,1);` -> `s` (**n.b. endIndex not included** - the length is endIndex - beginIndex)
 * `equals(String str)` -> `"Hello".equals("Hello");` -> `true` (*overriden equals, compares characters*)
 * `equalsIgnoreCase(String str)` -> *case-sensitive equals*
 * `startsWith(String str)` -> `"Hello".startsWith("H");` -> `true`
-* `endsWith(String str)` -> `"Hello".endsWith("H");` -> `false`
+* `endsWith(String str)` -> `"Hello".endsWith("H");` -> `false` **remember these take a String as their argument - the following won't compile:" `"Hello".startsWith('H');`
 * `contains(String str)` -> `"Hello".contains("Hell");` -> `true`
 * replace
   - `replace(char oldChar, char newChar)` -> `"Hello".replace('H', 'J');` -> `Jello`
@@ -1086,7 +1120,7 @@ sb.append("World"); // HelloWorld
 ```
 * mutates the original object and returns it - String just returns a new object
 * signatures:
-  - `new StringBuilder()` -> *empty StringBuilder*
+  - `new StringBuilder()` -> *empty StringBuilder, with intial size of 16 reserved character slots*
   - `new StringBuilder(String str)` -> *creates with that value*
   - `new StringBuilder(int size)` -> *reserves slots for characters, but not fixed size (as is mutable)*
 ### StringBuilder Methods
@@ -1098,8 +1132,9 @@ StringBuilder sb = new StringBuilder("HelloWorld");
 sb.substring(2, 6); // lloW
 sb; // HelloWorld
 ```
+* `subSequence()` -> similar to substring but returns `CharSequence`
 * `toString()` -> `new StringBuilder("Hello").toString();` -> `Hello` **return String object**
-#### the return type of all the following methods is StringBuilder
+#### the return type of all the following methods is StringBuilder (i.e., the object the method was called on)
 * `append(Object o)` -> *takes different data types e.g. String, boolean*
 ```java
 StringBuilder sb = new StringBuilder();
@@ -1110,6 +1145,8 @@ System.out.print(sb); // -> 1falsec
 * `delete(int start, int end)` -> `new StringBuilder("Hello").delete(1, 5);` -> `H`
 * `deleteCharAt(int index)` -> `new StringBuilder("Hello").deleteCharAt(0);` -> `ello`
 * `reverse()` -> `new StringBuilder("Hello").reverse();` -> `olleH`
+* `replace(int start, int end, String str)` -> `new StringBuilder("Hello").replace(2, 4, "zz")` -> `Hezzo`
+  - Replaces the characters in a substring of this sequence with characters in the specified String.
 #### StringBuffer
 * StringBuffer is an older, thread-safe (therefore, less efficient) version of StringBuilder which has the same methods
 * **StringBuffer is final, and therefore can't be extended**

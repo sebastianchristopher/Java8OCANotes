@@ -1,3 +1,4 @@
 *.class
 StaticImportClash.java
 /ignore/
+.DS_Store
