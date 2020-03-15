@@ -1403,6 +1403,8 @@ System.out.println(arrList.toString()); // [Foo, Bar]
 * `size()` -> `int` -> **String has `length()`, arrays have `length`, ArrayList has `size()`**
 * `clear()` -> `void` *removes all elements from ArrayList*
 * `contains(Object obj)` -> `boolean` *uses equals() method of class (so String overrides)*
+* `indexOf(Object o)` -> `index` -> returns index of first occurence or -1 if not found
+* `lastIndexOf(Object o)` -> `index` -> returns index of last occurence or -1 if not found
 * `equals(Object o)` -> `boolean` *compares the specified object with this list for equality*
 * `addAll(Collection c)` -> adds the `Collection` (or subclass of `Collection` e.g. `ArrayList`)
   - must be of the same type e.g. `List<String>` and `ArrayList<String>`
