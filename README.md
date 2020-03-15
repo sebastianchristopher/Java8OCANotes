@@ -1014,6 +1014,8 @@ b == x; // compiles -> false
 
 [Wrapper Classes and ArrayList](#wrapper-classes-and-arraylist)
 
+[Looping through an ArrayList](#looping-through-an-arrayList)
+
 [Caching and Wrapper Class Equality](#caching-and-wrapper-class-equality)
 
 [Autoboxing](#autoboxing)
@@ -1188,7 +1190,25 @@ int[] myArray = new int[3];
 int anotherArray[] = new int[3];
 int[] anonymousArray = new int[] {1, 2, 3, 4};
 int[] shorthandAnonymousArray = {1, 2, 3, 4};
-// anonymous arrays have to be declared and initialized on the same line
+```
+* shorthand anonymous arrays (i.e. not using `new`) have to be declared and initialized on the same line:
+```java
+int[] anonArray;
+anonArray = {1, 2, 3, 4}; // DOES NOT COMPILE
+```
+* but longhand anonymous arrays (i.e. using `new`) don't:
+```java
+int[] anonArray;
+anonArray = new int[]{1, 2, 3, 4}; // compiles
+```
+* as long as the initialization is on the same line - you can't do the following:
+```java
+int[] arr = new int[];
+arr = {1, 2, 3}; // DOES NOT COMPILE
+```
+* anonymous arrays can't specify the size of the array:
+```java
+int[] anonArray = new int[4]{1, 2, 3, 4}; // DOES NOT COMPILE
 ```
 * multiple declarations
 ```java
@@ -1200,6 +1220,18 @@ numbers = new int[3];
 int ids[], numbers; // declares one int[] object, and one int
 ids = new int[3];
 numbers = new int[3]; // COMPILE ERROR: incompatible types: int[] cannot be converted to int
+```
+* the first array must always specify size (which must evaulate to an int value):
+```java
+int[] ints = new int[]; // DOES NOT COMPILE
+int[] ints2 = new int[3]; // compiles
+int[][] multi = new int[3][]; // compiles - first array has specified size
+```
+* this can be as an expression as long as it evaluates to an int value:
+```java
+byte a = 1;
+short b = 2;
+int[] ints = new int[a + b];
 ```
 * an array of primitives is an object
 * it can cast (and automatically promote)
@@ -1224,6 +1256,10 @@ int[] arr = {1, 2, 3};
 int[] arr2 = {1, 2, 3};
 System.out.println(arr.equals(arr2)); // false
 ```
+* `clone()` -> returns a new copy of the array
+
+
+* **arrays have a property, `length` - this is not a method so has no brackets `()`**
 * `Arrays.binarySearch(type[] array, Type key)`-> *static method of `java.util.Arrays`*
 * must be used on a sorted array
 ```java
@@ -1284,6 +1320,11 @@ int[][] nums = { {1, 4}, {3},  {9, 8, 7} };
  nums[1] = new int[1];
  nums[2] = new int[2];
  ```
+ * the number of dimensions in the declaration must match the allocation:
+ ```java
+ int[] ints = new int[3][]; // DOES NOT COMPILE
+ int[][] ints2 = new int[3]; // DOES NOT COMPILE
+ ```
  * Looping
  ```java
  int[][] twoD = { {2, 4, 6}, {5, 3, 1} };
@@ -1336,7 +1377,9 @@ arrList.add("Two");
 arrList.add("Three");
 System.out.println(arrList.remove("Three")); // true -> removes object so no longer in ArrayList
 System.out.println(arrList.remove("Three")); // false
-```* `remove(int index)` -> `object` or `IndexOutOfBoundsException`
+```
+  - uses `equals()` to compare equality so careful when using types such as `StringBuilder` which don't override `equals()`
+* `remove(int index)` -> `object` or `IndexOutOfBoundsException`
 ```java
 ArrayList<String> arrList = new ArrayList<>();
 arrList.add("One");
@@ -1357,11 +1400,14 @@ System.out.println(arrList.toString()); // [Foo, Bar]
 ```
 * `get(int index)` -> *opposite of remove, doesn't mutate ArrayList*
 * `isEmpty()` -> `boolean`
-* `size()` -> `int`
+* `size()` -> `int` -> **String has `length()`, arrays have `length`, ArrayList has `size()`**
 * `clear()` -> `void` *removes all elements from ArrayList*
-* `contains(Object obj)` -> `boolean` *uses equals() method of type (so String overrides)*
+* `contains(Object obj)` -> `boolean` *uses equals() method of class (so String overrides)*
 * `equals(Object o)` -> `boolean` *compares the specified object with this list for equality*
-* `java.util.Collections.sort(List l)`
+* `addAll(Collection c)` -> adds the `Collection` (or subclass of `Collection` e.g. `ArrayList`)
+  - must be of the same type e.g. `List<String>` and `ArrayList<String>`
+* `addAll(int index, Collection c)` -> as above but at the specified index
+* the class `java.util.Collections` contains the method `sort()` which takes a List as an argument:
 ```java
 List<Integer> list = new ArrayList<>();
 list.add(10);
@@ -1370,6 +1416,90 @@ list.add(1);
 System.out.println(list.toString()); // -> [10, 5, 1]
 Collections.sort(list);
 System.out.println(list.toString()); // -> [1, 5, 10]
+```
+### Looping through an ArrayList
+* you can loop through an ArrayList using a for loop:
+```java
+import java.util.*;
+
+public class WithForLoop {
+	public static void main(String... args) {
+		List<Integer> list = new ArrayList<>();
+		list.add(1); list.add(2); list.add(3); list.add(4); list.add(5);
+		for(int i = 0; i < list.size(); i++){
+			System.out.println(list.get(i));
+		}
+	}
+}
+	
+```
+* using an enhanced for loop:
+```java
+import java.util.*;
+
+public class WithEnhancedForLoop {
+	public static void main(String... args) {
+		List<Integer> list = new ArrayList<>();
+		list.add(1); list.add(2); list.add(3); list.add(4); list.add(5);
+		for(Integer i : list){
+			System.out.println(i);
+		}
+	}
+}
+```
+* using an `Iterator`:
+```java
+import java.util.*;
+
+public class WithIterator {
+	public static void main(String... args) {
+		List<Integer> list = new ArrayList<>();
+		list.add(1); list.add(2); list.add(3); list.add(4); list.add(5);
+		Iterator<Integer> iterator = list.iterator();
+		while(iterator.hasNext()){
+			System.out.println(iterator.next());
+		}
+	}
+}
+```
+* using a `ListIterator`:
+```java
+import java.util.*;
+
+public class WithListIterator {
+	public static void main(String... args) {
+		List<Integer> list = new ArrayList<>();
+		list.add(1); list.add(2); list.add(3); list.add(4); list.add(5);
+		Iterator<Integer> */or ListIterator<Integer>*/ listIterator = list.listIterator();
+		while(listIterator.hasNext()){
+			System.out.println(listIterator.next());
+		}
+	}
+}
+```
+* `Iterator` and `ListIterator` are interfaces in `java.util` - `ListIterator` implements `Iterator`
+* using an iterator allows you to remove elements as you loop through, which is not possible with a for loop or enhanced for loop
+* the iterator is linked to the ArrayList when it is initialized - if modifications are made to the ArrayList after the iterator is initialized, it will throw a runtime error:
+```java
+import java.util.*;
+
+public class ConcurrentModification {
+	public static void main(String... args) {
+		List<Integer> list = new ArrayList<>();
+		list.add(1); list.add(2); list.add(3);
+		Iterator<Integer> iterator = list.listIterator();
+		list.add(4);
+		while(iterator.hasNext()){
+			System.out.println(iterator.next());
+		}
+	}
+}
+/* 
+* Exception in thread "main" java.util.ConcurrentModificationException
+*         at java.util.ArrayList$Itr.checkForComodification(ArrayList.java:901)
+*         at java.util.ArrayList$Itr.next(ArrayList.java:851)
+*         at ConcurrentModification.main(ConcurrentModification.java:10)
+*/
 ```
 ### Wrapper Classes and ArrayList
 * **Wrapper classes are final, and therefore can't be extended**
@@ -1494,6 +1624,8 @@ integerList.remove(1);
 System.out.print(integerList.toString()); // [1]
 ```
 * remember, remove() takes either an object or an integer as an argument, and the above interprets it as an index to remove
+* passing `remove()` for example, 1, is an `int` not an object - this will be an index
+* passing `remove()` `new Integer(1)` or `Integer.valueOf("1")` is an object
 * to explicitly remove the object:
 ```java
 List<Integer> integerList = new ArrayList<>();
@@ -4300,6 +4432,12 @@ public class PrintingAnException {
 ---
 ### Index
 
+---
+#### [A](#a) [B](#b) [C](#c) [D](#d) [E](#e) [F](#f) [G](#g) [H](#h) [I](#i) [J](#j) [K](#k) [L](#l) [M](#m) [N](#n) [O](#o) [P](#p) [Q](#q) [R](#r) [S](#s) [T](#t) [U](#u) [V](#v) [W](#w) [X](#x) [Y](#y) [Z](#z)
+
+---
+
+#### A
 [Abstract Class Definition Rules](#abstract-class-definition-rules)
 
 [Abstract Classes](#abstract-classes)
@@ -4326,12 +4464,14 @@ public class PrintingAnException {
 
 [Autoboxing](#autoboxing)
 
+#### B
 [Benefits of Java](#benefits-of-java)
 
 [break and continue with labelled statements](#break-and-continue-with-labelled-statements)
 
 [break](#break)
 
+#### C
 [Caching and Wrapper Class Equality](#caching-and-wrapper-class-equality)
 
 [Calling constructors](#calling-constructors)
@@ -4374,6 +4514,7 @@ public class PrintingAnException {
 
 [Creating Objects](#creating-objects)
 
+#### D
 [Dates and Times](#dates-and-times)
 
 [Declaring and initializing variables](#declaring-and-initializing-variables)
@@ -4396,12 +4537,14 @@ public class PrintingAnException {
 
 [do while](#do-while)
 
+#### E
 [Encapsulation](#encapsulation)
 
 [Errors](#errors)
 
 [Extra things](#extra-things)
 
+#### F
 [Final fields](#final-fields)
 
 [Finally block](#finally-block)
@@ -4412,8 +4555,10 @@ public class PrintingAnException {
 
 [Formatting Dates and Times](#formatting-dates-and-times)
 
+#### H
 [Hiding Static Methods](#hiding-static-methods)
 
+#### I
 [Identifiers](#identifiers)
 
 [if else](#if-else)
@@ -4430,6 +4575,7 @@ public class PrintingAnException {
 
 [Interface Variables](#interface-variables)
 
+#### L
 [Labels](#labels)
 
 [Lambdas](#lambdas)
@@ -4438,6 +4584,9 @@ public class PrintingAnException {
 
 [Logical operators](#logical-operators)
 
+[Looping through an ArrayList](#looping-through-an-arrayList)
+
+#### M
 [main() method](#main-method)
 
 [Manipulating Dates and Times](#manipulating-dates-and-times)
@@ -4452,8 +4601,10 @@ public class PrintingAnException {
 
 [Multidimensional Array](#multidimensional-array)
 
+#### N
 [Numeric promotion](#numeric-promotion)
 
+#### O
 [Object vs Reference](#object-vs-reference)
 
 [Order of catch blocks](#order-of-catch-blocks)
@@ -4476,6 +4627,7 @@ public class PrintingAnException {
 
 [Overriding vs Hiding Methods](#overriding-vs-hiding-methods)
 
+#### P
 [Package declarations and imports](#package-declarations-and-imports)
 
 [Parsing dates and Times](#parsing-dates-and-times)
@@ -4494,6 +4646,7 @@ public class PrintingAnException {
 
 [Printing an exception](#printing-an-exception)
 
+#### R
 [Redeclaring Private Methods](#redeclaring-private-methods)
 
 [Reference types and primitives](#reference-types-and-primitives)
@@ -4506,6 +4659,7 @@ public class PrintingAnException {
 
 [Runtime Exceptions](#runtime-exceptions)
 
+#### S
 [Static imports](#static-imports)
 
 [Static initialization](#static-initialization)
@@ -4526,6 +4680,7 @@ public class PrintingAnException {
 
 [switch](#switch)
 
+#### T
 [Ternary](#ternary)
 
 [Throwing a second exception](#throwing-a-second-exception)
@@ -4536,14 +4691,17 @@ public class PrintingAnException {
 
 [Types of Exception](#types-of-exception)
 
+#### U
 [Understanding Equality](#understanding-equality)
 
 [Understanding Polymorphism](#understanding-polymorphism)
 
+#### V
 [varargs](#varargs)
 
 [Virtual Methods](#virtual-methods)
 
+#### W
 [What are exceptions](#what-are-exceptions)
 
 [while](#while)
