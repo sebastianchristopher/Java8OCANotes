@@ -1407,6 +1407,19 @@ System.out.println(arrList.toString()); // [Foo, Bar]
 * `lastIndexOf(Object o)` -> `index` -> returns index of last occurence or -1 if not found
 * `equals(Object o)` -> `boolean` *compares the specified object with this list for equality*
 * `addAll(Collection c)` -> adds the `Collection` (or subclass of `Collection` e.g. `ArrayList`)
+* `clone()` -> shallow copy - creates a new copy of the ArrayList, but not copies of its elements which still refer to the initial objects (until modified - see below)
+```java
+ArrayList<Integer> list = new ArrayList<>();
+list.add(666); list.add(777); list.add(888);
+
+ArrayList<Integer> clonedList = (ArrayList<Integer>)list.clone();
+		
+System.out.println(list == clonedList); // false - clone has created a new copy of the list
+System.out.println(list.get(0) == clonedList.get(0)); // true = shallow copy creates a new copy of the list but not the objects within it - so the object point to the same place in memory
+		
+list.set(0, 999);
+System.out.println(list.get(0) == clonedList.get(0)); // false - when set is used on one of the collections, a new object is created 
+```
   - must be of the same type e.g. `List<String>` and `ArrayList<String>`
 * `addAll(int index, Collection c)` -> as above but at the specified index
 * the class `java.util.Collections` contains the method `sort()` which takes a List as an argument:
@@ -2764,6 +2777,8 @@ interface Predicate<T> {
 
 [Rules for overriding a method](#rules-for-overriding-a-method)
 
+[Overriding Equals](#overriding-equals)
+
 [Redeclaring Private Methods](#redeclaring-private-methods)
 
 [Hiding Static Methods](#hiding-static-methods)
@@ -3059,6 +3074,36 @@ public class Child extends Parent {
 * exceptions in the child method must be the same or narrower
 * return types in the child method must be the same or narrower
 * access to the child method must be the same or broader
+### Overriding Equals
+* all classes inherit the method `equals()` from Object
+* its signature is `equals(Object obj)`
+* its default implementation checks whether two instances are the same, so it is common to override it to check for logical equality
+* when overriding equals, make sure the parameter is `Object`, not the class you are overriding equals in:
+```java
+class Cat {
+	String name;
+	int whiskers;
+	public boolean equals(Object o){ // overrides the equals method in Object
+		// implementation
+	}
+	
+	// NOT:
+	public boolean equals(Cat c){ // new method with its own signature, specific to this class
+		// implementation
+	}
+}
+```
+* it's legal to implement equals any way you want, but the Java API defines a contract of how it *should ideally* be implemented:
+> The equals method implements an equivalence relation on non-null object references:
+>
+> It is reflexive: for any non-null reference value x, x.equals(x) should return true.
+> It is symmetric: for any non-null reference values x and y, x.equals(y) should return true if and only if y.equals(x) returns true.
+> It is transitive: for any non-null reference values x, y, and z, if x.equals(y) returns true and y.equals(z) returns true, then x.equals(z) should return true.
+> It is consistent: for any non-null reference values x and y, multiple invocations of x.equals(y) consistently return true or consistently return false, provided no information used in equals comparisons on the objects is modified.
+> For any non-null reference value x, x.equals(null) should return false.
+> The equals method for class Object implements the most discriminating possible equivalence relation on objects; that is, for any non-null reference values x and y, this method returns true if and only if x and y refer to the same object (x == y has the value true).>
+>
+> Note that it is generally necessary to override the hashCode method whenever this method is overridden, so as to maintain the general contract for the hashCode method, which states that equal objects must have equal hash codes.
 ### Redeclaring Private Methods
 * private methods can't be overriden as the child class can't access them
 * they can be overwritten/redeclared
@@ -4624,6 +4669,8 @@ public class PrintingAnException {
 [Overloading Methods](#overloading-methods)
 
 [Overriding a method](#overriding-a-method)
+
+[Overriding Equals](#overriding-equals)
 
 [Overriding methods with an exception in the method declaration](#overriding-methods-with-an-exception-in-the-method-declaration)
 
