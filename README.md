@@ -1754,7 +1754,28 @@ LocalDate ld = LocalDate.of(1989, 1, 32); // throws java.time.DateTimeException:
 #### System time
 * `static`	`now()` -> e.g. `LocalTime.now();`, `LocalDate.now();`, `LocalDateTime.now();`
 #### isBefore, isAfter
+```java
+import java.time.*;
 
+public class IsAfterAndIsBefore {
+	public static void main(String[] args){
+		LocalDate d1 = LocalDate.of(1999, 12, 31);
+		LocalDate d2 = LocalDate.of(2000, 1, 1);
+		System.out.println(d1.isBefore(d2)); // true
+		System.out.println(d1.isAfter(d2)); // false
+		
+		LocalTime t1 = LocalTime.of(11, 59);
+		LocalTime t2 = LocalTime.of(00, 00);
+		System.out.println(t1.isBefore(t2)); // false
+		System.out.println(t1.isAfter(t2)); // true
+		
+		LocalDateTime ldt1 = d1.atTime(t1);
+		LocalDateTime ldt2 = t2.atDate(d2);
+		System.out.println(ldt1.isBefore(ldt2)); // true
+		System.out.println(ldt1.isAfter(ldt2)); // false
+	}
+}
+```
 ### Manipulating Dates and Times
 ```java
 LocalDate date = LocalDate.of(2020, 2, 12);
@@ -1795,7 +1816,7 @@ date = date.plusDays(1).plusHours(2); // DOES NOT COMPILE
 * `withNano(int nanoOfSecond)` -> Returns a copy of this LocalTime with the nano-of-second altered.
 * `withSecond(int second)` -> Returns a copy of this LocalTime with the second-of-minute altered.
 
-* `LocalDateTime` has access to all the above methods, returning a `LocalDateTime` instance
+* `**LocalDateTime` has access to all the above methods, returning a `LocalDateTime` instance**
 * the methods are chainable:
 ```java
 import java.time.*;
@@ -1835,7 +1856,9 @@ public class LocalDateAndTimeAt {
 	}
 }
 ```
-* **n.b. there is no overloaded `atDate()` - only  `atDate(LocalDate dt)`
+* **n.b. there is no overloaded `atDate()` - only  `atDate(LocalDate dt)`**
+#### epoch
+* `LocalDate`	`toEpochDay()` -> `long` -> Converts this date to the Epoch Day (the count of dance since January 1 1970 00:00:00 GMT)
 ### Periods
 `java.time.Period` *implements TemporalAmount*
 
