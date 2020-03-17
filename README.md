@@ -1024,6 +1024,8 @@ b == x; // compiles -> false
 
 [Dates and Times](#dates-and-times)
 
+[Querying Dates and Times](#querying-dates-and-times)
+
 [Manipulating Dates and Times](#manipulating-dates-and-times)
 
 [Periods](#periods)
@@ -1492,7 +1494,8 @@ public class WithListIterator {
 	}
 }
 ```
-* `Iterator` and `ListIterator` are interfaces in `java.util` - `ListIterator` implements `Iterator`
+* `Iterator` and `ListIterator` are interfaces in `java.util`
+* `ListIterator` implements `Iterator`
 * using an iterator allows you to remove elements as you loop through, which is not possible with a for loop or enhanced for loop
 * the iterator is linked to the ArrayList when it is initialized - if modifications are made to the ArrayList after the iterator is initialized, it will throw a runtime error:
 ```java
@@ -1698,7 +1701,7 @@ stringList.remove(1);
 System.out.print(stringList.toString()); // -> [One, Four]
 ```
 ### Dates and Times
-** all immutable, all have no public constructor**
+* **all immutable, all have no public constructor**
 * `java.time.LocalDate`
 * `java.time.LocalTime`
 * `java.time.LocalDateTime`
@@ -1735,6 +1738,23 @@ LocalDate ld = new LocalDate(2020, 2, 12); // DOES NOT COMPILE
 ```java
 LocalDate ld = LocalDate.of(1989, 1, 32); // throws java.time.DateTimeException: Invalid value for DayOfMonth (valid values 1 - 28/31): 32
 ```
+### Querying Dates and Times
+* `static`	`getDayOfWeek()` -> returns `DayOfWeek enum` -> available to `LocalDate` and `LocalDateTime`
+* `static`	`getDayOfMonth()` -> returns `int` -> available to `LocalDate` and `LocalDateTime`
+* `static`	`getDayOfYear()` -> returns `int` -> available to `LocalDate` and `LocalDateTime`
+* `static`	`getDayOfYear()` -> returns `int` -> available to `LocalDate` and `LocalDateTime`
+* `static`	`getMonth()` -> returns `Month enum` -> available to `LocalDate` and `LocalDateTime`
+* `static`	`getMonthValue()` -> returns `int` -> available to `LocalDate` and `LocalDateTime`
+* `static`	`getYear()` -> returns `int` -> available to `LocalDate` and `LocalDateTime`
+
+* `static`	`getNano()` -> returns `int` -> available to `LocalTime` and `LocalDateTime`
+* `static`	`getSecond()` -> returns `int` -> available to `LocalTime` and `LocalDateTime`
+* `static`	`getMinute()` -> returns `int` -> available to `LocalTime` and `LocalDateTime`
+* `static`	`getHour()` -> returns `int` -> available to `LocalTime` and `LocalDateTime`
+#### System time
+* `static`	`now()` -> e.g. `LocalTime.now();`, `LocalDate.now();`, `LocalDateTime.now();`
+#### isBefore, isAfter
+
 ### Manipulating Dates and Times
 ```java
 LocalDate date = LocalDate.of(2020, 2, 12);
@@ -1764,8 +1784,61 @@ date = date.plusDays(1).plusWeeks(1);
 System.out.println(date); // 2020-02-20
 date = date.plusDays(1).plusHours(2); // DOES NOT COMPILE
 ```
+#### with
+* `withDayOfMonth(int dayOfMonth)` -> Returns a copy of this LocalDate with the day-of-month altered
+* `withDayOfYear(int dayOfYear)` -> Returns a copy of this LocalDate with the day-of-year altered
+* `withMonth(int month)` -> Returns a copy of this LocalDate with the month-of-year altered
+* `withYear(int year)` -> Returns a copy of this LocalDate with the year altered
+
+* `withHour(int hour)` -> Returns a copy of this LocalTime with the hour-of-day altered.
+* `withMinute(int minute)` -> Returns a copy of this LocalTime with the minute-of-hour altered.
+* `withNano(int nanoOfSecond)` -> Returns a copy of this LocalTime with the nano-of-second altered.
+* `withSecond(int second)` -> Returns a copy of this LocalTime with the second-of-minute altered.
+
+* `LocalDateTime` has access to all the above methods, returning a `LocalDateTime` instance
+* the methods are chainable:
+```java
+import java.time.*;
+
+public class LocalDateTimeWith {
+	public static void main(String[] args) {
+		LocalDateTime dtm = LocalDateTime.of(2020, 2, 11, 21, 31);
+		System.out.println(dtm.withYear(2021)); // -> 2021-02-11T21:31
+		System.out.println(dtm.withHour(0).withMinute(0)); // -> 2020-02-11T00:00
+	}
+}
+```
+#### at
+* combine a LocalDate and LocalTime to create a LocalDateTime object
+```java
+import java.time.*;
+
+public class LocalDateAndTimeAt {
+	public static void main(String[] args) {
+		LocalDate dt = LocalDate.of(2020, 2, 11);
+		LocalTime tm = LocalTime.of(21, 31);
+		
+		LocalDateTime dtm1 = dt.atTime(tm);
+		System.out.println(dtm1); // -> 2020-02-11T21:31
+				
+		LocalDateTime dtm2 = tm.atDate(dt);
+		System.out.println(dtm2); // -> 2020-02-11T21:31
+		
+		LocalDateTime dtm3 = dt.atTime(12, 31);
+		System.out.println(dtm3); // -> 2020-02-11T12:31
+		
+		LocalDateTime dtm4 = dt.atTime(12, 31, 33);
+		System.out.println(dtm4); // -> 2020-02-11T12:31:33
+		
+		LocalDateTime dtm5 = dt.atTime(12, 31, 33, 400);
+		System.out.println(dtm5); // -> 2020-02-11T12:31:33.000000400
+	}
+}
+```
+* **n.b. there is no overloaded `atDate()` - only  `atDate(LocalDate dt)`
 ### Periods
 `java.time.Period` *implements TemporalAmount*
+
 * immutable
 * `static Period	of(int years, int months, int days)`
 * `static Period	ofDays(int days)`
@@ -1854,6 +1927,8 @@ dtf.format(date); // -> February 12, 2020
 dtf.format(dateTime); // -> February 12, 2020
 ```
 ### Parsing Dates and Times
+* `static`	`parse()`
+* `static`	`parse(Formatter f)`
 ```java
 DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MM dd yyyy");
 LocalDate date = LocalDate.parse("00 02 2015", dtf);
@@ -1866,6 +1941,7 @@ LocalDate date = LocalDate.parse("02 12 2020 21:31", dtf2);
 * the class that `parse()` uses must match the type being created
 * if the type contains time fields, the string must be able to handle them e.g. "h:mm" or "M D yy HH:mm"
 * if the type contains date fields, the string must have them e.g. "MMMM d yyyy"
+* if used without a formatter, must match the pattern `yyyy-MM-dd` for LocalDate and `HH-mm-ss` for LocalTime exactly
 ## Chapter 4 - Methods and Encapsulation
 **In this chapter:**
 
@@ -4694,6 +4770,10 @@ public class PrintingAnException {
 [Primitive conversion](#primitive-conversion)
 
 [Printing an exception](#printing-an-exception)
+
+#### Q
+
+[Querying Dates and Times](#querying-dates-and-times)
 
 #### R
 [Redeclaring Private Methods](#redeclaring-private-methods)
