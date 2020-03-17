@@ -1738,6 +1738,13 @@ LocalDate ld = new LocalDate(2020, 2, 12); // DOES NOT COMPILE
 ```java
 LocalDate ld = LocalDate.of(1989, 1, 32); // throws java.time.DateTimeException: Invalid value for DayOfMonth (valid values 1 - 28/31): 32
 ```
+#### LocalTime constants
+* `LocalTime.MIN` —> Minimum supported time (00:00)
+* `LocalTime.MAX` —> Maximum supported time (23:59:59.999999999)
+* `LocalTime.MIDNIGHT` —> midnight (00:00)
+* `LocalTime.NOON` —> midday (12:00)
+#### System time
+* `static`	`now()` -> e.g. `LocalTime.now();`, `LocalDate.now();`, `LocalDateTime.now();`
 ### Querying Dates and Times
 * `static`	`getDayOfWeek()` -> returns `DayOfWeek enum` -> available to `LocalDate` and `LocalDateTime`
 * `static`	`getDayOfMonth()` -> returns `int` -> available to `LocalDate` and `LocalDateTime`
@@ -1751,8 +1758,7 @@ LocalDate ld = LocalDate.of(1989, 1, 32); // throws java.time.DateTimeException:
 * `static`	`getSecond()` -> returns `int` -> available to `LocalTime` and `LocalDateTime`
 * `static`	`getMinute()` -> returns `int` -> available to `LocalTime` and `LocalDateTime`
 * `static`	`getHour()` -> returns `int` -> available to `LocalTime` and `LocalDateTime`
-#### System time
-* `static`	`now()` -> e.g. `LocalTime.now();`, `LocalDate.now();`, `LocalDateTime.now();`
+
 #### isBefore, isAfter
 ```java
 import java.time.*;
@@ -1890,8 +1896,34 @@ LocalDate ld = LocalDate.of(2020, 2, 12);
 Period p = Period.ofWeeks(1).ofDays(1); // only processes last method
 System.out.println(ld.plus(p)); // 2020-02-13
 ```
-* can't be used with DateTime -> will throw a runtime exception -> use `Duration` instead (also implements *TemporalAmount*)
-
+* can't be used with LocalTime -> will throw a runtime exception -> use `Duration` instead (also implements *TemporalAmount*)
+#### between
+Period periodBetween = Period.between(carnivalStart, carnivalEnd); System.out.println(periodBetween);
+#### parse period
+* can also be instantiated with static `parse()` which takes ISO-8601 period formats `PnYnMnD` and `PnW` as arguments:
+> The string starts with an optional sign, denoted by the ASCII negative or positive symbol. If negative, the whole period is negated. The ASCII letter "P" is next in upper or lower case. > There are then four sections, each consisting of a number and a suffix. At least one of the four sections must be present. The sections have suffixes in ASCII of "Y", "M", "W" and "D" for years, months, weeks and days, accepted in upper or lower case. The suffixes must occur in order. The number part of each section must consist of ASCII digits. The number may be prefixed by the ASCII negative or positive symbol. The number must parse to an int.
+>
+>The leading plus/minus sign, and negative values for other units are not part of the ISO-8601 standard. In addition, ISO-8601 does not permit mixing between the PnYnMnD and PnW formats. >Any week-based input is multiplied by 7 and treated as a number of days.
+>
+>For example, the following are valid inputs:
+>
+>   "P2Y"             -- Period.ofYears(2)
+>   "P3M"             -- Period.ofMonths(3)
+>   "P4W"             -- Period.ofWeeks(4)
+>   "P5D"             -- Period.ofDays(5)
+>   "P1Y2M3D"         -- Period.of(1, 2, 3)
+>   "P1Y2M3W4D"       -- Period.of(1, 2, 25)
+>   "P-1Y2M"          -- Period.of(-1, 2, 0)
+>   "-P1Y2M"          -- Period.of(-1, -2, 0)
+#### querying period
+```java
+Period period = Period.of(2,4,40);
+System.out.println(period.getYears()); // 2
+System.out.println(period.getMonths()); // 4
+System.out.println(period.getDays()); // 40
+```
+#### isZero() and isNegative()
+* instance methods - `isZero()` returns boolean true if all three units are zero - 
 ### Formatting Dates and Times
 `java.time.format.DateTimeFormatter`
 * `static DateTimeFormatter	ofLocalizedDate(FormatStyle dateStyle)`
