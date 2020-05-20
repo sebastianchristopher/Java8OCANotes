@@ -37,6 +37,7 @@ public class ImmutableClasses{
 		
 		ImmutableReturnType obj3 = new ImmutableReturnType("Foo");
 		// obj3.getName().append("bar"); // can't append this as it's a String not a StringBuilder
+		obj3.getName().concat("bar"); // but I can do this!
 		System.out.println(obj3.getName()); // -> Foo
 	}
 }

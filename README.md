@@ -19,6 +19,8 @@ My notes from Boyarsky and Selikoff's *Oracle Certtified Associate Java SE 8 Pro
 
 [Chapter 6 - Exceptions](#chapter-6---exceptions)
 
+[Misc notes](#misc-notes)
+
 ---
 
 [Index](#index)
@@ -1100,7 +1102,7 @@ public class PrintingNullString {
   - `substring(int beginIndex)` -> `"Hello".substring(1);` -> `ello`
   - `substring(int beginIndex, int endIndex)` -> `"s".substring(0,1);` -> `s` (**n.b. endIndex not included** - the length is endIndex - beginIndex)
 * `equals(String str)` -> `"Hello".equals("Hello");` -> `true` (*overriden equals, compares characters*)
-* `equalsIgnoreCase(String str)` -> *case-sensitive equals*
+* `equalsIgnoreCase(String str)` -> *case-insensitive equals*
 * `startsWith(String str)` -> `"Hello".startsWith("H");` -> `true`
 * `endsWith(String str)` -> `"Hello".endsWith("H");` -> `false` **remember these take a String as their argument - the following won't compile:" `"Hello".startsWith('H');`
 * `contains(String str)` -> `"Hello".contains("Hell");` -> `true`
@@ -1108,6 +1110,7 @@ public class PrintingNullString {
   - `replace(char oldChar, char newChar)` -> `"Hello".replace('H', 'J');` -> `Jello`
   - `replace(String oldStr, String newStr)` -> `"Hello".replace("lo", "icopter");` -> `Helicopter`
 * `trim()` -> `"\t  a b c \n".trim();` -> `a b c` (*trims trailing whitespace, tab and newline*)
+* `concat(String s)` -> `"Hello".concat("World");` -> `HelloWorld`
 #### Chaining methods
 * you can chain as many methods as you want - each method creates a new string object
 * remember, strings are immutable so the original object isn't affected
@@ -1186,6 +1189,7 @@ System.out.println(sb1.equals(sb2)); // false
 System.out.println(sb1.toString().equals(sb2.toString())); // true
 ```
 ### Arrays
+**arrays are mutable, but their length is fixed**
 * Primitive arrays
 ```java
 int[] myArray = new int[3];
@@ -1271,12 +1275,12 @@ public class Main {
 		int[] nums = {4, 6, 8, 2};
 		Arrays.sort(nums);
 		Arrays.binarySearch(nums, 2); // -> 0 -> index of 2
-		Arrays.binarySearch(nums, 5); // -> negative (index + 1) of where it would go
+		Arrays.binarySearch(nums, 5); // -> -3 -> negative (index + 1) of where it would go
   }
 }
 ```
 * *remember for the exam, if line starts after 1 or is a snippet, assume imports are present*
-* *if the array is unsorted, the result is unpredictable lok for answer like 'undefined' or 'unpredictable'*
+* *if the array is unsorted, the result is unpredictable - look for answer like 'undefined' or 'unpredictable'*
 ### varargs
 * you can use a variable created with varagrs as if it were a normal array
 ```java
@@ -1354,7 +1358,7 @@ ArrayList arrList3 = new ArrayList(arrList2);
 // post-Java 5, using generics:
 ArrayList<String> arrList4 = new ArrayList<String>();
 // post-Java 7:
-ArrayList<string> arrList5 = new ArrayList<>();
+ArrayList<String> arrList5 = new ArrayList<>();
 ```
 ### ArrayList Methods
 * add
@@ -1603,7 +1607,7 @@ public class ImmutableWrappers {
 #### How to create a wrapper instance
 * wrapper classes are created by:
   - assignment e.g. `Boolean a = true;`, `Boolean b = Boolean.TRUE;`
-  - constructors e.g. `Boolean e = new Boolean(true);`, `Boolean d = new Boolean("truE");
+  - constructors e.g. `Boolean e = new Boolean(true);`, `Boolean d = new Boolean("truE");`
   - static methods e.g. `Boolean.valueOf(true);`, `Boolean.valueOf("TrUe");`
 * this is true for all wrapper classes, below are the full Boolean signatures as an example
 * **n.b.** String argument is non-case-sensitive
@@ -1683,6 +1687,7 @@ for(String el : stringArray){
 ```
 #### array to List
 * this list will be of a fixed size - add or remove will throw UnsupportedOperationException
+* you can however change the elements within it, and call e.g. Collections.sort() on it
 ```java
 String[] stringArray = {"One", "Two"};
 List<String> stringList = Arrays.asList(stringArray);
@@ -1864,7 +1869,7 @@ public class LocalDateAndTimeAt {
 ```
 * **n.b. there is no overloaded `atDate()` - only  `atDate(LocalDate dt)`**
 #### epoch
-* `LocalDate`	`toEpochDay()` -> `long` -> Converts this date to the Epoch Day (the count of dance since January 1 1970 00:00:00 GMT)
+* `LocalDate`	`toEpochDay()` -> `long` -> Converts this date to the Epoch Day (the count of days since January 1 1970 00:00:00 GMT)
 ### Periods
 `java.time.Period` *implements TemporalAmount*
 
@@ -1898,7 +1903,11 @@ System.out.println(ld.plus(p)); // 2020-02-13
 ```
 * can't be used with LocalTime -> will throw a runtime exception -> use `Duration` instead (also implements *TemporalAmount*)
 #### between
-Period periodBetween = Period.between(carnivalStart, carnivalEnd); System.out.println(periodBetween);
+```java
+Period periodBetween = Period.between(carnivalStart, carnivalEnd);
+System.out.println(periodBetween);
+```
+
 #### parse period
 * can also be instantiated with static `parse()` which takes ISO-8601 period formats `PnYnMnD` and `PnW` as arguments:
 > The string starts with an optional sign, denoted by the ASCII negative or positive symbol. If negative, the whole period is negated. The ASCII letter "P" is next in upper or lower case. > There are then four sections, each consisting of a number and a suffix. At least one of the four sections must be present. The sections have suffixes in ASCII of "Y", "M", "W" and "D" for years, months, weeks and days, accepted in upper or lower case. The suffixes must occur in order. The number part of each section must consist of ASCII digits. The number may be prefixed by the ASCII negative or positive symbol. The number must parse to an int.
@@ -2603,7 +2612,7 @@ public class PrivateConstructorTest {
 }
 ```
 ### Overloading constructors
-* DRYs up code and adds degulat values to variables
+* DRYs up code and adds default values to variables
 * the first line of a constructor is always either:
   - a call to another constructor in the same class using this
   - a call to a constructor in the superclass
@@ -2666,7 +2675,7 @@ public class FinalFieldsTester {
 ### Order of Initialization
 1. initialize superclass if present
 2. static members in order they appear (variables and initializers)
-3. instnace members in order they appear (variables and initializers)
+3. instance members in order they appear (variables and initializers)
 4. the constructor
 ```java
 public class OrderOfInitialization {
@@ -2727,7 +2736,7 @@ private boolean hat;
 public int getNumberOfHats(){
 	return numberOfHats;
 }
-public booealn isHat(){
+public boolean isHat(){
 	return hat;
 }
 public void setNumberOfHats(int num){
@@ -2792,12 +2801,13 @@ public class ImmutableClasses{
 		
 		ImmutableReturnType obj3 = new ImmutableReturnType("Foo");
 		// obj3.getName().append("bar"); // can't append this as it's a String not a StringBuilder
+		obj3.getName().concat("bar"); // but I can do this!
 		System.out.println(obj3.getName()); // -> Foo
 	}
 }
 ```
 ### Lambdas
-* lambdas expression without optional parts:
+* lambda expression without optional parts:
   - `parameter` `arrow` `body`
   - `a ` `->` `a.isHat()`
 * with optional parts:
@@ -2807,7 +2817,8 @@ public class ImmutableClasses{
   1. parentheses can be omitted if there is only one parameter and the type is not explicitly stated
   2. curly braces `{}` can be omitted if there is only one statement
   3. the return keyword can be omitted if not using a code block `{}`
-  4. semidcolon can be omitted if not using a code block `{}`
+  4. semicolon can be omitted if not using a code block `{}`
+  4. semicolon can be omitted if not using a code block `{}`
 #### valid lambdas
 * `() -> true; ` -> 0 parameters
 * `a -> a.startsWith("foo")` -> 1 parameter
@@ -2826,7 +2837,7 @@ public class ImmutableClasses{
 `(a, b) -> {int c = 3; return 5;}` -> legal - declares new variable in code block
 ### Predicates
 * lambdas work with interfaces that only have one method
-* these are claled functional interfaces
+* these are called functional interfaces
 * Java provides a general interface for this purpose: `java.util.function.Predicate`
 ```java
 public interface Predicate<T>{
@@ -3159,7 +3170,7 @@ public int getAge(){
 ### Rules for overriding a method
 1. child method must have same signature as parent method
 2. the child method must be at least as accessible as the parent method
-3. the child method must not introduce any new checked exceptions unless they are broader than the parent method's checked exceptions
+3. the child method must not introduce any new checked exceptions unless they are as or less broad than the parent method's checked exceptions
 4. the child method's return type must be the same or a subclass of the parent's return type
 * the last rule is known as *covariant returns* - the return type of an overriding method must be the same or a subtype
 ```java
@@ -3402,7 +3413,7 @@ public class HidingVariables {
 * *the rules are the same for static and non-static variables*
 > The nonprivate static variables and methods are inherited by derived classes. The static members aren’t involved in runtime polymorphism. You can’t override the static members in a derived class, but you can redefine them.
 ### Abstract Classes
-* abstract classes allow you to create a blueprint parent class, for other class to extend, without hacing to implement any of the methods in the parent class
+* abstract classes allow you to create a blueprint parent class, for other classes to extend, without hacing to implement any of the methods in the parent class
 * abstract classes cannot be instantiated
 * abstract methods have no implementation in the class they are declared in
 ```java
@@ -3435,7 +3446,7 @@ public class Piano extends Instrument {
 	}
 }
 ```
-* abstract classes may contain non-abstract members - these are inherited as concrete classes by any subclasses (as they would be from any class)
+* abstract classes may contain non-abstract members - these are inherited as concrete members by any subclasses (as they would be from any class)
 * abstract classes are allowed to contain no abstract methods if they wish:
 ```java
 public abstract class NoMethods {}; // compiles fine
@@ -4606,6 +4617,41 @@ public class PrintingAnException {
 *         at PrintingAnException.main(PrintingAnException.java:8)
 */
 ```
+
+---
+## Misc Notes
+
+Here's something useful to know about compilation - a line **won't** fail to compile if its reference fails to compile - see example below:
+
+```java
+public class Compilation {
+  public static void main(String[] args) {
+    Test t = new Test();
+    String x = t.foo;
+    int y = t.bar;
+  }
+  
+}
+class Test{
+  private Test(){}
+  public String foo;
+  private int bar;
+}
+```
+
+```bash
+javac Compilation.java
+Compilation.java:3: error: Test() has private access in Test
+    Test t = new Test();
+             ^
+Compilation.java:5: error: bar has private access in Test
+    int y = t.bar;
+             ^
+2 errors
+```
+
+Even though the line declaring and initializing `t` fails to compile, the following line, which uses `t.foo`, is fine - each line checks for compile errors independently of all others.
+---
 
 ---
 ### Index
