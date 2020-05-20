@@ -1468,7 +1468,7 @@ public class WithEnhancedForLoop {
 	}
 }
 ```
-* using an `Iterator`:
+* using an `Iterator` (`java.util.Iterator`):
 ```java
 import java.util.*;
 
@@ -3504,7 +3504,7 @@ public class AnimalTester{
 	}
 }
 ```
-* an abstract becomes useful when it is extended by a concrete subclass
+* an abstract class becomes useful when it is extended by a concrete subclass
 * a concrete class is the first non-abstract class to extend an abstract class
 * a concrete class must implement all the abstract methods it inherits
 > Abstract classes can be extended by other abstract classes. They don't have to implement its methods, but if they do they are passed to any class that extends it as concrete methods. Any inherited abstract methods not implemented, and any new abstract methods defined in the class, are passed to subclasses that extend it.
@@ -3586,9 +3586,9 @@ public class MyClass implements MyInterface{}
 ```java
 public class Rectangle implements isDrawable, isScalable{}
 ```
-* in the above example, Recangle is requireed to implement all abstract methods defined in isDrawable and isScalable (if any)
+* in the above example, Rectangle is required to implement all abstract methods defined in isDrawable and isScalable (if any)
 ### Defining an Interface
-1. interfaces cannot be instantiated diredctly
+1. interfaces cannot be instantiated directly
 2. an interface doesn't have to have methods if it doesn't want to
 3. can't be marked as `final`
 4. all top-level interfaces can only have `public` or default access (they are "assumed" to have "`public` or default" access) - therefore marking an interfaces as private or protected will trigger a compilation error, since this is incompatible with these assumptions
@@ -3622,7 +3622,7 @@ public abstract interface Animal {
 ### Inheriting an Interface
 1. an interface that extends another interface, as well as an abstract class that implements an interface, inherits all the abstract methods as its own abstract methods
 2. the first concrete class that implements an interface, or extends an abstract class that implements an interface, must provide an implementation for all of the inherited abstract methods
-* like an abstract class, an interface may be extended using the exends keyword - the new child interface inherits all the abstract methods
+* like an abstract class, an interface may be extended using the `extends` keyword - the new child interface inherits all the abstract methods
 * unlike an abstract class, an interface may extend multiple interfaces
 ```java
 public interface HasTail {
@@ -3803,7 +3803,7 @@ public interface IllegalDefaultDeclarations {
 * when an interface extends/an abstract class implements an interface with a default method, it can:
   - ignore it, in which case the default implementation will be used
   - override it, using the standard rules
-  - redeclare the method as abstract, reequiring that classes implementing the new interface explicitly provide a method body
+  - redeclare the method as abstract, requiring that classes implementing the new interface explicitly provide a method body
 ```java
 interface DefaultMethod {
 	default void foo() {
@@ -3874,9 +3874,9 @@ public class DefaultMethodsAndMultipleInheritance implements Walk, Run {
 ### Static Interface Methods
 * Java 8 also introduced static methods within interfaces
 * static methods are marked with the `static` keyword
-* static methods function mearly identically to static methods defined in classes, except that any classes that implement the interface do not inherit the static method
-#### Rules;
-1. is assumed to be `public` - cannot be marked `private` or `protected`
+* static methods function nearly identically to static methods defined in classes, except that any classes that implement the interface do not inherit the static method
+#### Rules:
+1. the static method is assumed to be `public` - cannot be marked `private` or `protected`
 2. to reference the static method, a reference to the name of the interface must be used - as it isn't inherited, it won't be present in the concrete class or its instances, so this is the only way to invoke it
 ```java
 interface Hop {
@@ -3932,7 +3932,7 @@ public class UnderstandingPolymorphism {
 ```
 * only one object, Dog, is created and referenced
 * the ability of a Dog instance to be passed as an instance of an interface it implements, and as an instance of one of its superclasses, is the nature of polymorphism
-* once the object has been assigned a new reference type, only the methods and variables available to that reference tyoe are callable on the object without an explicit class
+* once the object has been assigned a new reference type, only the methods and variables available to that reference type are callable on the object without an explicit cast
 ```java
 class Mammal {
 	public boolean isWarmBlooded() {
@@ -3981,7 +3981,7 @@ public class MisunderstandingPolymorphism {
 > changing a reference of an object to a new reference may give **access** to **new properties** - but these properties **existed** before the change
 ![Object vs Reference](https://github.com/sebastianchristopher/Java8OCANotes/blob/master/media/object-vs-reference.png "Object vs Reference")
 ### Casting Objects
-* in order to get access to those properties again, we can. use casting:
+* in order to get access to those properties again, we can use casting:
 ```java
 class Mammal {
 	public boolean isWarmBlooded() {
@@ -4064,8 +4064,8 @@ public class CastingRuntimeErrors {
 ### Virtual Methods
 * the most important feature of polymorphism is virtual methods
 * a virtual method is a method in which the specific implementation is not determined until runtime
-* all non-final, non-static and non-private methods are considered virtual method
-* if you call a method that ovverrides a method on an object, you get the overridden method, even if the call to the method is on a parent method or within the parent class
+* all non-final, non-static and non-private methods are considered virtual methods
+* if you call a method that overrides a method on an object, you get the overridden method, even if the call to the method is on a parent method or within the parent class
 ```java
 class Mammal {
 	public void info() {
@@ -4624,23 +4624,23 @@ public class PrintingAnException {
 Here's something useful to know about compilation - a line **won't** fail to compile if its reference fails to compile - see example below:
 
 ```java
-public class Compilation {
-  public static void main(String[] args) {
-    Test t = new Test();
-    String x = t.foo;
-    int y = t.bar;
-  }
-  
-}
-class Test{
-  private Test(){}
-  public String foo;
-  private int bar;
-}
+1.	public class Compilation {
+2.	  public static void main(String[] args) {
+3.		Test t = new Test();
+4.		String x = t.foo;
+5.		int y = t.bar;
+6.	  }
+7.	  
+8.	}
+9.	class Test{
+10.	  private Test(){}
+11.	  public String foo;
+12.	  private int bar;
+13.	}
 ```
 
 ```bash
-javac Compilation.java
+> javac Compilation.java
 Compilation.java:3: error: Test() has private access in Test
     Test t = new Test();
              ^
@@ -4650,7 +4650,8 @@ Compilation.java:5: error: bar has private access in Test
 2 errors
 ```
 
-Even though the line declaring and initializing `t` fails to compile, the following line, which uses `t.foo`, is fine - each line checks for compile errors independently of all others.
+Even though line 3, declaring and initializing `t`, fails to compile, line 4, which uses `t.foo`, is fine - each line checks for compile errors independently of all others.
+
 ---
 
 ---
