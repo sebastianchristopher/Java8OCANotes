@@ -21,6 +21,8 @@ My notes from Boyarsky and Selikoff's *Oracle Certtified Associate Java SE 8 Pro
 
 [Misc notes](#misc-notes)
 
+[Exam Essentials](#exam-essentials)
+
 ---
 
 [Index](#index)
@@ -4742,6 +4744,284 @@ public class Tester {
 	}
 }
 ```
+
+***
+
+What is the output of this code?
+
+```java
+public class Careful {
+	public static void main(String args[]){
+		Person personOne = new Person();
+		Person personTwo = new Person();
+		
+		personOne.name = "Jeremy";
+		personTwo.name = "Mark";
+		
+		System.out.println(personOne.name);
+	}
+}
+class Person {
+	static String name;
+}
+```
+
+Careful now it's:
+
+```bash
+> java Statics
+Mark
+```
+
+`name` is static, so the instance variable is used as a reference to the class and it changes each time. Pay attention!
+
+***
+
+Which of the following is a reference variable (and not a primitive)? (Choose all that apply)
+
+A.	int[] ints;Your selection is incorrect
+
+B.	long[] longs;Your selection is incorrect
+
+C.	String[] strings;Your selection is incorrect
+
+D.	Object[] objects;Your selection is incorrect
+
+E.	None of the above
+
+A, B, C, D. All array types are reference variables. Although int is a primitive type, int[] is still a reference type.
+
+***
+
+When compiling, one bytecode file is created per class/interface.
+
+***
+
+What is the output of the following program?
+1: public class ColorPicker {
+2: 		public void pickColor() {
+3: 			try {
+4: 				System.out.print("A");
+5: 				fail();
+6: 			} catch (NullPointerException e) {
+7: 				System.out.print("B");
+8: 			} finally {
+9: 				System.out.print("C");
+10: 		}
+11: 	}
+12: 	public void fail() {
+13: 		throw new ArithmeticException();
+14: 	}
+15: 	public static void main(String[] args) {
+16: 		new ColorPicker().pickColor();
+17: 		System.out.print("D");
+18: 	}
+19: }
+
+A.	ABCD
+
+B.	ABD
+
+C.	A and a stack trace for ArithmeticException
+
+D.	AC and a stack trace for ArithmeticExceptionYour selection is incorrect
+
+E.	ACD and a stack trace for ArithmeticException
+
+SOLUTIONS
+D.
+The pickColor() method is invoked on line 16. A is output on line 4 and then fail() is invoked. An ArithmeticException is thrown and not caught within pickColor(), so the finally block executes and prints C. Then the exception is thrown to main(). Because main() does not catch it either, the method returns to the caller and a stack trace is printed for the ArithmeticException.
+
+---
+
+## Exam Essentials
+
+### Java Building Blocks
+
+
+* Be able to write code using a main() method.
+  - A main() method is usually written as public static void main(String[] args).
+  - Arguments are referenced starting with args[0].
+  - Accessing an argument that wasn’t passed in will cause the code to throw an exception.
+* Understand the effect of using packages and imports.
+  - Packages contain Java classes.
+  - Classes can be imported by class name or wildcard.
+  - Wildcards do not look at subdirectories.
+  - In the event of a confl ict, class name imports take precedence.
+* Be able to recognize a constructor.
+  - A constructor has the same name as the class.
+  - It looks like a method without a return type.
+* Be able to identify legal and illegal declarations and initialization.
+  - Multiple variables can be declared and initialized in the same statement when they share a type.
+  - Local variables require an explicit initialization; others use the default value for that type.
+  - Identifiers may contain letters, numbers, $, or _.
+  - Identifiers may not begin with numbers.
+  - Numeric literals may contain underscores between two digits and begin with 1–9, 0, 0x, 0X, 0b, and 0B.
+* Be able to determine where variables go into and out of scope.
+  - All variables go into scope when they are declared.
+  - Local variables go out of scope when the block they are declared in ends.
+  - Instance variables go out of scope when the object is garbage collected.
+  - Class variables remain in scope as long as the program is running.
+* Be able to recognize misplaced statements in a class.
+  - Package and import statements are optional.
+  - If present, both go before the class declaration in that order.
+  - Fields and methods are also optional and are allowed in any order within the class declaration.
+* Know how to identify when an object is eligible for garbage collection.
+  - Draw a diagram to keep track of references and objects as you trace the code.
+  - When no arrows point to a box (object), it is eligible for garbage collection.
+
+### Operators and Statements
+
+* Be able to write code that uses Java operators.
+  - This chapter covered a wide variety of operator symbols.
+  - Go back and review them several times so that you are familiar with them throughout the rest of the book. 
+
+* Be able to recognize which operators are associated with which data types.
+  - Some operators may be applied only to numeric primitives, some only to boolean values, and some only to objects.
+  - It is important that you notice when an operator and operand(s) are mismatched, as this issue is likely to come up in a couple of exam questions.
+
+* Understand Java operator precedence.
+  - Most Java operators you’ll work with are binary, but the number of expressions is often greater than two.
+  - Therefore, you must understand the order in which Java will evaluate each operator symbol. 
+
+* Be able to write code that uses parentheses to override operator precedence.
+  - You can use parentheses in your code to manually change the order of precedence. 
+
+* Understand if and switch decision control statements.
+  - The if-then and switch statements come up frequently throughout the exam in questions unrelated to decision control, so make sure you fully understand these basic building blocks of Java. 
+
+* Understand loop statements.
+  - Know the syntactical structure of all loops, including while, do-while, and for.
+  - Each loop has its own special properties and structures.
+  - Also, be familiar with the enhanced for-each loops that iterate over lists. 
+
+* Understand how break and continue can change flow control.
+  - Know how to change the fl ow control within a statement by applying a break or continue command.
+  - Also know which control statements can accept break statements and which can accept continue statements.
+  - Finally, understand how these statements work inside embedded loops or switch statements.
+
+### Core Java APIs
+
+* Be able to determine the output of code using `String`
+  - Know the rules for concatenating Strings and how to use common String methods
+  - Know that Strings are immutable
+  - Pay special attention to the fact that indexes are zero based and that substring() gets the string up until right before the index of the second parameter
+* Be able to determine the output of code using StringBuilder
+  - Know that StringBuilder is mutable and how to use common StringBuilder methods
+  - Know that substring() does not change the value of a StringBuilder whereas append(), delete(), and insert() do change it
+  - Also note that most StringBuilder methods return a reference to the current instance of StringBuilder
+* Understand the difference between `==` and `equals`
+  - `==` checks object equality
+  - `equals()` depends on the implementation of the object it is being called on
+  - For Strings, `equals()` checks the characters inside of it
+* Be able to determine the output of code using arrays
+  - Know how to declare and instantiate one-dimensional and multidimensional arrays
+  - Be able to access each element and know when an index is out of bounds
+  - Recognize correct and incorrect output when searching and sorting
+* Be able to determine the output of code using ArrayList
+  - Know that ArrayList can increase in size
+  - Be able to identify the different ways of declaring and instantiating an ArrayList
+  - Identify correct output from ArrayList methods, including the impact of autoboxing
+* Recognize invalid uses of dates and times
+  - LocalDate does not contain time fi elds and LocalTime does not contain date fi elds
+  - Watch for operations being performed on the wrong time
+  - Also watch for adding or subtracting time and ignoring the result
+
+### Methods and Encapsulation
+
+* Be able to identify correct and incorrect method declarations
+  - A sample method signature is `public static void method(String... args) throws Exception {}`
+* Identify when a method or field is accessible
+  - Recognize when a method or field is accessed when the access modifier (`private`, `protected`, `public`, or default access) does not allow it
+* Recognize valid and invalid uses of static imports
+  - Static imports import static members
+  - They are written as import static, not static import
+  - Make sure they are importing static methods or variables rather than classnames
+* State the output of code involving methods
+  - Identify when to call static rather than instance methods based on whether the classname or object comes before the method
+  - Recognize the correct overloaded method
+  - Exact matches are used fi rst, followed by wider primitives, followed by autoboxing, followed by varargs
+  - Assigning new values to method parameters does not change the caller, but calling methods on them does
+* Evaluate code involving constructors
+  - Constructors can call other constructors by calling this() as the fi rst line of the constructor
+  - Recognize when the default constructor is provided
+  - Remember the order of initialization is the superclass, static variables/initializers, instance variables/initializers, and the constructor
+* Be able to recognize when a class is properly encapsulated
+  - Look for private instance variables and public getters and setters when identifying encapsulation
+* Write simple lambda expressions
+  - Look for the presence or absence of optional elements in lambda code
+  - Parameter types are optional
+  - Braces and the return keyword are optional when the body is a single statement
+  - Parentheses are optional when only one parameter is specifi ed and the type is implicit
+  - The Predicate interface is commonly used with lambdas because it declares a single method called test(), which takes one parameter
+  
+### Class Design
+
+* Be able to write code that extends other classes
+  - A Java class that extends another class inherits all of its public and protected methods and variables
+  - The first line of every constructor is a call to another constructor within the class using this() or a call to a constructor of the parent class using the super() call
+  - If the parent class doesn’t contain a noargument constructor, an explicit call to the parent constructor must be provided
+  - Parent methods and objects can be accessed explicitly using the super keyword
+  - Finally, all classes in Java extend java.lang.Object either directly or from a superclass
+* Understand the rules for method overriding
+  - The Java compiler allows methods to be overridden in subclasses if certain rules are followed: a method must have the same signature, be at least as accessible as the parent method, must not declare any new or broader exceptions, and must use covariant return types
+* Understand the rules for hiding methods and variables
+  - When a static method is recreated in a subclass, it is referred to as method hiding
+  - Likewise, variable hiding is when a variable name is reused in a subclass
+  - In both situations, the original method or variable still exists and is used in methods that reference the object in the parent class
+  - For method hiding, the use of static in the method declaration must be the same between the parent and child class
+  - Finally, variable and method hiding should generally be avoided since it leads to confusing and diffi cult-to-follow code
+* Recognize the difference between method overriding and method overloading
+  - Both method overloading and overriding involve creating a new method with the same name as an existing method
+  - When the method signature is the same, it is referred to as method overriding and must follow a specifi c set of override rules to compile
+  - When the method signature is different, with the method taking different inputs, it is referred to as method overloading and none of the override rules are required
+* Be able to write code that creates and extends abstract classes
+  - In Java, classes and methods can be declared as abstract
+  - Abstract classes cannot be instantiated and require a concrete subclass to be accessed
+  - Abstract classes can include any number, including zero, of abstract and nonabstract methods
+  - Abstract methods follow all the method override rules and may only be defi ned within abstract classes
+  - The first concrete subclass of an abstract class must implement all the inherited methods
+  - Abstract classes and methods may not be marked as final or private
+* Be able to write code that creates, extends, and implements interfaces
+  - Interfaces are similar to a specialized abstract class in which only abstract methods and constant static final variables are allowed
+  - New to Java 8, an interface can also defi ne default and static methods with method bodies
+  - All members of an interface are assumed to be public
+  - Methods are assumed to be abstract if not explicitly marked as default or static
+  - An interface that extends another interface inherits all its abstract methods
+  - An interface cannot extend a class, nor can a class extend an interface
+  - Finally, classes may implement any number of interfaces
+* Be able to write code that uses default and static interface methods
+  - A default method allows a developer to add a new method to an interface used in existing implementations, without forcing other developers using the interface to recompile their code
+  - A developer using the interface may override the default method or use the provided one
+  - A static method in an interface follows the same rules for a static method in a class
+* Understand polymorphism
+  - An object in Java may take on a variety of forms, in part depending on the reference used to access the object
+  - Methods that are overridden will be replaced everywhere they are used, whereas methods and variables that are hidden will only be replaced in the classes and subclasses that they are defi ned
+  - It is common to rely on polymorphic parameters—the ability of methods to be automatically passed as a superclass or interface reference—when creating method defi nitions
+* Recognize valid reference casting
+  - An instance can be automatically cast to a superclass or interface reference without an explicit cast
+  - Alternatively, an explicit cast is required if the reference is being narrowed to a subclass of the object
+  - The Java compiler doesn’t permit casting to unrelated types
+  - You should be able to discern between compiler-time casting errors and those that will not occur until runtime and that throw a CastClassException
+
+### Exceptions
+
+* Differentiate between checked and unchecked exceptions
+  - Unchecked exceptions are also known as runtime exceptions and are subclasses of java.lang.RuntimeException
+  - All other subclasses of java.lang.Exception are checked exceptions
+* Understand the flow of a try statement
+  - A try statement must have a catch or a finally block
+  - Multiple catch blocks are also allowed, provided no superclass exception type appears in an earlier catch block than its subclass
+  - The finally block runs last regardless of whether an exception is thrown
+* Identify whether an exception is thrown by the programmer or the JVM
+  - Illegal ArgumentException and NumberFormatException are commonly thrown by the programmer
+  - Most of the other runtime exceptions are typically thrown by the JVM
+* Declare methods that declare exceptions
+  - The throws keyword is used in a method declaration to indicate an exception might be thrown
+  - When overriding a method, the method is allowed to throw fewer exceptions than the original version
+* Recognize when to use throw versus throws
+  - The throw keyword is used when you actually want to throw an exception - for example, throw new RuntimeException()
+  - The throws keyword is used in a method declaration
 
 ---
 
