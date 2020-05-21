@@ -1438,6 +1438,19 @@ System.out.println(list.toString()); // -> [10, 5, 1]
 Collections.sort(list);
 System.out.println(list.toString()); // -> [1, 5, 10]
 ```
+
+#### Printing an ArrayList
+
+* ArrayList can be printed directly, which will output the elements surrounded by square brackets:
+
+```java
+List<Integer> list = new ArrayList<>();
+list.add(1);
+list.add(2);
+list.add(3);
+System.out.println(list); // [1, 2, 3]
+```
+
 ### Looping through an ArrayList
 * you can loop through an ArrayList using a for loop:
 ```java
@@ -3065,7 +3078,7 @@ public class Foo{
 }
 ```
 * an explicit constructor means the compiler won't insert a default no-args constructor
-* if the parent class has an explicit constructor, with an argument, the child must match this
+* if the parent class has an explicit constructor, with an argument, the child must also have an explicit constructor
 * a default constructor will not be inserted by the compiler
 ```java
 public class Parent{
@@ -3096,6 +3109,9 @@ public class Child{
 3. if no `super()` call is declared in a constructor, Java inserts a no-args `super()` as the first statement
 4. if the parent hasn't got a default no-args constructor (i.e. it defines its own constructor with args) and the child doesn't define any constructors, it will not compile
 5. if the parent doesn't have a default no-args constructor, the compiler requires an explicit call to a parent constructor on the first line of each child constructor
+
+* if you see a constructor in a parent class, **check whether the child class will compile**. The exam will probably try to trip you up - if it doesn't make a correct `super()` call to the parent constructor, it won't compile
+
 ### Calling constructors
 * the parent constructor is always executed before the child constructor
 * as `super()` is always the first line, this makes sense!
@@ -3126,20 +3142,39 @@ public class Grandchild{
 * child classes can use any public or protected members from the parent class
 * if they are in the same package, they can also use any default (package-private) members
 * they don't have direct access to any of the parent's private members, although encapsulation may provide getter/setter access
-* parent members can be called directly:
+* parent members can be called directly, as in the method `getName()` below:
 ```java
-public class Parent{
+class Parent{
 	public String name = "Parent";
 }
 
-public class Child{
+public class Child extends Parent{
+	String getName(){
+		return name;
+	}
+	
 	public static void main(String... args){
-		System.out.println(name); // -> Parent
+		Child child = new Child();
+		System.out.println(child.getName()); // -> Parent
 	}
 }
 ```
-* if a member exists in the parent class but not the child class, `this.` will call it e.g. `System.out.println(this.name);`
-* you can use `super.` to call any accessible parent method e.g. `System.out.println(super.name);`
+* if a member exists in the parent class but not the child class, `this.` will call it e.g.
+
+```java
+String getName(){
+		return this.name;
+	}
+```
+
+* you can use `super.` to call any accessible parent method e.g.
+
+```java
+String getName(){
+		return super.name;
+	}
+```
+ 
 * if a child method overrides a parent method, `this.` calls the child method and `super.` calls the parent method
 * if a method doesn't exist in the parent class, trying to call it with `super.` will cause a compile error
 > super() and super are different, like this() and this - watch out for this on the exam
@@ -3348,14 +3383,15 @@ Parent parent = new Parent();
 parent.sayParentName(); // -> Parent is Parent
 parent.sayChildName(); // DOES NOT COMPILE -> can't find symbol
 ```
+* **redeclared private methods and hidden static methods use the method belonging to their reference - overridden methods always use the child method** (I *think*)
 ### Creating final methods
 * final methods cannot be overriden
-* the `final` keywords forbids methods from being hidden or overridden
+* the `final` keyword forbids methods from being hidden or overridden (but a `final private` method in the parent class can be redeclared in the child class)
 ### Inheriting variables
 * variables can't be overriden, only hidden
 * to hide a variable, define a variable in the child class with the same name as a variable in the parent class
 * as with hidden methods, if you reference the variable from within the parent class, the variable defined in the parent class is used
-* if referncing from within the child class, the variable defined in the child class is used
+* if referencing from within the child class, the variable defined in the child class is used
 ```java
 public class Parent {
 	public String name = "Parent";
@@ -3413,7 +3449,7 @@ public class HidingVariables {
 * *the rules are the same for static and non-static variables*
 > The nonprivate static variables and methods are inherited by derived classes. The static members aren’t involved in runtime polymorphism. You can’t override the static members in a derived class, but you can redefine them.
 ### Abstract Classes
-* abstract classes allow you to create a blueprint parent class, for other classes to extend, without hacing to implement any of the methods in the parent class
+* abstract classes allow you to create a blueprint parent class, for other classes to extend, without having to implement any of the methods in the parent class
 * abstract classes cannot be instantiated
 * abstract methods have no implementation in the class they are declared in
 ```java
@@ -3580,7 +3616,7 @@ public class MyClass implements MyInterface{}
 ![Implementing an interface](https://github.com/sebastianchristopher/Java8OCANotes/blob/master/media/implementing-an-interface.jpg "Implementing an interface")
 * The public access specifier indicates that the interface can be used by any class in any package. If you do not specify that the interface is public, then your interface is accessible only to classes defined in the same package as the interface.
 * abstract is assumed and optional for the interface
-* public static for variables is assumed and therefore optional
+* public static final for variables is assumed and therefore optional
 * public abstract for methods is assumed and therefore optional
 * classes may implement multiple interfaces, separated by comma:
 ```java
@@ -3784,7 +3820,8 @@ interface DefaultMethods {
 > **the keyword `default` is not the same as default access**
 > default access is denoted by the lack of an access modifier in normal classes
 > because all interface methods are public, the access modifier (assumed or explicit) for a default method is always public
-####Rules
+
+#### Rules
 1. a default method can only be declared in an interface, not in a class or abstract class
 2. a default method must be marked with the default keyword
 3. a default method must provide a method body
@@ -4238,9 +4275,9 @@ class was marked as protected and overridden in the subclass, then the method on
 * `RuntimeException` and its subclasses  are *runtime exceptions*  - unexpected but not fatal
 		- e.g. accessing an invalid array index
 * they are also know as **Unchecked Exceptions**
-* **Checked Exceptions** include `Excpetion` and all subclasses that do not extend `RuntimeException`
+* **Checked Exceptions** include `Exception` and all subclasses that do not extend `RuntimeException`
 * Java has a rule called *handle or declare*
-* for checked exceptions, Java requires that the code either handle or the, or declare them in the method signature
+* for checked exceptions, Java requires that the code either handle them, or declare them in the method signature
 ```java
 public class Fail {
 	void fail() {
@@ -4248,19 +4285,14 @@ public class Fail {
 	}
 }
 ```
-```java
-public class CatchFail  {
-	void fail() throws Exception {
-		throw new Exception(); // DOES NOT COMPILE
-	}
-}
-```
-* throws **delcares** it *might* throw a an exception
+
+* throws **declares** it *might* throw a an exception
 * the `throws` keyword tells Java you want to have the option of throwing an exception
 * `throw` tells Java to throw an exception
 > An example of an unchecked (or runtime) exception is NullPointerException. This can happen in any method - but you don't see `throws NullPointerException` everywhere because it is unchecked
+* **A method that declares an exception isn't required to throw one - but it must not throw a superclass of an exception it declares**
 ### Throwing an Exception
-* there may be made up exceptions on the exam but threat them as real exceptions - `class MyMadeUpException extends Exception {}`
+* there may be made up exceptions on the exam but treat them as real exceptions - e.g. `class MyMadeUpException extends Exception {}`
 * for the exam, there are two types of code that throw exceptions:
   - code that is wrong e.g.
   ```java
@@ -4274,7 +4306,7 @@ public class CatchFail  {
   throw new RuntimeException("You have exceded your overdraft");
   ```
 * exception classes usually take an optional string constructor argument - both types above
-* **you can throw Throwable and all of its subclasses:**
+* **you can throw (and declare) Throwable and all of its subclasses:**
 ```java
 public class ThrowableClasses {
 	public static void main(String[] args) {
@@ -4305,6 +4337,9 @@ public class ThrowableClasses {
 }
 ```
 ### Types of Exception
+
+**OK for program to catch? means, is it good practice? It is legal for the program to catch an Error (bad book wording)**
+
 | Type                        | How to recognize                                                  | OK for program to catch? | Required to declare or handle? |
 | -------------------- | --------------------------------------------------- | -------------------------- | --------------------------------- |
 | Runtime exception  | subclass of RuntimeException                               | Yes                                   | No                                              |
@@ -4319,11 +4354,11 @@ try {
 	// exception handler block
 }
 ```
-* if the code in the try clause throws an exception, it stop running and excecution passes to the catch statement
+* if the code in the try clause throws an exception, it stops running and excecution passes to the catch statement
 * curly braces are **required**
 * try statements and methods always require curly braces
-* if statements and loops allow you to omit curly braces if there is only one statement inside the code block
-* a `try` block needs to have `catch` or `finally`
+* (if statements and loops allow you to omit curly braces if there is only one statement inside the code block)
+* a `try` block needs to have `catch` and/or `finally`
 ```java
 try { // DOES NOT COMPILE
 	// do something
@@ -4422,7 +4457,7 @@ try {
 }
 ```
 * output is: Exception in thread "main" java.lang.Exception
-> because the finally lbock **always** has to run, the catch clause will execute up until the exception, then pass to finally - it can't throw two exceptions so has to go to finally
+> because the finally block **always** has to run, the catch clause will execute up until the exception, then pass to finally - it can't throw two exceptions so has to go to finally
 * another example:
 ```java
 public class ThrowingASecondException {
@@ -4454,7 +4489,7 @@ public class ThrowingASecondException {
   2. checked exceptions
   3. errors
 ### Runtime Exceptions
-* `ArithmeticException` - thrown by the JVM when code attempts to divide by zero e.g. `int x = ``/0;`
+* `ArithmeticException` - thrown by the JVM when code attempts to divide by zero e.g. `int x = 1/0;`
 * `ArrayOutOfBoundsException` - thrown by the JVM e.g.
   ```java
   String[] arr = new String[0];
@@ -4476,8 +4511,8 @@ public class ThrowingASecondException {
   - `foo instanceof Integer` -> `false`
   - it isn't, so throws ClassCastException
 * `IllegalArgumentException` - thrown by the programmer to indicate that a method has been passed an illegal or inappropriate argument
-  ```java
-  class Dog {
+```java
+class Dog {
 	int numLegs;
 	public void setNumLegs(int legs) throws IllegalArgumentException{ // n.b. doesn't need to be declared as it's an unchecked exception
 		if(legs < 0 || legs > 4){
@@ -4487,28 +4522,32 @@ public class ThrowingASecondException {
 		}
 	}
 }
-  ```
+```
+
 * `NullPointerException` - thrown by the JVM when there is a null reference where an object is required - instance variables and methods must be called on a non-null reference
-  ```java
-  class Foo {
+
+```java
+class Foo {
 	String name;
 	void bla() {
 		System.out.println(name.length()); // -> throws NullPointerException -> null.length();
 	}
 } // watch out for this with objects whose initializing default value is null
-  ```
+```
+
 * `NumberFormatException` - thrown by the programmer when an attempt is made to convert a string to a numeric type but the string doesn't have an appropriate format
   - subclass of `IllegalArgumentException`, used for example by Integer:
-  ```java
+```java
   Integer.parseInt("abc"); // -> NumberFormatException
-  ```
+```
+
 ### Checked Exceptions
 * checked exceptions:
   - are subclasses of `Exception` but not of `RuntimeException`
   - must be handled or declared
   - can be thrown by the JVM or the programmer
 * `FileNotFoundException` - subclass of `IOException`
-* `IOException` - thrown programmatically when there's a problem reading/writing a file
+* `IOException` - thrown **programmatically** when there's a problem reading/writing a file - not thrown by the JVM (you got this wrong so remember!)
 ### Errors
 * errors:
   - are thrown by the JVM
@@ -4558,6 +4597,32 @@ public static void main(String... args){
 	}
 }
 ```
+
+* Why doesn't this compile?
+
+```java
+import java.io.IOException;
+
+public class ThisDoesntCompile {
+	public static void main(String args[]){
+		try {
+			System.out.println("Hello world!");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+}
+```
+* The method called inside the try block (`System.out.println()`) doesn't declare an IOException to be thrown - the compiler realises that IOException would be an unreachable catch block. Here's the output when it's run:
+
+```bash
+> javac ThisDoesntCompile.java
+ThisDoesntCompile.java:7: error: exception IOException is never thrown in body of corresponding try statement
+                } catch (IOException e) {
+                  ^
+1 error
+```
+
 ### Overriding methods with an exception in the method declaration
 * an overriding method in the subclass must not introduce new checked exceptions
 ```java
@@ -4651,6 +4716,32 @@ Compilation.java:5: error: bar has private access in Test
 ```
 
 Even though line 3, declaring and initializing `t`, fails to compile, line 4, which uses `t.foo`, is fine - each line checks for compile errors independently of all others.
+
+***
+
+It's possible to create a new object without assigning it - this is done a lot when passing arguments, but can also be done as a standalone line:
+
+```java
+public class Foo {
+	public static void main(String[] args) {
+		new Foo();
+	}
+}
+```
+***
+
+You can pass `null` in place of any object (object, not primitives) - the test seems to like this:
+
+```java
+interface Iface {}
+class Classy implements Iface {}
+public class Tester {
+	void foo(Iface interf) {}
+	public static void main(string[] args) {
+		foo(null);
+	}
+}
+```
 
 ---
 
