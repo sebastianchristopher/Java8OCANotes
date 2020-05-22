@@ -713,6 +713,14 @@ long y = (x = 5);
 System.out.println(y); // 5
 System.out.println(x); // 5
 ```
+* `=` can be chained:
+```java
+int x, y, z;
+int a = x = y = z = 5;
+// a, x, y, z are all equal to 5
+```
+* however, all variables to the right of the first `=` must have already been declared, or it won't compile
+
 ### Logical operators
 ```java
 true & true // true
@@ -819,7 +827,6 @@ switch(x){ // braces required
 	- `double` or `Double`
 	- `float` or `Float`
 * additionally, it can't be passed a null value (NullPointerException)
----
 * case values must be compile-time constants of same data type as switch value e.g.
 ```java
 String x = "bla bla";
@@ -875,6 +882,37 @@ public void fooBar(String bla, final String tac) {
   4. All case labels should be COMPILE TIME CONSTANTS.
   5. No two of the case constant expressions associated with a switch statement may have the same value.
   6. At most one default label may be associated with the same switch statement.
+#### A bit more on switch statements
+* when used with a String uses the equals() method to compare the given expression to each value in the case statement and will therefore throw a NullPointerException if the expression is null
+* it can match for multiple cases:
+```java
+int x = 2;
+switch(x) {
+	case 1: case 2:
+		System.out.println("It is less than three");
+		break;
+	default:
+		System.out.println("It is not less than three");
+}
+```
+* variable declarations made inside the switch statement happen whether or not the case is reached:
+```java
+int x = 2;
+switch(x) {
+	case 1:
+		String s = "One";
+		System.out.println(s);
+		break;
+	case 2:
+		s = "Two";
+		System.out.println(s);
+}
+```
+* as long as a variable is declared inside a case label, before it is initialized (or on the same line), it declares it
+* the reason is, I think, that the case blocks don't have any scope - so the declaration can only happen once within the switch scope
+> case 2 is in the same block as case 1 and appears after it, even though case 1 will never execute... so the local variable is in scope and available for writing despite you logically never "executing" the declaration. (A declaration isn't really "executable" although initialization is.)
+
+> Declarations aren't "run" - they're not something that needs to execute, they just tell the compiler the type of a variable. (An initializer would run, but that's fine - you're not trying to read from the variable before assigning a value to it.)
 ### while
 * braces optional for single-line statement
 ```java
@@ -944,7 +982,7 @@ for(int i = 0, j = 0; i < 5; i++){} // legal
 ```
 ### for each
 * format: for(`dataType` `variableName` : `collection`){}
-* `collection` must be an object that implements Iterable, e.g. array, ArrayList
+* `collection` must be an object that implements Iterable, e.g. array, Collection, List, ArrayList, Stack - it cannot iterate over Map
 * curly braces `{}` optional for a one-line statement
 ```java
 int[] arr = new int[] {1, 2, 3, 4};
@@ -1135,13 +1173,21 @@ public class PrintingNullString {
 * `equals(String str)` -> `"Hello".equals("Hello");` -> `true` (*overriden equals, compares characters*)
 * `equalsIgnoreCase(String str)` -> *case-insensitive equals*
 * `startsWith(String str)` -> `"Hello".startsWith("H");` -> `true`
-* `endsWith(String str)` -> `"Hello".endsWith("H");` -> `false` **remember these take a String as their argument - the following won't compile:" `"Hello".startsWith('H');`
+* `endsWith(String str)` -> `"Hello".endsWith("H");` -> `false` **remember these take a String as their argument** - the following won't compile:" `"Hello".startsWith('H');`
 * `contains(String str)` -> `"Hello".contains("Hell");` -> `true`
 * replace
   - `replace(char oldChar, char newChar)` -> `"Hello".replace('H', 'J');` -> `Jello`
   - `replace(String oldStr, String newStr)` -> `"Hello".replace("lo", "icopter");` -> `Helicopter`
 * `trim()` -> `"\t  a b c \n".trim();` -> `a b c` (*trims trailing whitespace, tab and newline*)
 * `concat(String s)` -> `"Hello".concat("World");` -> `HelloWorld`
+* `intern()` -> the intern() method creates an exact copy of a String object in the heap memory and stores it in the String constant pool, unless it already exists in which case it points to that object:
+```java
+String s1 = "String";
+String s2 = new String("String");
+System.out.println(s1 == s2); // false
+String s3 = s2.intern();
+System.out.println(s1 == s3); // true
+```
 #### Chaining methods
 * you can chain as many methods as you want - each method creates a new string object
 * remember, strings are immutable so the original object isn't affected
@@ -1210,6 +1256,13 @@ System.out.println(x.equals(z));  // true
 
 System.out.println(x == "Hello World ".trim()); // two different literals - as they aren't the same at compile time, a new string object is created
 ```
+* String things:
+1. Literal strings within the same class in the same package represent references to the same String object. 
+2. Literal strings within different classes in the same package represent references to the same String object. 
+3. Literal strings within different classes in different packages likewise represent references to the same String object. 
+4. Strings computed by constant expressions are computed at compile time and then treated as if they were literals.
+5. Strings computed at run time are newly created and therefore are distinct. e.g. `"String ".trim()` will not equal `"String"`
+6. The result of explicitly interning a computed string is the same string as any pre-existing literal string with the same contents. 
 #### StringBuilder equality
 * StringBuilder doesn't have an overridden `equals()`
 ```java
@@ -1394,8 +1447,8 @@ ArrayList<String> arrList5 = new ArrayList<>();
 ```
 ### ArrayList Methods
 * add
-  - `add(E element)`
-  - `add(int index, E element)`
+  - `add(E element)` -> returns `boolean` (i.e. `true`)
+  - `add(int index, E element)` -> void
  (*E is an object of the ArrayList's type or a type that it extends/implements - if not specified, implicitly it is the ArrayList's type*)
  *argument must match type*
  ```java
@@ -1460,6 +1513,14 @@ System.out.println(list.get(0) == clonedList.get(0)); // false - when set is use
 ```
   - must be of the same type e.g. `List<String>` and `ArrayList<String>`
 * `addAll(int index, Collection c)` -> as above but at the specified index
+* `subList(int fromIndex, int toIndex)` -> returns a new List object of the portion of this list between the specified fromIndex, inclusive, and toIndex, exclusive.
+```java
+int[] ints = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+List<Integer> list = new ArrayList<>();
+for(int i : ints) list.add(i);
+List<Integer> subList = list.subList(5, 9);
+System.out.println(subList); // [6, 7, 8, 9]
+```		
 * the class `java.util.Collections` contains the method `sort()` which takes a List as an argument:
 ```java
 List<Integer> list = new ArrayList<>();
@@ -1649,6 +1710,21 @@ public class ImmutableWrappers {
 * essentially: `Byte`, `Short`, `Integer` or `Long` between -128 and 127 created using `valueOf` or through autoboxing will point to the same object and have `==` equality
 * the same for `Character` between 0 and 127
 * constructors always create new objects
+* you can't compare (`==`) wrapper classes of different types as `==` only works with the same object type e.g. `Double.valueOf(1) == Integer.valueOf(1);` doesn't compile
+#### Using equals() on wrapper classes
+* the signature of the `equals()` method is `boolean equals(Object o)`, so it can take any object
+* the equals methods of all wrapper classes first checks if the two object are of same class or not. If not, they immediately return false.
+```java
+public static void main(String[] args) {
+	Integer num1 = Integer.valueOf(1);
+	Integer num2 = Integer.valueOf(1);
+	Short num3 = Short.valueOf((short)1); // need to case as valueOf() takes the primitive and short is smaller than int
+	
+	System.out.println(num1.equals(num2)); // true
+	System.out.println(num1.equals(num3)); // false
+}
+```
+
 #### How to create a wrapper instance
 * wrapper classes are created by:
   - assignment e.g. `Boolean a = true;`, `Boolean b = Boolean.TRUE;`
@@ -1668,6 +1744,22 @@ public class ImmutableWrappers {
   - `static Boolean`	`valueOf(boolean b)` -> returns wrapper class
   - `static Boolean`	`valueOf(String s)` -> returns wrapper class
   - `boolean`			`booleanValue()` -> returns primitive
+* **so** - a wrapper class's static methods are:
+ - `valueOf()`, which takes a String or a primitive and returns the wrapper class
+ - if passing a primitive to `valueOf()`, it must be the same type, or promotable to the type, or otherwise cast:
+```java
+Integer i = Integer.valueOf(6); // same primitive type
+Double d = Double.valueOf(6); // int promotes to double
+Short s = Short.valueOf(  (short)6 ); // int cast to short
+```
+ - parsePrimitiveName e.g. `parseInt()`, which takes a String and returns a primitive
+* it also has the non-static primitiveNameValue() e.g. `intValue()`, which turns a wrapper class into a primitive:
+
+```java
+Double d1 = Double.valueOf(5);
+double d2 = d1.doubleValue();
+```
+
 ### Autoboxing
 ```java
 List<Double> doubleList = new ArrayList<>();
@@ -2926,6 +3018,15 @@ public class ImmutableClasses{
 `(a, b) -> {int a = 3; return 5;}` -> illegal - redeclares variable in code block
 `(a, b) -> {a = 3; return 5;}` -> legal - reassigns variable in code block
 `(a, b) -> {int c = 3; return 5;}` -> legal - declares new variable in code block
+* you also can't redeclare variables in the arguments if they have been used in the method calling the lambda:
+
+```java
+public static void main(String[] args) {
+	int i = 5;
+	Predicate<Integer> isFive = i -> i == 5; // error: variable i is already defined in method main(String[])
+	System.out.println(isFive.test(i));
+}
+```
 ### Predicates
 * lambdas work with interfaces that only have one method
 * these are called functional interfaces
@@ -3039,9 +3140,26 @@ public class TestingFuncInterfaceWithMultipleArgs {
 	}
 }
 ```
-* all arguments have to match if the type is specified
+* all arguments have to match if the type is specified (subclasses aren't allowed - Predicate<List> won't take (ArrayList arrList) -> arrList.isEmpty();)
 * if one type is specified, all types have to be specified
+#### Another functional interface and lambda example, for fun
+```java
+import java.util.*;
 
+interface Functional {
+	boolean testList(List list, String string);
+}
+
+public class QuickTest {
+	public static void main(String[] args) {
+		List<Character> vowels = Arrays.asList(new Character[]{'A', 'E', 'I', 'O', 'U'});
+		Functional startsWithVowel = (list, s) -> list.contains(s.charAt(0));
+		System.out.println(startsWithVowel.testList(vowels, "Java")); // false
+		System.out.println(startsWithVowel.testList(vowels, "Objective-C")); // true
+	}
+	
+}
+```
 ## Chapter 5 - Class Design
 **In this chapter:**
 
@@ -3578,6 +3696,9 @@ public class HidingVariables {
 * the instances are kept separate, allowing the instance of child to access both independently
 * *the rules are the same for static and non-static variables*
 > The nonprivate static variables and methods are inherited by derived classes. The static members aren’t involved in runtime polymorphism. You can’t override the static members in a derived class, but you can redefine them.
+* another way of putting this would be:
+  - Which variable (or static method) will be used depends on the class that the variable is declared of (i.e. what it's reference is)
+  - Which instance method will be used depends on the actual class of the object that is referenced by the variable (i.e.e the object in memory).
 ### Abstract Classes
 * abstract classes allow you to create a blueprint parent class, for other classes to extend, without having to implement any of the methods in the parent class
 * abstract classes cannot be instantiated
@@ -3934,6 +4055,8 @@ public interface IllegalExamples {
 	int 4; // DOES NOT COMPILE -> not assigned a value
 }
 ```
+* **(static) interface variables - child classes directly inherit interface variables so are available to call without a reference to the interface**
+* **static interface methods - child classes do not inherit interface methods so they can only be called with a reference to the name of the interface**
 ### Default Interface Methods
 * Java 8 introduced the `default` method to interfaces
 * marked `default`, it has a method body unlike regular interface methods which are assumed abstract and have no implementation
@@ -4729,6 +4852,7 @@ SecondCheckedException.java:8: error: unreported exception Exception; must be ca
   1. runtime exceptions (also known as unchecked exceptions)
   2. checked exceptions
   3. errors
+* the following are in the the `java.lang` library unless stated otherwise  
 ### Runtime Exceptions
 * `ArithmeticException` - thrown by the JVM when code attempts to divide by zero e.g. `int x = 1/0;`
 * `ArrayOutOfBoundsException` - thrown by the JVM e.g.
@@ -4751,7 +4875,7 @@ SecondCheckedException.java:8: error: unreported exception Exception; must be ca
   - but at runtime, it checks if the object in memory (foo, a String) is an instance of Integer
   - `foo instanceof Integer` -> `false`
   - it isn't, so throws ClassCastException
-* `IllegalArgumentException` - thrown by the programmer to indicate that a method has been passed an illegal or inappropriate argument
+* `IllegalArgumentException` - thrown by the programmer (although usually by the application) to indicate that a method has been passed an illegal or inappropriate argument
 ```java
 class Dog {
 	int numLegs;
@@ -4764,7 +4888,7 @@ class Dog {
 	}
 }
 ```
-
+* `IllegalStateException`  Usually thrown by the application. Signals that a method has been invoked at an illegal or inappropriate time. In other words, the Java environment or Java application is not in an appropriate state for the requested operation.
 * `NullPointerException` - thrown by the JVM when there is a null reference where an object is required - instance variables and methods must be called on a non-null reference
 
 ```java
@@ -4781,14 +4905,16 @@ class Foo {
 ```java
   Integer.parseInt("abc"); // -> NumberFormatException
 ```
+* `SecurityException` - thrown by the application programmer (the security manager) upon security violation. For example, when a java program runs in a sandbox (such as an applet) and it tries to use prohibited APIs such as File I/O, the security manager throws this exception.
 
 ### Checked Exceptions
 * checked exceptions:
   - are subclasses of `Exception` but not of `RuntimeException`
   - must be handled or declared
   - can be thrown by the JVM or the programmer
-* `FileNotFoundException` - subclass of `IOException`
-* `IOException` - thrown **programmatically** when there's a problem reading/writing a file - not thrown by the JVM (you got this wrong so remember!)
+* `java.io.FileNotFoundException` - subclass of `IOException`
+* `java.io.IOException` - thrown **programmatically** when there's a problem reading/writing a file - not thrown by the JVM (you got this wrong so remember!)
+* `CloneNotSupportedException` - thrown by JVM/programmer to indicate that the clone method in class Object has been called to clone an object, but that the object's class does not implement the Cloneable interface.
 ### Errors
 * errors:
   - are thrown by the JVM
