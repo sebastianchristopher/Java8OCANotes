@@ -278,6 +278,8 @@ public class Foo {
 * byte can hold a value between -128 and 127
 * char can be assigned a character literal e.g. `char c = z` or a positive integer e.g. `char c = 122` (both examples are equivalent)
 * char can't be assigned a negative value (except through casting e.g. `char c = (char)-1` which will store an unexpected value)
+* because char is equivalent to an unsigned short in Java, arithmetic operators can run on it
+* upercase letters come before lowercase, therefore have a lower ASCII value -> `System.out.println('B' > 'b');` -> `false`
 * when char is used as an operand to arithmetic operators, its corresponding ASCII value is used in the arithmetic operation, and the result is numeric
 * this is not the case when using unary or compound assignment operators, as they will [automatically cast](#automatic-casting)
 ```java
@@ -436,6 +438,33 @@ public int foo() {
 11. }
 12. System.out.println(x); // DOES NOT COMPILE - if z == false, x won't be initialized
 ```
+* careful when a local variable uses the compound assignment operator that it has been initialized beforehand:
+
+```java
+public static void main(String... args){
+	int i = 1;
+	int y += i; // DOES NOT COMPILE - y has not been initialized
+	System.out.println(y);
+}
+```
+* interestingly, you also can't do this on a single line with an instance or class variable:
+
+```java
+public class CompoundAssignmentLocalInstanceVariables {
+	static y += 1;
+	public static void main(String... args){
+		System.out.println(y);
+	}
+}
+```
+
+```bash
+javac CompoundAssignmentLocalInstanceVariables.java
+CompoundAssignmentLocalInstanceVariables.java:3: error: <identifier> expected
+        static y += 1;
+                     ^
+```
+
 * *class variables* and *instance variables* do not require initialization
 * they have a default value, assigned on declaration
 
@@ -1282,6 +1311,7 @@ public class Main {
 }
 ```
 * *remember for the exam, if line starts after 1 or is a snippet, assume imports are present*
+* **if the line starts on 1, CHECK ALL IMPORTS ARE PRESENT - if it uses for example LIst<>, MAKE SURE java.util.List is imported**
 * *if the array is unsorted, the result is unpredictable - look for answer like 'undefined' or 'unpredictable'*
 ### varargs
 * you can use a variable created with varagrs as if it were a normal array
@@ -1917,11 +1947,52 @@ Period p = Period.ofWeeks(1).ofDays(1); // only processes last method
 System.out.println(ld.plus(p)); // 2020-02-13
 ```
 * can't be used with LocalTime -> will throw a runtime exception -> use `Duration` instead (also implements *TemporalAmount*)
+* but can be used with LocalDateTime - it will make the date adjustments and leave the time as it was:
+
+```java
+import java.time.LocalDateTime;
+import java.time.Period;
+
+public class PeriodAndLocalDateTime {
+	public static void main(String args[]) {
+		LocalDateTime birth = LocalDateTime.of(2020, 2, 12, 21, 31);
+		Period aYearAndADay = Period.of(1, 0, 1);
+		System.out.println(birth.plus(aYearAndADay)); // 2021-02-13T21:31
+	}
+}
+```
+
 #### between
 ```java
 Period periodBetween = Period.between(carnivalStart, carnivalEnd);
 System.out.println(periodBetween);
 ```
+
+* **LocalDateTime etc instance methods e.g. `plusYears()` can be chained** -> `dt.plusDays(1).plusWeeks(2);` -> the date plus two weeks and a day
+* **Period static methods e.g. `ofYears()` can't be chained - they will compile but only the last method will take effect** -> `Period.ofWeeks(2).ofDays(1);` -> a period of 1 day
+* **Period instance methods e.g. `minus` can be chained**
+* What is the output of the following?:
+
+```java
+import java.time.LocalDate;
+import java.time.Period;
+
+public class ChainingPeriodMethods {
+	public static void main(String[] args) {
+		LocalDate ld = LocalDate.of(2020, 2, 12);
+		Period p = Period.ofYears(1000).ofWeeks(12).ofDays(1);
+		p.plusDays(10);
+		p = p.plusDays(1).plusDays(1);
+		System.out.println(ld.plus(p));
+	}
+}
+
+```
+
+* The output is `2020-02-15`
+  - the static methods `ofYears()`, `ofWeeks()` & `ofDays()` don't chain, so it creates a period of a day.
+  - Period is immutable so `p.plusDays(10);` makes no change to the object
+  - `p = p.plusDays(1).plusDays(1);` makes a new assignment, so the new value uses the chained methods on the instance, which adds two days
 
 #### parse period
 * can also be instantiated with static `parse()` which takes ISO-8601 period formats `PnYnMnD` and `PnW` as arguments:
@@ -2761,6 +2832,11 @@ public void setHat(boolean hat){
 	this.hat = hat;
 }
 ```
+
+* **encapsulation allows setters, but doesn't require them (class is still encapsulated if it doesn't have setters)**
+* **it must have setters if it is to follow JavaBeans rules**
+* **Immutability requires private instance variables and no setters.**
+
 ### Creating Immutable Classes
 * omit the setters and initialize variables in the constructor
 ```java
@@ -2914,6 +2990,58 @@ interface Predicate<T> {
   - `Predicate<Integer> p = i -> i > 5;`
   - not `Predicate<Integer> p = (i ,j) -> i < 5 || j < 10;` // DOES NOT COMPILE -> `PredicateTester.java:5: error: incompatible types: incompatible parameter types in lambda expression`
 * Unlike regular interfaces, Functional interfaces can be instantiated by a lambda expression, as shown above, as long as the lambda arguments match the interface arguments
+
+#### Functional interfaces
+
+* Any interface with a Single Abstract Method (an SAM) is a functional interface. The examples on the exam will all have a boolean method.
+* the important thing to note is that where a method calls for a functional interface (or Predicate) argument, a lambda can be passed as the reference
+* We can show this by creating our own functional interface:
+
+```java
+interface Age {
+	boolean tooOld(Integer age);
+}
+public class TestingFunctionalInterface {
+	public static void main(String[] args){
+		checkAge(i -> i > 50, 25); // Just right
+		checkAge( (Integer i) -> i > 45, 55); // Too old
+		checkAge( (int i) -> i > 1, 100); // Does not compile - type is Integer, not int - predicates can't autobox in the same way that Collections can
+	}
+	public static void checkAge(Age age, int years){
+		if(age.tooOld(years))
+			System.out.println("Too old");
+		else
+			System.out.println("Just right");
+	}
+}
+```
+* Any reference to a functional interface can be assigned a lambda - e.g. `Age a = i -> i == 0;`, `Predicate<String> foo = s -> s.equals("Foo");`
+* if specifying the type in the lambda, it must match the type of the functional interface - e.g. `(double d -> d > 0)` won't match `Predicate<Double>` or `singleAbstractMethod(Double d)` - it doesn't autobox
+* however, if the type argument isn't specified, or is correctly specified (`(Double d) -> d > 0)`) then it can be passed a primitive, which will autobox to its wrapper class
+* `Predicate` only takes one argument, but we could write a functional interface with more than one argument:
+
+```java
+interface Shape {
+	boolean test(int h, double l);
+}
+
+public class TestingFuncInterfaceWithMultipleArgs {
+	public static void main(String[] args) {
+		Shape square = (h, l) -> h == l;
+		System.out.println(square.test(5, 5));
+		System.out.println(square.test(3, 7));
+		
+		Shape rectangleHeightTwiceLength = (int h, double l) -> h == (l * 2);
+		System.out.println(rectangleHeightTwiceLength.test(4, 2));
+		System.out.println(rectangleHeightTwiceLength.test(1, 5));
+		
+		// Shape lengthIsOne = (int h, l) -> l == 1; // DOES NOT COMPILE - if one argument has a type, all others have to as well
+	}
+}
+```
+* all arguments have to match if the type is specified
+* if one type is specified, all types have to be specified
+
 ## Chapter 5 - Class Design
 **In this chapter:**
 
@@ -4439,6 +4567,46 @@ try {
 ```
 * superclasses can't be caught before subclasses
 * order should go upwards, from the narrowest subclass up to the superclass
+* **check this every time there is a question with catch blocks, as you KEEP missing it**
+* What is the output of this code?:
+```java
+12: int a = 123;
+13: int b = 0;
+14: try {
+15: 	System.out.print(a / b);
+16: 	System.out.print("1");
+17: } catch (RuntimeException e) {
+18: 	System.out.print("2");
+19: } catch (ArithmeticException e) {
+20: 	System.out.print("3");
+21: } finally {
+22: 	System.out.print("4");
+23: }
+```
+
+* look at the catch blocks - `ArithmeticException` is after its superclass, `RuntimeException`, meaning it is unreachable - so it will not compile
+* similarly, a catch block for an exception the where the exception will never be thrown, won't compile:
+
+```java
+import java.io.IOException;
+public class BadExceptionHandling {
+	public static void main(String args[]){
+		try {
+			System.out.println("Hello world");
+		} catch (IOException e) {
+			System.out.println("Bad maths");
+		}
+	}
+}
+```
+
+```bash
+> javac BadExceptionHandling.java
+BadExceptionHandling.java:6: error: exception IOException is never thrown in body of corresponding try statement
+                } catch (IOException e) {
+                  ^
+```
+
 ### Throwing a second exception
 ```java
 try {
@@ -4460,6 +4628,7 @@ try {
 ```
 * output is: Exception in thread "main" java.lang.Exception
 > because the finally block **always** has to run, the catch clause will execute up until the exception, then pass to finally - it can't throw two exceptions so has to go to finally
+* **however, the exception will then be passed back to the caller**
 * another example:
 ```java
 public class ThrowingASecondException {
@@ -4485,6 +4654,76 @@ public class ThrowingASecondException {
 	}
 }
 ```
+
+* careful when a second exception is thrown and goes to finally -  what is the output here?:
+
+```java
+public class SecondException {
+	static void foo() {
+		try {
+			System.out.println("2");
+			throw new RuntimeException();
+		} catch(RuntimeException e) {
+			System.out.println("3");
+			throw e;
+		} finally {
+			System.out.println("4");
+		}
+	}
+	
+	public static void main(String args[]) {
+		System.out.println("1");
+		foo();
+		System.out.println("5");
+	}
+}
+```
+
+```bash
+> java SecondException
+1
+2
+3
+4
+Exception in thread "main" java.lang.RuntimeException
+        at SecondException.foo(SecondException.java:5)
+        at SecondException.main(SecondException.java:16)
+```
+
+* control passes to the finally block, printing "4", then the exception is passed back to the caller (`main()`), which doesn't handle it so it throws the exception.
+* if we do the same thing with a checked exception:
+
+```java
+public class SecondCheckedException {
+	static void foo() {
+		try {
+			System.out.println("2");
+			throw new Exception();
+		} catch(Exception e) {
+			System.out.println("3");
+			throw e;
+		} finally {
+			System.out.println("4");
+		}
+	}
+	
+	public static void main(String args[]) {
+		System.out.println("1");
+		foo();
+		System.out.println("5");
+	}
+}
+```
+
+```bash
+> javac SecondCheckedException.java
+SecondCheckedException.java:8: error: unreported exception Exception; must be caught or declared to be thrown
+                        throw e;
+                        ^
+```
+
+* this time, it won't compile, as the caller, `main()`, doesn't handle or declare the checked exception
+
 ### Common Exception Types
 * 3 types for the exam:
   1. runtime exceptions (also known as unchecked exceptions)
@@ -4779,17 +5018,18 @@ Mark
 
 Which of the following is a reference variable (and not a primitive)? (Choose all that apply)
 
-A.	int[] ints;Your selection is incorrect
+A.	int[] ints;
 
-B.	long[] longs;Your selection is incorrect
+B.	long[] longs;
 
-C.	String[] strings;Your selection is incorrect
+C.	String[] strings;
 
-D.	Object[] objects;Your selection is incorrect
+D.	Object[] objects;
 
 E.	None of the above
 
-A, B, C, D. All array types are reference variables. Although int is a primitive type, int[] is still a reference type.
+Solution:
+A, B, C, D. All array types are reference variables. Although `int` is a primitive type, `int[]` is still a reference type.
 
 ***
 
@@ -4798,6 +5038,8 @@ When compiling, one bytecode file is created per class/interface.
 ***
 
 What is the output of the following program?
+
+```java
 1: public class ColorPicker {
 2: 		public void pickColor() {
 3: 			try {
@@ -4817,6 +5059,7 @@ What is the output of the following program?
 17: 		System.out.print("D");
 18: 	}
 19: }
+```
 
 A.	ABCD
 
@@ -4828,9 +5071,72 @@ D.	AC and a stack trace for ArithmeticExceptionYour selection is incorrect
 
 E.	ACD and a stack trace for ArithmeticException
 
-SOLUTIONS
-D.
-The pickColor() method is invoked on line 16. A is output on line 4 and then fail() is invoked. An ArithmeticException is thrown and not caught within pickColor(), so the finally block executes and prints C. Then the exception is thrown to main(). Because main() does not catch it either, the method returns to the caller and a stack trace is printed for the ArithmeticException.
+Solution:
+D. The pickColor() method is invoked on line 16. A is output on line 4 and then fail() is invoked. An ArithmeticException is thrown and not caught within pickColor(), so the finally block executes and prints C. Then the exception is thrown to main(). Because main() does not catch it either, the method returns to the caller and a stack trace is printed for the ArithmeticException.
+
+***
+
+Java is funny about curly braces `{}` - they are required around methods, try blocks, switch statements, catch blocks, and finally blocks even if there is only one statement inside.
+They are optional for loops (both types of for loop, while loops, and do-while loops) **if** a single statement follows
+What consitutes a "single statement" is a bit complicated - for example look at the following code:
+
+```java
+public class RemovingOptionalBraces {
+	public static void main(String[] args) {
+		int num1 = 8;
+		int num2 = 8;
+		for (int i = 0; i < 3; i++)
+			if (num1 == num2)
+				try {
+					System.out.println("t");
+				} catch (Exception e) {
+					System.out.println("c");
+				}
+	}
+}
+```
+
+This seems like it wouldn't compile, as the *if* spans several lines, as does the *try-catch*. But the if statement is a single statement, as it the try-catch statement. An if-else would also be a single statement.
+Single statements include:
+
+> IfThenStatement
+> IfThenElseStatement
+> WhileStatement
+> ForStatement
+> SwitchStatement
+> DoStatement
+> BreakStatement
+> ContinueStatement
+> ReturnStatement
+> ThrowStatement
+> TryStatement
+> A block (that is, using curly braces)
+
+Non-single statements include:
+> LocalVariableDeclarationStatement
+
+Therefore the following won't compile:
+
+```java
+public class LocalVariableDeclarationStatement {
+	public static void main(String[] blabla) {
+		// this compiles
+		int x = 1;
+		if(true)
+			switch(x) {
+				case 1:
+				case 2:
+				case 3:
+				default:
+			}
+		
+		// this won't compile
+		if(true)
+			int y = 2; // error: variable declaration not allowed here
+		
+	}	
+}
+```
 
 ---
 
