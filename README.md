@@ -1,4 +1,4 @@
-# Java OCA
+](# Java OCA
 
 My notes from Boyarsky and Selikoff's *Oracle Certtified Associate Java SE 8 Programmer I Study Guide*, with top-ups from Mala Gupta's *OCA Java SE 8 Programmer I Certification Guide*
 
@@ -3140,7 +3140,7 @@ public class TestingFuncInterfaceWithMultipleArgs {
 	}
 }
 ```
-* all arguments have to match if the type is specified (subclasses aren't allowed - Predicate<List> won't take (ArrayList arrList) -> arrList.isEmpty();)
+* all arguments have to match if the type is specified (subclasses aren't allowed - `Predicate<List>` won't take `(ArrayList arrList) -> arrList.isEmpty();`)
 * if one type is specified, all types have to be specified
 #### Another functional interface and lambda example, for fun
 ```java
