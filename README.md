@@ -1,4 +1,4 @@
-](# Java OCA
+# Java OCA
 
 My notes from Boyarsky and Selikoff's *Oracle Certtified Associate Java SE 8 Programmer I Study Guide*, with top-ups from Mala Gupta's *OCA Java SE 8 Programmer I Certification Guide*
 
@@ -137,8 +137,7 @@ import java.util.*; // imports all classes in java.util
 ```
 * doesn't import classes in child packages/subpackages e.g. the classes in `java.util.concurrent` won't be imported with `import java.util.*;`
 * similarly, `import java.util.concurrent.*;` won't import the classes in `java.util`
----
-here is an example using the classes `Files` and `Paths`, both in `java.nio.file`:
+* here is an example using the classes `Files` and `Paths`, both in `java.nio.file`:
 * to import, either use wildcard:
 ```java
 import java.nio.file.*;
@@ -153,7 +152,6 @@ import java.nio.file.Paths;
 import java.nio.*; // only matches classes, not packages
 import java.nio.*.*; // can't recursively use wildcards - there can only be one and it must be at the end
 ```
----
 #### Naming conflicts
 ```java
 import java.util.*;
@@ -181,7 +179,7 @@ public class Foo {
 import java.util.Date;
 import java.sql.Date; // DOES NOT COMPILE
 ```
----
+
 #### Create a package
 * filepath `C:\temp\packagea\ClassA.java`
 ```java
@@ -447,11 +445,11 @@ public static void main(String... args){
 	System.out.println(y);
 }
 ```
-* interestingly, you also can't do this on a single line with an instance or class variable:
+* interestingly also can't do this on a single line with an instance or class variable:
 
 ```java
 public class CompoundAssignmentLocalInstanceVariables {
-	static y += 1;
+	static y += 1; // DOES NOT COMPILE
 	public static void main(String... args){
 		System.out.println(y);
 	}
@@ -616,7 +614,17 @@ System.out.println(a);
 
 * [More on this](https://coderanch.com/t/653797/certification/Post-Pre-unary-operator-precedence)  
 * [Princeton on precedence](https://introcs.cs.princeton.edu/java/11precedence/)
+* careful when assigning and using the post-increment/decrement operator:
+```java
+int a = 0;
+a = a++;
+System.out.println(a); // -> 0
 
+int b = 0 ;
+b = b++ + b++; // -> 1
+```
+* example one - reading left to right - a is assigned the value of a, 0. The incremented value is stored but never applied?
+* example two - b is 0, post-incremented - it is added to b, which is now 1 - 0 + 1 = 1. Again the last post incremented value isn't included when the assignment is made
 ### Logical complement (!) and negation (-) operators
 * `!` flips the value of a boolean expression e.g.
 ```java
@@ -689,6 +697,14 @@ long l = 192_301_398_193_810_323L;
 float f = 1.2; // DOES NOT COMPILE -> 1.2 interpreted as double -> double larger than float
 float f = 1.2f; // compiles
 float f = (float)1.2; // compiles
+```
+* numeric underflow again - here is a good example:
+```java
+byte b = (byte)128;
+System.out.println(b); // -128     -> 127 is the largest possible byte, so it wraps one place to the next possible value
+
+byte b2 = (byte) -129;
+System.out.println(b2); // 127
 ```
 ### Compound assignment operator
 ```java
@@ -882,6 +898,7 @@ public void fooBar(String bla, final String tac) {
   4. All case labels should be COMPILE TIME CONSTANTS.
   5. No two of the case constant expressions associated with a switch statement may have the same value.
   6. At most one default label may be associated with the same switch statement.
+* the last two can be summed up as: **no duplicate cases**
 #### A bit more on switch statements
 * when used with a String uses the equals() method to compare the given expression to each value in the case statement and will therefore throw a NullPointerException if the expression is null
 * it can match for multiple cases:
