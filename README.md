@@ -1019,12 +1019,80 @@ for(int i : arr){
 	System.out.print(i);
 } // OUTPUT -> 1234
 ```
+#### Unreachable lines
+* code in a for or while loop has to be reachable to compile
+* if the while condition (or the middle condition in a for loop) evaluate to false at compile time, an compiler error will occur:
+```java
+while(false) { // does not compile
+	System.out.println("Foo"); // unreachable code
+}
+for(int i = 0; false; i++) { // does not compile
+	System.out.println("Fooble"); // unreachable code
+}
+```
+```java
+public class UnreachableCode {
+	static boolean bool1 = false;
+	static final boolean bool2 = false;
+	public static void main(String[] args) {
+		while(bool1) {
+			System.out.println("Foo"); // bool1 is not a compile-time constant so this is reachable
+		}
+		
+		while(bool2) {// does not compile
+			System.out.println("Foo"); // bool2 is compile-time constant - code not reachable
+		}
+	}
+}
+```
+* this is not the case with enhanced for loops (there is no condition), do-while loops (the condition is checked after the block has run), or if statements (which allow branching unreachable code)
+#### final variables in loops
+* final variables are allowed to be assigned in the initialization of a for loop:
+```java
+int i = 0;
+for(final int j = 99; i < 3; i++) {
+	System.out.println(j);
+}
+```
+* compiles because the final value is not changed. You would not be allowed to use it in the increment block. If used in the condition block it would endlessly loop unless it was looking for that value
+* also allowed in a for-each, which is more useful:
+```java
+int[] ints = {1, 2, 3};
+for(final int item : ints) {
+	// item can't be modified
+}
+```
+* not allowed in `while` or do-while
+* they can also be declared in the body of a loop, as they will go out of scope at the end of each iteration:
+```java
+int i = 0;
+while(i < 6){
+	i++;
+	final String s = "Iteration number " + i;
+}
+```
 ### Labels
 ```java
 int[][] myComplexArray = { {1, 2, 3},{4, 5, 6},{7, 8, 9} };
 OUTER_LOOP: for(int[] mySimpleArray : myComplexArray){
 	INNER_LOOP: // code
 }
+```
+* You can apply a label to any code block or a block level statement (such as a for statement) but not to declarations. For example: loopX : int i = 10;
+* Labeled blocks only work with break and continue statements, but they can be before other statements (**not variable declarations**) - they just won't do anything
+* `break` and `continue` on a label must be called within its scope
+```java
+int x;
+label1 : x = 1; // legal but uncallable
+label2: while(x <5) {
+	break label1; // DOES NOT COMPILE - label1 is not in scope (its scope is just that initialization line so this can never be called)
+}
+```
+```java
+myForLoop: for(int i = 0; i < 5; i++) {
+	System.out.println(i);
+}
+continue myForLoop; // DOES NOT COMPILE - not in scope
 ```
 ### break
 ```java
@@ -1785,6 +1853,21 @@ public static void main(String[] args) {
   - static methods e.g. `Boolean.valueOf(true);`, `Boolean.valueOf("TrUe");`
 * this is true for all wrapper classes, below are the full Boolean signatures as an example
 * **n.b.** String argument is non-case-sensitive
+#### You need to remember the following points about Boolean:
+1. Boolean class has two constructors - Boolean(String) and Boolean(boolean)
+  - The String constructor allocates a Boolean object representing the value true if the string argument is not null and is equal, ignoring case, to the string "true".
+  - Otherwise, allocate a Boolean object representing the value false.
+  - Examples: new Boolean("True") produces a Boolean object that represents true. new Boolean("yes") produces a Boolean object that represents false.
+  - The boolean constructor is self explanatory.
+2. Boolean class has two static helper methods for creating booleans - parseBoolean and valueOf.
+  - Boolean.parseBoolean(String ) method returns a primitive boolean and not a Boolean object
+  - (Note - Same is with the case with other parseXXX methods such as Integer.parseInt - they return primitives and not objects).
+  - The boolean returned represents the value true if the string argument is not null and is equal, ignoring case, to the string "true".
+  - Boolean.valueOf(String ) and its overloaded Boolean.valueOf(boolean ) version, on the other hand, work similarly but return a reference to either Boolean.TRUE or Boolean.FALSE wrapper objects.
+  - Observe that they dont create a new Boolean object but just return the static constants TRUE or FALSE defined in Boolean class.
+3. When you use the equality operator ( == ) with booleans, if exactly one of the operands is a Boolean wrapper, it is first unboxed into a boolean primitive and then the two are compared (JLS 15.21.2).
+  - If both are Boolean wrappers, then their references are compared just like in the case of other objects.
+  - Thus, new Boolean("true") == new Boolean("true") is false, but new Boolean("true") == Boolean.parseBoolean("true") is true.
 #### Boolean members
 * Constructors:
   - `Boolean(boolean value)`
@@ -3313,7 +3396,7 @@ import privateAccess.PrivateClass;
 
 ```
 
-* final classes can't have any child classes
+* final classes can't have any child classes (Wrapper classes and `System` are, amongst many others, final classes (I didn't know where else to put this))
 * a child class can access all public members of the parent class
 * a child class can, through inheritance, access all protected  members of the parent class
 * if it is in the same package can access all its protected members directly, otherwise it can only through the child class:
@@ -3439,6 +3522,23 @@ public class Grandchild{
 * Child
 */
 ```
+#### Polymorphism and methods in constructors
+* What will the following print?
+```java
+class Parent{
+	void foo() { System.out.println("Parent"); }
+	Parent(){
+		foo();
+	}
+}
+public class Child extends Parent {
+	void foo() { System.out.println("Child");
+	public static void main(String[] rags){
+		Child c = new Child();
+}
+```
+* it prints child - the object is a Child at runtime, so it prints the overriden method from the parent constructor.
+* remember, methods in constructor blocks are also polymorphic 
 ### Calling inherited class members
 * child classes can use any public or protected members from the parent class
 * if they are in the same package, they can also use any default (package-private) members
@@ -3519,6 +3619,33 @@ public class Child extends Parent{
 	public String foo(){ // DOES NOT COMPILE -> non-covariant return types
 		return "foo";
 	}
+}
+```
+* **there is no covariance in primitives or generics**:
+```java
+class Parent {
+    public int method() {
+        return 0;
+    }
+}
+
+class Child extends Parent {
+    public short method() { // compilation error
+        return 0;
+    }
+}
+```
+```java
+class Parent {
+    public Collection<String> method() {
+        return null;
+    }
+}
+
+class Child extends Parent {
+    public List<String> method() { // the object is covariant - List is a subtype of Collection - but the generic, String, must match
+        return null;
+    }
 }
 ```
 * overriding is a lot more restrictive than overloading (where only the method signature has to match)
@@ -4012,6 +4139,14 @@ public interface HasFur extends Hyena {} // DOES NOT COMPILE
 * `interface` `extends` `interface`
 * `class` `implements` `interface`
 * `class` `extends` `class`
+#### Weird edge case
+* Here is something that came up on a mock test: can a class implement an interface if it extends a class that already implements that interface?
+```java
+interface Interface{}
+class Class1 implements Interface{}
+class Class2 extends Class1 implements Interface{}
+```
+* yes it can, although implementing it again is redundant
 ### Abstract Methods and Multiple Inheritance
 * what happens if two interfaces contain the same abstract method and a concrete class implements them both?
 * if they have the same name but a different signature, they are overloaded methods and follow those rules
@@ -4110,6 +4245,21 @@ public interface IllegalExamples {
 ```
 * **(static) interface variables - child classes directly inherit interface variables so are available to call without a reference to the interface**
 * **static interface methods - child classes do not inherit interface methods so they can only be called with a reference to the name of the interface**
+* what happens if a class inherits two interface variables with the same name?
+```java
+interface interface1 {
+	int x = 1;
+}
+interface interface2 {
+	int x = 2;
+}
+public class Implementer implements interface1, interface2 {
+	public static void main(String[] args) {
+		System.out.println(x); // DOES NOT COMPILE -> reference to x is too ambiguous
+	}
+}
+```
+* the class will compile unless you try to use the static variable without an explicit reference to which variable you mean - e.g. `interface1.x`
 ### Default Interface Methods
 * Java 8 introduced the `default` method to interfaces
 * marked `default`, it has a method body unlike regular interface methods which are assumed abstract and have no implementation
@@ -4689,6 +4839,21 @@ try {
 	// this always runs
 }
 ```
+* execution will always pass to finally:
+```java
+loop:
+{
+ try{
+	for (i = 0; i < 5;  ++i){
+	   if(i == 2) break loop; // on second iteration, break loop happens - but control is FIRST passed to finally block
+	}
+ } finally{
+	System.out.println("In Finally"); // this gets executed
+ }
+}
+```
+* **except** when `System.exit(0);` is used - this is the only way to avoid control passing to the finally block (at least for the exam)
+
 ### Catching various types of exception
 ```java
 class ACheckedException extends Exception {}
@@ -5102,7 +5267,26 @@ public class PrintingAnException {
 *         at PrintingAnException.main(PrintingAnException.java:8)
 */
 ```
+---
+Consider the following code:
+```java
+class A{
+   A() {  print();   }
+   void print() { System.out.println("A"); }
+}
+class B extends A{
+   int i =   4;
+   public static void main(String[] args){
+      A a = new B();
+      a.print();
+   }
+   void print() { System.out.println(i); }
+}
+```
+What will be the output when class B is run ?
 
+It will print 0, 4
+> Note that method print() is overridden in class B. Due to polymorphism, the method to be executed is selected depending on the class of the actual object. Here, when an object of class B is created, first B's default constructor (which is not visible in the code but is automatically provided by the compiler because B does not define any constructor explicitly) is called. The first line of this constructor is a call to super(), which invokes A's constructor. A's constructor in turn calls print(). Now, print is a non-private instance method and is therefore polymorphic, which means, the selection of the method to be executed depends on the class of actual object on which it is invoked. Here, since the class of actual object is B, B's print is selected instead of A's print. At this point of time, variable i has not been initialized (because we are still in the middle of initializing A), so its default value i.e. 0 is printed.   Finally, 4 is printed.
 ---
 ## Misc Notes
 
@@ -5316,7 +5500,73 @@ public class LocalVariableDeclarationStatement {
 	}	
 }
 ```
+---
+A good example of order of precedence:
+Consider the following method:
+```java
+static int mx(int s){
+	for(int i=0; i<3; i++){
+		s = s + i;
+	}
+	return s;
+}  
+```
+and the following code snippet:
+```java
+int s = 5;
+s += s + mx(s) + ++s;
+System.out.println(s);
+```
+What will it print?
+s += (expression) will be converted to s =  s + expression.
+So the given expression will become: s = s + s + mx(s) + ++s;
+s = 5 + 5 + mx(5) + 6;
+s = 5 + 5+ 8 + 6;
+s = 24;
 
+---
+Here is another:
+What will be the result of trying to compile and execute the following program?
+```java
+public class TestClass{
+    public static void main(String args[] ){
+		int i = 0 ;
+		int[] iA = {10, 20} ;
+		iA[i] = i = 30 ;
+		System.out.println(""+ iA[ 0 ] + " " + iA[ 1 ] + "  "+i) ;
+	}
+}
+```
+It will print 30 20 30
+The statement iA[i] = i = 30 ; will be processed as follows:
+iA[i] = i = 30; => iA[0] = i = 30 ;  =>  i = 30; iA[0] = i ; =>   iA[0] = 30 ;
+
+Here is what JLS says on this:
+1 Evaluate Left-Hand Operand First  
+2 Evaluate Operands before Operation  
+3 Evaluation Respects Parentheses and Precedence  
+4 Argument Lists are Evaluated Left-to-Right  
+
+For Arrays: First, the dimension expressions are evaluated, left-to-right. If any of the expression evaluations completes abruptly, the expressions to the right of it are not evaluated.
+---
+A snippet I don't know where to put:
+> The getClass method always returns the Class object for the actual object on which the method is called irrespective of the type of the reference. Since s refers to an object of class String, s.getClass returns Class object for String  and similarly list.getClass returns Class object for ArrayList.
+```java
+import java.util.*;
+public class ClassnameTest {
+     public static void main(String[] args) {
+		List<String> list = new ArrayList<>();
+		StringBuilder sb = new StringBuilder("mrx");
+		String s = sb.toString();
+		list.add(s);
+		System.out.println(s.getClass());
+		System.out.println(list.getClass());
+	}
+}
+```
+Prints:
+class java.lang.String
+class java.util.ArrayList
 ---
 
 ## Exam Essentials
