@@ -676,12 +676,14 @@ int x = 1;
 long y = 2;
 long z = x + y; // x promoted to long; z is also a long
 ```
+* remember, these rules apply to all operations **including** assignment - e.g. `float f = 1;` -> int literal is promoted to the floating-point value type
+* also remember, all numbers without a decimal point are interpreted as int literals, all with a decimal point are interpreted as double literals
 ### Primitive conversion
 * Java automatically promotes from smaller to larger data types, but not the other way round
 ```java
-float f = 1; // promotes integer to float
 int x = 1.0; // DOES NOT COMPILE -> double can't assign to int
 short y = 1921222; // DOES NOT COMPILE -> too large to fit into short type
+byte b = 128;
 int z = 9f; // DOES NOT COMPILE -> float can't assign to int
 long l = 192_301_398_193_810_323; // DOES NOT COMPILE -> interprets literal as int & value is too large
 ```
@@ -773,6 +775,7 @@ if(x)
 	System.out.print("two");
 ```
 * output is "two" - despite the formatting, it is interpretted as a single statement if block so the second statement runs regardless
+* what constitutes a single statement is confusing - it can be a block of several lines, an entire if-elseif-else statement - see [single statements](#single-statements)
 ### if else
 * again, braces optional for single statments
 ```java
@@ -899,6 +902,7 @@ public void fooBar(String bla, final String tac) {
   5. No two of the case constant expressions associated with a switch statement may have the same value.
   6. At most one default label may be associated with the same switch statement.
 * the last two can be summed up as: **no duplicate cases**
+* point 3 essentially says that switch uses numeric promotion/conversion - if you can't do `byte b = 300;` then it won't compile
 #### A bit more on switch statements
 * when used with a String uses the equals() method to compare the given expression to each value in the case statement and will therefore throw a NullPointerException if the expression is null
 * it can match for multiple cases:
@@ -931,7 +935,7 @@ switch(x) {
 
 > Declarations aren't "run" - they're not something that needs to execute, they just tell the compiler the type of a variable. (An initializer would run, but that's fine - you're not trying to read from the variable before assigning a value to it.)
 ### while
-* braces optional for single-line statement
+* braces optional for single statement
 ```java
 while(booleanExpression)
 	// do code
@@ -952,7 +956,7 @@ while(++x < 5){
 // 1234
 ```
 ### do while
-* braces optional for single-line statement
+* braces optional for single statement
 * `while` evaluates before running the block, `do-while` evaluates after
 * `do-while` will always run at least once e.g.
 ```java
@@ -997,6 +1001,14 @@ for(int i = 0, long x = 0; i < 5; i++){} // DOES NOT COMPILE
 for(int i = 0, int j = 0; i < 5; i++){} // DOES NOT COMPILE -> instead you would use:
 for(int i = 0, j = 0; i < 5; i++){} // legal
 ```
+* this might be a bit confusing - basically, the initialization block (the bit before the first `;`) should be treated like another line of code in the same scope, in terms of whether it compiles
+* so don't redeclare anything in the same scope
+* don't try to declare two types in the same statement
+* it means you can do things like:
+```java
+for(int x, y, z = 0; z < 5; x = y = ++z){}`
+```
+* but you wouldn't be able to use x or y inside the for block, as they might not have been initialized (only after the update statement has run)
 ### for each
 * format: for(`dataType` `variableName` : `collection`){}
 * `collection` must be an object that implements Iterable, e.g. array, Collection, List, ArrayList, Stack - it cannot iterate over Map
@@ -1063,16 +1075,22 @@ lbl: for(String bird : birds){
 ### Extra things
 * remember, numeric promotion also occurs when checking equality `==`
 * can't compare boolean to other primitives
-* can compare char to numeric types (although output will be false)
+* can compare char to numeric types
+  - a char representing a numeric type wont' match (the ASCII number of '1' is 49)
 ```java
 int x = 1;
 double y = 2;
 boolean z = false;
 x == y; // compiles -> int promotes to double -> true
 x == z; // DOES NOT COMPILE -> boolean not numeric
+
 byte b = 1;
 char c = '1';
 b == x; // compiles -> false
+
+// however
+int bla = 49;
+bla == c; // compiles -> true // but you aren't expected to know all ASCII codes so this won't come up
 ```
 ## Chapter 3 - Java Core APIs
 **In this chapter:**
@@ -1147,7 +1165,9 @@ b == x; // compiles -> false
   String s6 = "Foo";
   String s7 = s6;
   ```
+* I suspsect the important constructors for the exam are: `String()`, `String(char[] value)`, `String(StringBuilder builder)` (also StringBuffer), `String(String original`, and String("StringLiteral")
 * using a constructor always creates a new String object in memory, whereas using a string literal only creates a new object if it isn't already in the string pool
+* using `intern()` will add a String object to the String pool (if not already present)
 * **String pool**
   - string literals are stored in the string pool
   - they are not garbage collected
@@ -1160,7 +1180,7 @@ int three = 3;
 String four = "4";
 System.out.println(1 + 2 + three  + four); // -> 64
 ```
-* using `toString()` on a null String reference prints `null`, rather than nothing:
+* using `println` on a null String reference prints `null`, rather than nothing:
 ```java
 public class PrintingNullString {
 	static String s1 = "Hello";
@@ -1170,6 +1190,7 @@ public class PrintingNullString {
 	}
 }
 ```
+* *an aside* - `println` doesn't call `toString()`, as this would result in a null pointer reference - it calls `String.valueOf(s2).toString()`
 ### String Methods
 * `length()` -> `"Hello".length()` -> `5`
 * `charAt(int index)` -> `"Hello".charAt(4);` -> `o`
@@ -1213,6 +1234,10 @@ String s = "Hello"
 s.replace("lo", "icopter").substring(3, 5) + "e"; // -> ice
 s; // -> Hello
 ```
+#### String methods that accept char
+* the only String methods that have `char` as an argument (from those listed above) are:
+  - `replace(char oldChar, char newChar)`
+  - `indexOf(char ch)`
 ### StringBuilder
 * StringBuilder objects are mutable
 ```java
@@ -1248,9 +1273,20 @@ System.out.print(sb); // -> 1falsec
 * `reverse()` -> `new StringBuilder("Hello").reverse();` -> `olleH`
 * `replace(int start, int end, String str)` -> `new StringBuilder("Hello").replace(2, 4, "zz")` -> `Hezzo`
   - Replaces the characters in a substring of this sequence with characters in the specified String.
+  - **n.b.** different to `String`'s replace method which takes a String to find as its first arg and the replacement String as its second
 #### StringBuffer
 * StringBuffer is an older, thread-safe (therefore, less efficient) version of StringBuilder which has the same methods
 * **StringBuffer is final, and therefore can't be extended**
+##### Difference between mutability in String and StringBuilder
+```java
+StringBuilder sb = new StringBuilder("Hello");
+System.out.println(sb.append("World"); // -> HelloWorld
+System.out.println(sb); // -> HelloWorld
+
+String s = "Hello";
+System.out.println(s.concat("World"); // -> HelloWorld
+System.out.println(s); // -> Hello
+```
 ### Understanding Equality
 ```java
 StringBuilder sb1 = new StringBuilder();
@@ -1278,7 +1314,7 @@ System.out.println(x == "Hello World ".trim()); // two different literals - as t
 2. Literal strings within different classes in the same package represent references to the same String object. 
 3. Literal strings within different classes in different packages likewise represent references to the same String object. 
 4. Strings computed by constant expressions are computed at compile time and then treated as if they were literals.
-5. Strings computed at run time are newly created and therefore are distinct. e.g. `"String ".trim()` will not equal `"String"`
+5. Strings computed at run time are newly created and therefore are distinct. e.g. `"String ".trim()` will not `==` `"String"`
 6. The result of explicitly interning a computed string is the same string as any pre-existing literal string with the same contents. 
 #### StringBuilder equality
 * StringBuilder doesn't have an overridden `equals()`
@@ -5218,7 +5254,7 @@ Solution:
 D. The pickColor() method is invoked on line 16. A is output on line 4 and then fail() is invoked. An ArithmeticException is thrown and not caught within pickColor(), so the finally block executes and prints C. Then the exception is thrown to main(). Because main() does not catch it either, the method returns to the caller and a stack trace is printed for the ArithmeticException.
 
 ***
-
+##### Single statements
 Java is funny about curly braces `{}` - they are required around methods, try blocks, switch statements, catch blocks, and finally blocks even if there is only one statement inside.
 They are optional for loops (both types of for loop, while loops, and do-while loops) **if** a single statement follows
 What consitutes a "single statement" is a bit complicated - for example look at the following code:
