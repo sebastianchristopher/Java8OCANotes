@@ -97,6 +97,7 @@ System.out.println(s); // -> foo
 * args can be `(String[] args)`, `(String args[])`, `(String... args)`
 * when running the program, spaces are used to separate the arguments
 * if a string has spaces, surround it with quotes e.g. `> java Foo 'arg one' two three`
+* **if run without arguments, `args` is an empty String array - not null**
 * trying to access an argument not supplied will throw a runtime error
 * `args` can be any legal identifier e.g. `public static void main(String... blarguments){}`
 * a Java class with a properly defined `main()` method is an *executable class*
@@ -117,6 +118,8 @@ public class OverloadingMain {
  * Running overloaded main method
 */
 ```
+* a non-public class can have a main() method (but it won't be able to run from the command line)
+* a class can have a main() method without `String[]` argument, but it won't be executable
 #### Running with class path
 * given the following source file `Java8OCANotes/myFolder/HelloWorld.java`
 * from `Java8OCANotes:`
@@ -412,6 +415,21 @@ public class AStringCalledString {
 	}
 }
 ```
+* In case there is a conflict between variable name and class name, if the variable is in scope then it is the variable that is accessed instead of the class:
+```java
+String String = "String";
+System.out.println(String.length()); // prints 6
+```
+* Here, the variable String is in scope and therefore the length of the string pointed to by the variable String is printed. The compiler does not confuse it with the class name String.
+* What if we want to use a static method of the String class?
+```java
+String String = "String";
+System.out.println(String.valueOf(String); // prints String
+// it's the same as:
+String str = "String";
+System.out.println(str.valueOf(str); // prints String
+```
+* since we can call a static method with an instance of the object, this compiles and runs without any issues
 ### Default initialization of variables
 * *local variables* (i.e. variables in a method) must be initialized before use
 * their scope is confined to the method or block they are declared in
@@ -675,6 +693,19 @@ short zz = xx + yy; // compiles - the value is known at compile time and can fit
 int x = 1;
 long y = 2;
 long z = x + y; // x promoted to long; z is also a long
+```
+5. narrowing primitive conversion may be used if the type of the variable is byte, short, or char, and the value of the constant expression is representable in the type of the variable:
+```java
+short x = 5;
+```
+* No such narrowing primitive conversion is allowed in the invocation context:
+```java
+static void printNum(short num) { System.out.println(num)); }
+public static void main(String[] args){
+	short x = 5;
+	printNum(x); // Java can narrow this
+	printNum(5); // DOES NOT COMPILE -> incompatible types; possible lossy conversion from into to short
+}
 ```
 * remember, these rules apply to all operations **including** assignment - e.g. `float f = 1;` -> int literal is promoted to the floating-point value type
 * also remember, all numbers without a decimal point are interpreted as int literals, all with a decimal point are interpreted as double literals
@@ -977,6 +1008,12 @@ for( ; ; ){} // compiles - will run an infinite loop
 for(){} // DOES NOT COMPILE
 for(;){} // DOES NOT COMPILE
 ```
+* the update statement happens at the end of an interation of the loop
+* if the boolean condition is blank, it evaluates to true:
+```java
+for( ; ; ){
+	// neverending loop
+}
 * we can add multiple terms:
 ```java
 for(int x = 0, y = 5; y < 10 && x < 5; x++, y++){}
@@ -1259,9 +1296,13 @@ public class PrintingNullString {
 }
 ```
 * *an aside* - `println` doesn't call `toString()`, as this would result in a null pointer reference - it calls `String.valueOf(s2).toString()`
+* `println()` can print any object - or print the result of a method or operation it is called on (e.g. `println(1 + 2);`_)
+* careful though - it must be passed either a valid object or a valid operation:
+  - `println(1 + 2 + "" + null + null);` - this compiles - `""` is a String so converts and concatenates
+  - `println(1 + 2 + null + null);` - `2 + null` is not valid so compilation fails
 ### String Methods
 * `length()` -> `"Hello".length()` -> `5`
-* `charAt(int index)` -> `"Hello".charAt(4);` -> `o`
+* `charAt(int index)` -> `"Hello".charAt(4);` -> `o` -> As per the API documentation for charAt, it throws `IndexOutOfBoundsException` if you pass an invalid value. In practice, the message you will get back is `StringIndexOutOfBoundsException`
 * indexOf
   - `indexOf(char ch)`
   - `indexOf(String str)`
@@ -1929,6 +1970,18 @@ integerList.add(2);
 integerList.remove(new Integer(1)); // or integerList.remove(Integer.valueOf("1");
 System.out.print(integerList.toString()); // [2]
 ```
+#### Autoboxing and promotion
+* Java can't promote a primitive and then autobox it:
+```java
+List<Double> list = new ArrayList<>();
+list.add(1); // DOES NOT COMPILE -> int cannot be converted to Double
+```
+```java
+List<Integer> list = new ArrayList<>();
+short x = 1;
+list.add(x); // DOES NOT COMPILE -> short cannot be converted to Integer
+```
+* you can overcome this by casting ( `list.add( (int) x));` or using one of the wrapper class's static methods to convert it
 ### Converting between array and List
 #### List to array
 * `toArray()` -> `Object[]`
@@ -4458,6 +4511,11 @@ public class MisunderstandingPolymorphism {
 }
 ```
 * dog has access to all its superclasses' methods, and any inherited concrete and default methods - swims and mammal only have access to their members
+#### Benefits of polymorphism (a mock question)
+* It makes the code more reusable
+* It makes the code more dynamic.
+  - Polymophism allows the actual decision of which method is to be invoked to be taken at runtime based on the actual class of object
+  - This is dynamic binding and makes the code more dynamic
 ### Object vs Reference
 * in Java, all objects are accessed by reference
 * conceptually, the object is the entity that exists in memory
@@ -4725,6 +4783,32 @@ class was marked as protected and overridden in the subclass, then the method on
 * an exception is an event that alters program flow
 *  all objects that represent these events come from the `Throwable` superclass
 * **n.b. not all have the word exception in them**
+#### Why exceptions? (I was asked in a mock)
+* It allows creation of new exceptions that are custom to a particular application domain
+* It improves code because error handling code is clearly separated from the main program logic.
+  - The error handling logic is put in the catch block, which makes the main flow of the program clean and easily understandable.
+#### What exception does this method throw?
+* This also came up in a mock and is pernickety at best:
+```java
+String s = "String";
+char c = s.charAt(s.length());
+```
+* What exception is thrown if passed a value higher than or equal to the length of the string (or less than 0)?
+  - `IndexOutOfBoundsException`
+* What is printed when running the above code?
+  - `StringIndexOutOfBoundsException`
+* I *think* the difference is:
+```java
+//psuedoclass - this is not the source code but my interpretation of how it works (it's illustrative...)
+class String {
+	char charAt(int i) throws IndexOutOfBoundsException { // the method throws this (this would be in the API)
+		if ((index < 0) || (index >= count)) {
+			throw new StringIndexOutOfBoundsException(index); // but throws this (this is what is printed as the error message)
+		}
+	}
+}
+```
+
 #### Key Subclasses of Throwable
 ![Key Subclasses of Throwable](https://github.com/sebastianchristopher/Java8OCANotes/blob/master/media/key-subclasses-of-throwable.png "Key Subclasses of Throwable")
 * `Error` means something irrecoverable went wrong
