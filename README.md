@@ -118,7 +118,7 @@ public class OverloadingMain {
  * Running overloaded main method
 */
 ```
-* a non-public class can have a main() method (but it won't be able to run from the command line)
+* a non-public class can have a main() method, and it can still run from the command line
 * a class can have a main() method without `String[]` argument, but it won't be executable
 #### Running with class path
 * given the following source file `Java8OCANotes/myFolder/HelloWorld.java`
@@ -241,6 +241,8 @@ public class Foo {
 }
 ```
 * a method name with a return type is not a constructor - the exam will try to trip you up on this
+* a constructor can take the same type as a parameter -> `String(String s)`, `Foo(Foo f)`
+* a constructor cannot be final, static or abstract
 #### Instance initializer blocks
 * code blocks in a method are run when the method is called
 * code blocks outside a method are instance initializers, run when the object is created:
@@ -481,7 +483,11 @@ CompoundAssignmentLocalInstanceVariables.java:3: error: <identifier> expected
         static y += 1;
                      ^
 ```
-
+* the declaration happens on the left-hand side - the assignment is provided by the `=`:
+```java
+int x = x + x; // does not compile - can't use before initialization
+int x = (x = 1) + x // the brackets give precedence to the assignment (x = 1), which allows it to be used
+```
 * *class variables* and *instance variables* do not require initialization
 * they have a default value, assigned on declaration
 
@@ -711,7 +717,7 @@ public static void main(String[] args){
 * remember, these rules apply to all operations **including** assignment - e.g. `float f = 1;` -> int literal is promoted to the floating-point value type
 * also remember, all numbers without a decimal point are interpreted as int literals, all with a decimal point are interpreted as double literals
 ### Primitive conversion
-* Java automatically promotes from smaller to larger data types, but not the other way round (except int literals which can narrow to byte, short and char types if the value fits)
+* Java automatically promotes from smaller to larger data types, but not the other way round (except int literals which can narrow to byte, short and char types if the value fits, and char literals which can narrow to byte, if the value fits)
 ```java
 int x = 1.0; // DOES NOT COMPILE -> double can't assign to int
 short y = 1921222; // DOES NOT COMPILE -> too large to fit into short type
@@ -968,6 +974,7 @@ switch(x) {
 > Declarations aren't "run" - they're not something that needs to execute, they just tell the compiler the type of a variable. (An initializer would run, but that's fine - you're not trying to read from the variable before assigning a value to it.)
 ### while
 * braces optional for single statement
+* condition expression in a while header is required
 ```java
 while(booleanExpression)
 	// do code
@@ -989,6 +996,7 @@ while(++x < 5){
 ```
 ### do while
 * braces optional for single statement
+* boolean condition expression is required
 * `while` evaluates before running the block, `do-while` evaluates after
 * `do-while` will always run at least once e.g.
 ```java
@@ -1003,7 +1011,7 @@ for(int i = 0; i < 5; i++){}
 ```
 * format: for(`initialization`; `booleanExpression`; `updateStatement`){}
 * curly braces `{}` optional for a one-line statement
-* the initialization, boolean and update statements themselves can be blank, but the separating semicolons must be present:
+* the initialization, boolean and update statements themselves can be blank (unlike while condition), but the separating semicolons must be present:
 ```java
 for( ; ; ){} // compiles - will run an infinite loop
 for(){} // DOES NOT COMPILE
@@ -1066,6 +1074,17 @@ while(false) { // does not compile
 }
 for(int i = 0; false; i++) { // does not compile
 	System.out.println("Fooble"); // unreachable code
+}
+```
+```java
+for(int i = 0; i < 100; i++){
+	if(i % 2 == 0){
+		break;
+	} else {
+		continue;
+	}
+	++i; // DOES NOT COMPILE - unreachable as it will always break or continue before these lines
+	System.out.println(i); // as above
 }
 ```
 ```java
@@ -1304,6 +1323,7 @@ public class PrintingNullString {
 ### String Methods
 * `length()` -> `"Hello".length()` -> `5`
 * `charAt(int index)` -> `"Hello".charAt(4);` -> `o` -> As per the API documentation for charAt, it throws `IndexOutOfBoundsException` if you pass an invalid value. In practice, the message you will get back is `StringIndexOutOfBoundsException`
+  - if there is a question on this - answer is that "it throws `IndexOutOfBoundsException`"
 * indexOf
   - `indexOf(char ch)`
   - `indexOf(String str)`
@@ -1436,6 +1456,15 @@ System.out.println(sb1.equals(sb2)); // false
 System.out.println(sb1.toString().equals(sb2.toString())); // true
 ```
 ### Arrays
+* an arrays is an object, so it can be assigned null:
+```java
+int[] ints = null;
+```
+* if you try to access a null array's indices, it compiles but you get a NullPointerException at runtime:
+```java
+int[] ints = null;
+int i = ints[0]; // Exception in thread -> NullPointerException
+```
 **arrays are mutable, but their length is fixed**
 * Primitive arrays
 ```java
@@ -1503,6 +1532,9 @@ Number[] numbers = new Double[1];
 numbers[0] = new Integer(4); // throw java.lang.ArrayStoreException: java.lang.Integer
 ```
 ### Array Methods
+* *not an array method, but need to know*:
+  - the `isArray()` method of a Class returns true. For example, `int[] ints = {1}; ints.getClass().isArray()` will return true.
+  - `getClass()` returns the class of the object, not the reference
 * `equals(type[] array)` - not overridden so looks for reference equality
 ```java
 int[] arr = {1, 2, 3};
@@ -1595,7 +1627,7 @@ for(int[] inner : twoD){
 }
 ```
 ### ArrayList
-`java.util.ArrayList`
+`java.util.ArrayList` -> (extends `java.util.AbstractList`)
 * mutable object, no fixed size
 * creating:
 ```java
@@ -3070,6 +3102,9 @@ public class OrderOfInitialization {
 // output: 12345
 ```
 ### Encapsulation
+* Benefits of (asked the mock):
+  - It helps make sure that clients have no accidental dependence on the choice of representation
+  - It helps avoiding name clashes as internal variables are not visible outside
 ```java
 class Encapsulation{
 	private int num;
@@ -3871,6 +3906,7 @@ parent.sayChildName(); // DOES NOT COMPILE -> can't find symbol
 * the `final` keyword forbids methods from being hidden or overridden (but a `final private` method in the parent class can be redeclared in the child class)
 ### Inheriting variables
 * variables can't be overriden, only hidden
+* **final variables can be hidden**
 * to hide a variable, define a variable in the child class with the same name as a variable in the parent class
 * as with hidden methods, if you reference the variable from within the parent class, the variable defined in the parent class is used
 * if referencing from within the child class, the variable defined in the child class is used
@@ -3968,6 +4004,7 @@ public class Piano extends Instrument {
 }
 ```
 * abstract classes may contain non-abstract members - these are inherited as concrete members by any subclasses (as they would be from any class)
+* abstract methods may not contain abstract variables - **no variable can be marked abstract**
 * abstract classes are allowed to contain no abstract methods if they wish:
 ```java
 public abstract class NoMethods {}; // compiles fine
@@ -5149,7 +5186,6 @@ SecondCheckedException.java:8: error: unreported exception Exception; must be ca
 ```
 
 * this time, it won't compile, as the caller, `main()`, doesn't handle or declare the checked exception
-
 ### Common Exception Types
 * 3 types for the exam:
   1. runtime exceptions (also known as unchecked exceptions)
@@ -5635,7 +5671,7 @@ Here is what JLS says on this:
 For Arrays: First, the dimension expressions are evaluated, left-to-right. If any of the expression evaluations completes abruptly, the expressions to the right of it are not evaluated.
 ---
 A snippet I don't know where to put:
-> The getClass method always returns the Class object for the actual object on which the method is called irrespective of the type of the reference. Since s refers to an object of class String, s.getClass returns Class object for String  and similarly list.getClass returns Class object for ArrayList.
+> The `getClass()` method always returns the Class object for the actual object on which the method is called irrespective of the type of the reference. Since s refers to an object of class String, s.getClass returns Class object for String  and similarly list.getClass returns Class object for ArrayList.
 ```java
 import java.util.*;
 public class ClassnameTest {
