@@ -336,6 +336,11 @@ public class ParseIntUnderscores {
 }
 ```
 * this will compile, as `parseInt()` expects a String, but throws java.lang.NumberFormatException at runtime
+* another edge case is that, stupidly, you can have as many underscores next to each other as you want, as long as their position is legal:
+```java
+int i = 1_______________________________0____________________________________________0;
+System.out.println(++i); // 101
+```
 ### Reference Types
 * a reference points to the location in memory where an object is stored
 * a value is assigned to a reference in one of two ways:
@@ -498,6 +503,7 @@ int x = (x = 1) + x // the brackets give precedence to the assignment (x = 1), w
 | float, double          | 0.0 (in the type's bit length |
 | char                   | '\u0000' (NUL) *not on exam   |
 | All object references  | null                          |
+* the default value of char is an empty char; its ASCII value is 0 - if cast to int or used in an operation its value is 0
 ### Variable scope
 * local variables are in scope from declaration to the end of the block
 * in the following example, `int i` is in scope from its declaration to the end of the method
@@ -796,6 +802,12 @@ System.out.println(x); // 6, as right hand operation never reached
 * there are two situations in which short-circuiting happens:
   - the first condition of an `&&` is false (i.e. both can't be true)
   - the first condition of an `||` is true (i.e. it doesn't matter what the other is)
+* it doesn't matter how many other conditions are after - if the first condition of `&&` is false or `||` is true, *everything* on the other side won't be evaluated:
+```java
+boolean a = (a = false), b = (b = false), c = (c = false), d = (d = false);
+boolean foo = (a = true) || (b = true) && (c = true) || (d = true);
+System.out.println(a + " " + b + " " + c + " " + d);
+```
 ### if....
 ```java
 if(booleanExpression)
@@ -1023,6 +1035,7 @@ for(;){} // DOES NOT COMPILE
 for( ; ; ){
 	// neverending loop
 }
+```
 * we can add multiple terms:
 ```java
 for(int x = 0, y = 5; y < 10 && x < 5; x++, y++){}
@@ -1344,8 +1357,8 @@ public class PrintingNullString {
 * `endsWith(String str)` -> `"Hello".endsWith("H");` -> `false` **remember these take a String as their argument** - the following won't compile:" `"Hello".startsWith('H');`
 * `contains(String str)` -> `"Hello".contains("Hell");` -> `true`
 * replace
-  - `replace(char oldChar, char newChar)` -> `"Hello".replace('H', 'J');` -> `Jello`
-  - `replace(String oldStr, String newStr)` -> `"Hello".replace("lo", "icopter");` -> `Helicopter`
+  - `replace(char oldChar, char newChar)` -> `"Hello".replace('H', 'J');` -> `Jello` -> **returns a new object if the string changes, otherwise the same object**
+  - `replace(String oldStr, String newStr)` -> `"Hello".replace("lo", "icopter");` -> `Helicopter` -> **returns a new object even if there is no change**
 * `trim()` -> `"\t  a b c \n".trim();` -> `a b c` (*trims trailing whitespace, tab and newline*)
 * `concat(String s)` -> `"Hello".concat("World");` -> `HelloWorld`
 * `intern()` -> the intern() method creates an exact copy of a String object in the heap memory and stores it in the String constant pool, unless it already exists in which case it points to that object:
@@ -1404,6 +1417,10 @@ System.out.print(sb); // -> 1falsec
 * `replace(int start, int end, String str)` -> `new StringBuilder("Hello").replace(2, 4, "zz")` -> `Hezzo`
   - Replaces the characters in a substring of this sequence with characters in the specified String.
   - **n.b.** different to `String`'s replace method which takes a String to find as its first arg and the replacement String as its second
+* ensureCapacity(int size) (useful to know it exists for the exam, probably not much more than that)
+  - Ensures that the capacity of the buffer is at least equal to the specified minimum.
+* setLength(int len) (also useful to know that it is a method of StringBuilder)
+  - Sets the length of this String buffer.
 #### StringBuffer
 * StringBuffer is an older, thread-safe (therefore, less efficient) version of StringBuilder which has the same methods
 * **StringBuffer is final, and therefore can't be extended**
@@ -1640,6 +1657,11 @@ ArrayList<String> arrList4 = new ArrayList<String>();
 // post-Java 7:
 ArrayList<String> arrList5 = new ArrayList<>();
 ```
+* initializing an ArrayList with a size *reserves slots* but does not create an ArrayList of that size:
+```java
+List<Integer> arrList = new ArrayList<>(5);
+arrList.size(); // 0
+arrList.get(0); // throws IndexOutOfBoundsException at runtime
 ### ArrayList Methods
 * add
   - `add(E element)` -> returns `boolean` (i.e. `true`)
@@ -2977,6 +2999,7 @@ public class Foo {
 	}
 }
 ```
+* **`this` isn't available in a static context** - so you wouldn't be able to call it from `main()`
 * constructors can't call themselves:
 ```java
 public class RecursiveConstructorInvocation {
@@ -4846,8 +4869,10 @@ class String {
 	}
 }
 ```
-
-#### Key Subclasses of Throwable
+#### Exceptions and overridden methods
+* The overriding method may choose to have no throws clause even if the overridden method has a throws clause.
+* Whether a call needs to be wrapped in a try/catch or whether the enclosing method requires a throws clause depends on the class of the reference and not the class of the actual object. This is because it is the compiler that checks whether a call needs to have exception handling and the compiler knows only about the declared class of a variable. It doesn't know about the actual object referred to by that variable (which is known only to JVM at run time). 
+* #### Key Subclasses of Throwable
 ![Key Subclasses of Throwable](https://github.com/sebastianchristopher/Java8OCANotes/blob/master/media/key-subclasses-of-throwable.png "Key Subclasses of Throwable")
 * `Error` means something irrecoverable went wrong
 * `RuntimeException` and its subclasses  are *runtime exceptions*  - unexpected but not fatal
@@ -5091,7 +5116,48 @@ try {
 ```
 * output is: Exception in thread "main" java.lang.Exception
 > because the finally block **always** has to run, the catch clause will execute up until the exception, then pass to finally - it can't throw two exceptions so has to go to finally
-* **however, the exception will then be passed back to the caller**
+* if the catch block either throws an exception or returns a value, this will be passed back to the caller UNLESS the finally block also throws an exception or returns a value:
+```java
+class Returning {
+	public static void main(String[] args) {
+		System.out.println(returner1());
+		System.out.println(returner2());
+	}
+	static String returner1(){
+		try{
+			throw new RuntimeException();
+		}catch{RuntimeException e){
+			System.out.println("In catch");
+			return "Catch"
+		}finally{
+			System.out.println("In finally");
+			return "Finally";
+		}
+	}
+	static String returner2(){
+		try{
+			throw new RuntimeException();
+		}catch{RuntimeException e){
+			System.out.println("In catch");
+			return "Catch"
+		}finally{
+			System.out.println("In finally");
+		}
+	}
+}
+```
+* the above will print:
+```bash
+In catch
+In finally
+Finally
+
+In catch
+In finally
+Catch
+```
+* if finally doesn't give us something else to return to the caller (a return or an exception), it goes back to the catch block and passes the return or thrown exception back to the caller
+
 * another example:
 ```java
 public class ThrowingASecondException {
@@ -5186,6 +5252,42 @@ SecondCheckedException.java:8: error: unreported exception Exception; must be ca
 ```
 
 * this time, it won't compile, as the caller, `main()`, doesn't handle or declare the checked exception
+#### Exceptions and inheritance
+* a method in a superclass that declares it throws an exception doesn't have to declare that same exception in an overridden method:
+```java
+class Super{
+	void foo() throws Exception {}
+}
+class Sub{
+	void foo(){}
+```
+* as overridden methods are polymrophic, if the foo method is called from an object whose reference is parent, it will need to be handled or caught
+* if it is called from an object whose reference is Child, it won't:
+```java
+class Super{
+	void foo() throws Exception {}
+}
+class Sub{
+	void foo(){}
+}
+public class Tester{
+	public static void main(String[] args){
+		Child child = new Child();
+		child.foo(); // runs
+		Parent parent = new Child();
+		parent.foo(); // does not compile - must be caught or declared
+	}
+}
+```
+* also, if the overriding method actually *throws* an exception, it needs to declare it:
+```java
+class Super{
+	void foo() throws Exception {}
+}
+class Sub{
+	void foo(){throw new Exception()} // does not compile - must be caught or declared to be thrown
+```
+
 ### Common Exception Types
 * 3 types for the exam:
   1. runtime exceptions (also known as unchecked exceptions)
