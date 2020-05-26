@@ -277,7 +277,7 @@ public class Foo {
 |  char    | 16-bit unicode value          | 'a'      |
 * each numeric type uses twice as many bits as its next smallest type
 * byte can hold a value between -128 and 127
-* char can be assigned a character literal e.g. `char c = z` or a positive integer e.g. `char c = 122` (both examples are equivalent)
+* char can be assigned a character literal e.g. `char c = 'z'` or a positive integer e.g. `char c = 122` (both examples are equivalent)
 * char can't be assigned a negative value (except through casting e.g. `char c = (char)-1` which will store an unexpected value)
 * because char is equivalent to an unsigned short in Java, arithmetic operators can run on it
 * upercase letters come before lowercase, therefore have a lower ASCII value -> `System.out.println('B' > 'b');` -> `false`
@@ -304,7 +304,7 @@ class CharAddition {
   - at the end
   - right before a decimal point
   - right after a decimal point
-  - right after the prefixes 0b, 0B, 0x, and 0X (but legal after octal prefix 0)
+  - right after (or between) the prefixes 0b, 0B, 0x, and 0X (but legal after octal prefix 0)
   - prior to an L or F suffix (or l, f, D, etc)
 ```java
 double d1 = _0.1; // illegal
@@ -318,7 +318,8 @@ _
 long octVal = 0_413; // legal
 
 long hexVal1 = 0x_10_BA_75; // illegal
-long hexVal2 = 0x10_BA_75; // legal
+long hexVal2 = 0_x10_BA_75; // illegal
+long hexVal3 = 0x10_BA_75; // legal
 
 long binVal1 = 0b_1_0000_10_11; // illegal
 long binVal2 = 0b1_0000_10_11; // legal
@@ -431,7 +432,7 @@ System.out.println(str.valueOf(str); // prints String
 ```
 * since we can call a static method with an instance of the object, this compiles and runs without any issues
 ### Default initialization of variables
-* *local variables* (i.e. variables in a method) must be initialized before use
+* *local variables* (i.e. variables in a method, initializer block or static initializer block) must be initialized before use
 * their scope is confined to the method or block they are declared in
 * they can't be marked with access modifiers
 * they do not have a default value and must be initialized before use
@@ -710,7 +711,7 @@ public static void main(String[] args){
 * remember, these rules apply to all operations **including** assignment - e.g. `float f = 1;` -> int literal is promoted to the floating-point value type
 * also remember, all numbers without a decimal point are interpreted as int literals, all with a decimal point are interpreted as double literals
 ### Primitive conversion
-* Java automatically promotes from smaller to larger data types, but not the other way round
+* Java automatically promotes from smaller to larger data types, but not the other way round (except int literals which can narrow to byte, short and char types if the value fits)
 ```java
 int x = 1.0; // DOES NOT COMPILE -> double can't assign to int
 short y = 1921222; // DOES NOT COMPILE -> too large to fit into short type
