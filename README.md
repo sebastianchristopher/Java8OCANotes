@@ -3718,7 +3718,7 @@ public int getAge(){
 ### Rules for overriding a method
 1. child method must have same signature as parent method
 2. the child method must be at least as accessible as the parent method
-3. the child method must not introduce any new checked exceptions unless they are as or less broad than the parent method's checked exceptions
+3. the child method must not introduce any new checked exceptions unless they are **less broad** than the parent method's checked exceptions
 4. the child method's return type must be the same or a subclass of the parent's return type
 * the last rule is known as *covariant returns* - the return type of an overriding method must be the same or a subtype
 ```java
@@ -3760,6 +3760,15 @@ class Child extends Parent {
     }
 }
 ```
+* covariance does not autobox/unbox"
+```java
+class Parent{
+	Integer foo(){return 1;}
+}
+class Child extends Parent{
+	int foo(){return 2;} // DOES NOT COMPILE -> return type int is not compatible with Integer
+}
+```
 * overriding is a lot more restrictive than overloading (where only the method signature has to match)
 ```java
 public class Parent{
@@ -3773,7 +3782,7 @@ public class Child extends Parent{
 	}
 }
 ```
-* checked exceptions must be **as** or **less** broad
+* checked exceptions must be **the same exception** or **a sub-exception**
 ```java
 class SpecificException extends Exception{}
 
@@ -3991,7 +4000,7 @@ public class HidingVariables {
 > The nonprivate static variables and methods are inherited by derived classes. The static members aren’t involved in runtime polymorphism. You can’t override the static members in a derived class, but you can redefine them.
 * another way of putting this would be:
   - Which variable (or static method) will be used depends on the class that the variable is declared of (i.e. what it's reference is)
-  - Which instance method will be used depends on the actual class of the object that is referenced by the variable (i.e.e the object in memory).
+  - Which instance method will be used depends on the actual class of the object that is referenced by the variable (i.e. the object in memory).
 ### Abstract Classes
 * abstract classes allow you to create a blueprint parent class, for other classes to extend, without having to implement any of the methods in the parent class
 * abstract classes cannot be instantiated
@@ -4358,7 +4367,7 @@ public interface IllegalExamples {
 }
 ```
 * **(static) interface variables - child classes directly inherit interface variables so are available to call without a reference to the interface**
-* **static interface methods - child classes do not inherit interface methods so they can only be called with a reference to the name of the interface**
+* **static interface methods - child classes do not inherit static interface methods so they can only be called with a reference to the name of the interface**
 * what happens if a class inherits two interface variables with the same name?
 ```java
 interface interface1 {
@@ -4890,7 +4899,7 @@ public class Fail {
 ```
 
 * throws **declares** it *might* throw a an exception
-* the `throws` keyword tells Java you want to have the option of throwing an exception
+  - the `throws` keyword tells Java you want to have the option of throwing an exception
 * `throw` tells Java to throw an exception
 > An example of an unchecked (or runtime) exception is NullPointerException. This can happen in any method - but you don't see `throws NullPointerException` everywhere because it is unchecked
 * **A method that declares an exception isn't required to throw one - but it must not throw a superclass of an exception it declares**
@@ -5080,8 +5089,8 @@ import java.io.IOException;
 public class BadExceptionHandling {
 	public static void main(String args[]){
 		try {
-			System.out.println("Hello world");
-		} catch (IOException e) {
+			System.out.println("Hello world"); // this method doesn't throw IOException
+		} catch (IOException e) { // so this won't compile
 			System.out.println("Bad maths");
 		}
 	}
