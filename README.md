@@ -615,8 +615,46 @@ public class Foobar { // class declaration; required
 | ternary               | `x == true ? y : z`                |
 | assignment            | `=`, `+=`, `-=`                    |
 
-*if the above table isn't rendering properly, [see here](#https://github.com/jbt/markdown-editor/issues/20) *
-
+* In Java, the dot operator has higher precedence than the cast operator:
+```java
+class Parent{
+	int x;
+}
+class Child extends Parent{
+	Long x;
+}
+class MyTest{
+	public static void main(String[] args){
+		Child child = new Child();
+		int x = (Parent)child.x; // DOES NOT COMPILE ->  error: incompatible types: Long cannot be converted to Parent
+	}
+}
+```
+* the `.` is executed first, so it tries to cast Long to Parent. The parentheses denoting a cast are not the same as parentheses overriding precedence. The following is the correct way to do it:
+```java
+class Parent{
+	int x;
+}
+class Child extends Parent{
+	Long x;
+}
+class MyTest{
+	public static void main(String[] args){
+		Child child = new Child();
+		int x = ( (Parent)child).x; // these extra parentheses override precendence - they say, perform the cast before the dot
+	}
+}
+```
+* what if one of my operands is a method?
+* this is confusing - basically, it seems that the method will be called based on evaluating left to right, ignoring parentheses:
+```java
+static int num(){return 1;}
+public static void main(String[]args){
+	int a = 0;
+	int b = num() + (a = 1); // here num() is called before (a = 1)
+	int c = (a = 1) + num(); // here num() is called after (a = 1)
+}
+```
 ### Pre unary and post unary increment and decrement
 * pre unary increments/decrements and returns a new value
 * post unary increments/decrements and returns the original value
@@ -865,6 +903,13 @@ int y = true ? 1 : "not true"; // DOES NOT COMPILE
 ```java
 System.out.println(true ? 1 : "not true");
 ```
+* both sides need to return a value - hence the following is invalid:
+```java
+int i = 0;
+while(true){
+	i++;
+	i % 2 == 0 ? break : continue; // does not compile -> Both sides of : should return some value
+```
 ### switch
 ```java
 int x = 4;
@@ -883,6 +928,7 @@ switch(x){ // braces required
 		break;
 }
 ```
+* **a switch statement must have at least one of a valid case label or a default label** - if neither are present, it won't compile
 * supports:
   - `int` and `Integer`
   - `short` and `Short`
@@ -1417,10 +1463,15 @@ System.out.print(sb); // -> 1falsec
 * `replace(int start, int end, String str)` -> `new StringBuilder("Hello").replace(2, 4, "zz")` -> `Hezzo`
   - Replaces the characters in a substring of this sequence with characters in the specified String.
   - **n.b.** different to `String`'s replace method which takes a String to find as its first arg and the replacement String as its second
-* ensureCapacity(int size) (useful to know it exists for the exam, probably not much more than that)
-  - Ensures that the capacity of the buffer is at least equal to the specified minimum.
-* setLength(int len) (also useful to know that it is a method of StringBuilder)
+* `setLength(int len)`
   - Sets the length of this String buffer.
+  - `StringBuilder sb = new StringBuilder(); sb.setLength(100); System.out.println(sb.length());` -> 100
+* `ensureCapacity(int minCapacity)`
+  - Ensures that the capacity of the buffer is at least equal to the specified minimum.
+  - if not, modifies the capacity to be the larger of the minimumCapacity argument or twice the old capacity, plus 2.
+  - `StringBuilder sb = new StringBuilder(); sb.setLength(100); sb.getCapacity(101); System.out.println(sb.capacity());` -> 202
+* `capacity()` -> returns the capacity
+* the default capacity is 16 -> `StringBuilder sb = new StringBuilder(); System.out.println(sb.capacity());` -> 16
 #### StringBuffer
 * StringBuffer is an older, thread-safe (therefore, less efficient) version of StringBuilder which has the same methods
 * **StringBuffer is final, and therefore can't be extended**
@@ -1646,6 +1697,8 @@ for(int[] inner : twoD){
 ### ArrayList
 `java.util.ArrayList` -> (extends `java.util.AbstractList`)
 * mutable object, no fixed size
+* An ArrayList is backed by an array. 
+  - the elements are stored in an array (the expression "backed by an array" means that the implementation of ArrayList actually uses an array to store elements)
 * creating:
 ```java
 // before Java 5 and generics:
@@ -1662,6 +1715,7 @@ ArrayList<String> arrList5 = new ArrayList<>();
 List<Integer> arrList = new ArrayList<>(5);
 arrList.size(); // 0
 arrList.get(0); // throws IndexOutOfBoundsException at runtime
+```
 ### ArrayList Methods
 * add
   - `add(E element)` -> returns `boolean` (i.e. `true`)
@@ -2498,7 +2552,7 @@ LocalDate date = LocalDate.parse("02 12 2020 21:31", dtf2);
 * can be before access modifier
 #### Return Type
 * method signature must contain return type
-* must contain a return statement matching return type that is reached by all branches
+* must contain a return statement matching return type (**OR** throw an error) that is reached by all branches
 * if void, return statement is optional; either omit or return with no value
 * **return value can be a subclass of the return type**
 * **return value can be a primitive that automatically promotes to the return type**
@@ -3097,9 +3151,10 @@ public class FinalFieldsTester {
 * by the stime the constructor completes, all final instance variables must have been assigned
 ### Order of Initialization
 1. initialize superclass if present
-2. static members in order they appear (variables and initializers)
-3. instance members in order they appear (variables and initializers)
-4. the constructor
+2. static members in order they appear in the topmost class (variables and initializers)
+3. instance members in order they appear in the topmost class (variables and initializers)
+4. repeat 2 and 3 down through each subclass
+5. the constructor (the rest of the constructor after the super() call)
 ```java
 public class OrderOfInitialization {
 	static void print(int num){
@@ -3275,6 +3330,26 @@ public static void main(String[] args) {
 	System.out.println(isFive.test(i));
 }
 ```
+* if a variable has already been declared in the method that defines a lambda, you can't reuse that variable in the lambda expression:
+```java
+import java.util.function.Predicate;
+
+class MyTest{
+	public static void main(String[] args){
+		String s = "Foo";
+		Predicate<String> isFoo = s -> s.equals("Foo"); // DOES NOT COMPILE -> error: variable s is already defined in method main(String[])
+		isFoo("Foo", isFoo);
+	}
+	static void isFoo(String s, Predicate<String> isFoo){
+		if(isFoo.test(s)){
+			System.out.println("true");
+		}else{
+			System.out.println("false");
+		}
+	}
+}
+```
+* you are free to use it afterwards, as it only exists in the lambda scope
 ### Predicates
 * lambdas work with interfaces that only have one method
 * these are called functional interfaces
@@ -3599,6 +3674,22 @@ public class Child{
 }
 ```
 * the child constructor doesn't have to match, just the call to `super()`
+#### constructors and exceptions
+* the rule for overriding a method is opposite to the rule for constructors
+* An overriding method cannot throw a superclass exception, while a constructor of a subclass cannot throw subclass exception (Assuming that the same exception or its super class is not present in the subclass constructor's throws clause):
+```java
+class A{
+     public A() throws IOException{ }
+     void m() throws IOException{ }
+}    
+class B extends A{
+     //IOException is valid here, but FileNotFoundException is invalid
+     public B() throws IOException{ }
+
+     //FileNotFoundException is valid here, but Exception is invalid
+     void m() throws FileNotFoundException{ } 
+}
+```
 ### Reviewing constructor rules
 1. the first statement in a constructor must be either a call to another constructor in the class, using `this()`, or a call to a constructor in the parent class, using `super()`
 2. the `super()` method must not be used after the first statement of the construct (i.e. at most once, and on the first line)
@@ -3690,6 +3781,7 @@ String getName(){
  
 * if a child method overrides a parent method, `this.` calls the child method and `super.` calls the parent method
 * if a method doesn't exist in the parent class, trying to call it with `super.` will cause a compile error
+* you can only call a overridden method in the next superclass - there is no way of calling an overridden method in the superclass two levels up (e.g. you can't do super.super)
 > super() and super are different, like this() and this - watch out for this on the exam
 ### Inheriting Methods
 * a subclass has access to all public and protected methods of the parent class
@@ -4857,6 +4949,8 @@ class was marked as protected and overridden in the subclass, then the method on
 * It allows creation of new exceptions that are custom to a particular application domain
 * It improves code because error handling code is clearly separated from the main program logic.
   - The error handling logic is put in the catch block, which makes the main flow of the program clean and easily understandable.
+* Java Exceptions is a mechanism that you can use to determine what to do when something unexpected happens.
+* Java Exceptions is a mechanism for logging unexpected behavior.
 #### What exception does this method throw?
 * This also came up in a mock and is pernickety at best:
 ```java
@@ -5009,7 +5103,7 @@ loop:
 }
 ```
 * **except** when `System.exit(0);` is used - this is the only way to avoid control passing to the finally block (at least for the exam)
-
+* **try, catch and finally all have their own scope** - e.g. a variable declared in the try block is not in scope in the catch block
 ### Catching various types of exception
 ```java
 class ACheckedException extends Exception {}
@@ -5388,6 +5482,7 @@ class Foo {
   *         at ExceptionInitializerErrorExample.<clinit>(ExceptionInitializerErrorExample.java:5)
   */
   ```
+  - note that while `ArrayIndexOutOfBoundsException` caused the error, the error thrown at runtime is `ExceptionInInitializerError`
 * `NoClassDefFoundError` - occurs when Java can't find a class at runtime
 ### Calling methods that throw exceptions
 ```java
@@ -5828,6 +5923,7 @@ class java.util.ArrayList
   - All variables go into scope when they are declared.
   - Local variables go out of scope when the block they are declared in ends.
   - Instance variables go out of scope when the object is garbage collected.
+  - they do not go out of scope if they are returned (although the method ends immediately after, at which point it does go out of scope)
   - Class variables remain in scope as long as the program is running.
 * Be able to recognize misplaced statements in a class.
   - Package and import statements are optional.
